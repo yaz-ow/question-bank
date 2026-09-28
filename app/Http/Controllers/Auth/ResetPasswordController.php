@@ -8,7 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
 class ResetPasswordController extends Controller
@@ -30,7 +30,7 @@ class ResetPasswordController extends Controller
             'token' => 'required',
             'university_id' => ['required', 'string'],
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 
         // Normalize university ID input
@@ -85,7 +85,7 @@ class ResetPasswordController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', PasswordRule::defaults()],
         ]);
 
         // Find user by email and check if they are instructor or admin
