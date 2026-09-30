@@ -1,10 +1,11 @@
+import FlashMessages from '../Components/FlashMessages';
 import { Link } from '@inertiajs/react'
-import { usePage } from '@inertiajs/react'
 
 export default function WelcomePage() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
             <div className="text-center">
+                <FlashMessages />
                 <h1 className="mb-6 text-3xl font-bold text-gray-900">
                     مرحبًا بك في نظام سؤال وجواب
                 </h1>

@@ -8,9 +8,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Inertia;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class LoginController extends Controller
 {
@@ -30,7 +29,7 @@ class LoginController extends Controller
         try {
             $request->validate([
                 'university_id' => ['required', 'string'],
-                'password' => ['required'],
+                'password' => ['required', 'string'],
             ]);
 
             // Normalize university ID input
@@ -40,12 +39,12 @@ class LoginController extends Controller
             $user = User::where('university_id', $university_id)->first();
 
             // Validate credentials and check if user is active student
-            if (!$user ||
-                !Hash::check($request->password, $user->password) ||
+            if (! $user ||
+                ! Hash::check($request->password, $user->password) ||
                 $user->role !== 'student' ||
-                !$user->is_active) {
+                ! $user->is_active) {
                 throw ValidationException::withMessages([
-                    'university_id' => ['الحقائق غير صحيحة'], // Arabic: Invalid credentials
+                    'university_id' => ['بيانات الدخول غير صحيحة'], // Arabic: Invalid credentials
                 ]);
             }
 
@@ -77,19 +76,19 @@ class LoginController extends Controller
         try {
             $request->validate([
                 'email' => ['required', 'string', 'email'],
-                'password' => ['required'],
+                'password' => ['required', 'string'],
             ]);
 
             // Find user by email
             $user = User::where('email', $request->email)->first();
 
             // Validate credentials and check if user is admin or instructor and active
-            if (!$user ||
-                !Hash::check($request->password, $user->password) ||
-                !in_array($user->role, ['instructor', 'admin']) ||
-                !$user->is_active) {
+            if (! $user ||
+                ! Hash::check($request->password, $user->password) ||
+                ! in_array($user->role, ['instructor', 'admin']) ||
+                ! $user->is_active) {
                 throw ValidationException::withMessages([
-                    'email' => ['الحقائق غير صحيحة'], // Arabic: Invalid credentials
+                    'email' => ['بيانات الدخول غير صحيحة'], // Arabic: Invalid credentials
                 ]);
             }
 

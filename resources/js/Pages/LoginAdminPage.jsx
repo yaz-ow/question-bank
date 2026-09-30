@@ -1,5 +1,5 @@
+import FlashMessages from '../Components/FlashMessages';
 import { useForm, Link } from '@inertiajs/react'
-import { usePage } from '@inertiajs/react'
 
 export default function LoginAdminPage() {
     const { data, setData, post, processing, errors } = useForm({
@@ -7,21 +7,17 @@ export default function LoginAdminPage() {
         password: '',
     })
 
-    const { flash } = usePage().props
 
     const submit = (e) => {
         e.preventDefault()
         post(route('login-admin.store'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md space-y-6">
+                <FlashMessages />
                 <div className="space-y-3">
                     <h2 className="text-center text-2xl font-bold text-gray-900">
                         تسجيل دخول المسؤول
@@ -30,11 +26,6 @@ export default function LoginAdminPage() {
                         أدخل بريدك الإلكتروني وكلمة المرور للدخول إلى لوحة التحكم
                     </p>
                 </div>
-                {flash.error && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
-                        {flash.error}
-                    </div>
-                )}
                 <form onSubmit={submit} className="space-y-6">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-gray-700">

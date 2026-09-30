@@ -1,30 +1,29 @@
-import { useForm, Link } from '@inertiajs/react'
+import { useForm, Link, router } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
 import { useState } from 'react'
 
 export default function AdminStudentManagementPage({ students, filters }) {
-    const { data, setData, get, processing, relocate } = useForm({
+    const { data, setData, get, processing } = useForm({
         search: filters.search || '',
     })
 
     const { flash } = usePage().props
 
     const [confirmingToggle, setConfirmingToggle] = useState(null)
+    const [toggling, setToggling] = useState(false)
 
     const handleToggle = (studentId) => {
         setConfirmingToggle(studentId)
     }
 
     const confirmToggle = (studentId) => {
-        // Create a temporary form for the toggle request
-        const toggleForm = useForm({
-            _method: 'POST',
-        })
-
-        toggleForm.post(route('admin.students.toggle', studentId), {
+        if (toggling) return
+        setToggling(true)
+        router.post(route('admin.students.toggle', studentId), {}, {
+            preserveScroll: true,
+            onFinish: () => setToggling(false),
             onSuccess: () => {
                 setConfirmingToggle(null)
-                relocate(route('admin.students.index', { search: data.search }))
             },
             onError: () => {
                 setConfirmingToggle(null)
@@ -81,8 +80,8 @@ export default function AdminStudentManagementPage({ students, filters }) {
                         </div>
                     </div>
                     <div className="relative">
-                        <div className="absolute inset-0 bg-gray-50 opacity-75">
-                            {confirmingToggle !== null && (
+                        {confirmingToggle !== null && (
+                        <div className="absolute inset-0 z-10 bg-gray-50/90">
                                 <div className="flex items-center justify-center h-full">
                                     <div className="bg-white rounded-lg p-6 text-center w-full max-w-xs">
                                         <h3 className="text-lg font-medium text-gray-900 mb-4">
@@ -93,12 +92,14 @@ export default function AdminStudentManagementPage({ students, filters }) {
                                         </p>
                                         <div className="flex justify-center space-x-4">
                                             <button
+                                                disabled={toggling}
                                                 onClick={() => confirmToggle(confirmingToggle)}
                                                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                                             >
                                                 نعم
                                             </button>
                                             <button
+                                                disabled={toggling}
                                                 onClick={cancelToggle}
                                                 className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                                             >
@@ -107,8 +108,8 @@ export default function AdminStudentManagementPage({ students, filters }) {
                                         </div>
                                     </div>
                                 </div>
-                            )}
                         </div>
+                        )}
                         <table className="w-full text-sm text-left rtl:ignore text-right">
                             <thead className="bg-gray-50">
                                 <tr>

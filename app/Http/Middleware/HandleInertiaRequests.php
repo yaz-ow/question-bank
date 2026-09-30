@@ -45,11 +45,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'ziggy' => function () {
-                return array_merge((array) config('ziggy'), [
-                    'location' => request()->url(),
-                ]);
-            },
         ]);
     }
 }

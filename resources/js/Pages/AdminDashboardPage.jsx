@@ -1,3 +1,4 @@
+import FlashMessages from '../Components/FlashMessages';
 import { Link } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
 
@@ -7,6 +8,7 @@ export default function AdminDashboardPage() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md space-y-6">
+                <FlashMessages />
                 <div className="space-y-3">
                     <h2 className="text-center text-2xl font-bold text-gray-900">
                         لوحة تحكم المسؤول
@@ -16,6 +18,7 @@ export default function AdminDashboardPage() {
                     </p>
                 </div>
                 <div className="space-y-4">
+                    {auth.user?.role === 'admin' && <>
                     <Link
                         href="/admin/students"
                         className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
@@ -28,6 +31,8 @@ export default function AdminDashboardPage() {
                     >
                         إنشاء مسؤول مدرب
                     </Link>
+                    </>}
+                    <Link href={route('admin.subjects.index')} className="block rounded border p-3 text-center">إدارة المقررات</Link>
                     <Link
                         href="/"
                         className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"

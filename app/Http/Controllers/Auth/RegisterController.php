@@ -9,10 +9,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Inertia;
+use Inertia\Inertia;
 
 class RegisterController extends Controller
 {
@@ -29,6 +28,9 @@ class RegisterController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $request->merge(['university_id' => is_string($request->university_id)
+            ? strtoupper(trim($request->university_id)) : $request->university_id]);
+
         try {
             $request->validate([
                 'name' => ['required', 'string', 'max:255'],

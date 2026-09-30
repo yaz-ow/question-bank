@@ -1,10 +1,10 @@
 import { useForm, Link } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
 
-export default function ResetPasswordAdminPage({ token }) {
+export default function ResetPasswordAdminPage({ token, email = '' }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
-        email: '',
+        email,
         password: '',
         password_confirmation: '',
     })
@@ -14,10 +14,6 @@ export default function ResetPasswordAdminPage({ token }) {
     const submit = (e) => {
         e.preventDefault()
         post(route('password-reset.admin.store'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 

@@ -4,13 +4,16 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class ResetPasswordController extends Controller
 {
@@ -29,7 +32,7 @@ class ResetPasswordController extends Controller
     {
         try {
             $request->validate([
-                'token' => 'required',
+                'token' => ['required', 'string'],
                 'university_id' => ['required', 'string'],
                 'email' => ['required', 'string', 'email'],
                 'password' => ['required', 'confirmed', PasswordRule::defaults()],
@@ -45,11 +48,11 @@ class ResetPasswordController extends Controller
 
         // Find student by university_id and email to verify identity
         $user = User::where('university_id', $university_id)
-                    ->where('email', $request->email)
-                    ->where('role', 'student')
-                    ->first();
+            ->where('email', $request->email)
+            ->where('role', 'student')
+            ->first();
 
-        if (!$user) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'university_id' => ['الحقائق غير صحيحة'], // Arabic: Invalid credentials
             ]);
@@ -59,11 +62,19 @@ class ResetPasswordController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                // Update the password and clear the remember token to log out from all devices
+                // Rotate persistent login tokens and invalidate database sessions.
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    'remember_token' => null,
+                    'remember_token' => Str::random(60),
                 ])->save();
+
+                if (config('session.driver') === 'database') {
+                    DB::connection(config('session.connection'))
+                        ->table(config('session.table', 'sessions'))
+                        ->where('user_id', $user->getKey())->delete();
+                }
+
+                event(new PasswordReset($user));
             }
         );
 
@@ -92,7 +103,7 @@ class ResetPasswordController extends Controller
     {
         try {
             $request->validate([
-                'token' => 'required',
+                'token' => ['required', 'string'],
                 'email' => ['required', 'string', 'email'],
                 'password' => ['required', 'confirmed', PasswordRule::defaults()],
             ]);
@@ -104,10 +115,10 @@ class ResetPasswordController extends Controller
 
         // Find user by email and check if they are instructor or admin
         $user = User::where('email', $request->email)
-                    ->whereIn('role', ['instructor', 'admin'])
-                    ->first();
+            ->whereIn('role', ['instructor', 'admin'])
+            ->first();
 
-        if (!$user) {
+        if (! $user) {
             throw ValidationException::withMessages([
                 'email' => ['الحقائق غير صحيحة'], // Arabic: Invalid credentials
             ]);
@@ -117,11 +128,19 @@ class ResetPasswordController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
-                // Update the password and clear the remember token to log out from all devices
+                // Rotate persistent login tokens and invalidate database sessions.
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    'remember_token' => null,
+                    'remember_token' => Str::random(60),
                 ])->save();
+
+                if (config('session.driver') === 'database') {
+                    DB::connection(config('session.connection'))
+                        ->table(config('session.table', 'sessions'))
+                        ->where('user_id', $user->getKey())->delete();
+                }
+
+                event(new PasswordReset($user));
             }
         );
 

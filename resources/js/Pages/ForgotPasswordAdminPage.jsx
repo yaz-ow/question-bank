@@ -11,10 +11,6 @@ export default function ForgotPasswordAdminPage() {
     const submit = (e) => {
         e.preventDefault()
         post(route('password-request-admin'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 

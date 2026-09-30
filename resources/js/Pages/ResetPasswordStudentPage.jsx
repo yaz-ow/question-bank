@@ -1,11 +1,11 @@
 import { useForm, Link } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
 
-export default function ResetPasswordStudentPage({ token }) {
+export default function ResetPasswordStudentPage({ token, email = '' }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         token: token,
         university_id: '',
-        email: '',
+        email,
         password: '',
         password_confirmation: '',
     })
@@ -15,10 +15,6 @@ export default function ResetPasswordStudentPage({ token }) {
     const submit = (e) => {
         e.preventDefault()
         post(route('password-reset.student.store'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 
@@ -66,7 +62,7 @@ export default function ResetPasswordStudentPage({ token }) {
                             value={data.university_id}
                             onChange={(e) => setData('university_id', e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="M seguido de 9 dígitos"
+                            placeholder="M ثم 9 أرقام، مثال: M123456789"
                             required
                         />
                         {errors.university_id && <span className="mt-1 text-sm text-red-600">{errors.university_id}</span>}

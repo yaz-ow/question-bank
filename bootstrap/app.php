@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\EnsureUserHasRole;
+use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -11,10 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->redirectGuestsTo(fn ($request) => $request->is('admin', 'admin/*')
+            ? route('login-admin.show') : route('login-student.show'));
+
         $middleware->alias([
-            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
-            'active' => \App\Http\Middleware\EnsureUserIsActive::class,
-            'inertia' => \App\Http\Middleware\HandleInertiaRequests::class,
+            'role' => EnsureUserHasRole::class,
+            'active' => EnsureUserIsActive::class,
+            'inertia' => HandleInertiaRequests::class,
         ]);
 
         $middleware->web(append: [

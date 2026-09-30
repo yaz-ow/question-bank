@@ -4,15 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MiddlewareTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
-    public function student_cannot_access_admin_dashboard()
+    public function test_student_cannot_access_admin_dashboard()
     {
         // Create an active student user
         $student = User::factory()->create([
@@ -32,8 +30,7 @@ class MiddlewareTest extends TestCase
         $response->assertSessionHas('error', 'غير مسموح لك بالوصول إلى هذه الصفحة');
     }
 
-    /** @test */
-    public function inactive_user_cannot_access_protected_route()
+    public function test_inactive_user_cannot_access_protected_route()
     {
         // Create an inactive student user
         $user = User::factory()->create([

@@ -1,5 +1,5 @@
+import FlashMessages from '../Components/FlashMessages';
 import { useForm, Link } from '@inertiajs/react'
-import { usePage } from '@inertiajs/react'
 
 export default function LoginStudentPage() {
     const { data, setData, post, processing, errors } = useForm({
@@ -7,21 +7,17 @@ export default function LoginStudentPage() {
         password: '',
     })
 
-    const { flash } = usePage().props
 
     const submit = (e) => {
         e.preventDefault()
         post(route('login-student.store'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md space-y-6">
+                <FlashMessages />
                 <div className="space-y-3">
                     <h2 className="text-center text-2xl font-bold text-gray-900">
                         تسجيل دخول الطالب
@@ -30,11 +26,6 @@ export default function LoginStudentPage() {
                         أدخل رقمك الجامعي وكلمة المرور للدخول إلى حسابك
                     </p>
                 </div>
-                {flash.error && (
-                    <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-md text-red-600">
-                        {flash.error}
-                    </div>
-                )}
                 <form onSubmit={submit} className="space-y-6">
                     <div>
                         <label htmlFor="university_id" className="block text-sm font-medium text-gray-700">
@@ -47,7 +38,7 @@ export default function LoginStudentPage() {
                             value={data.university_id}
                             onChange={(e) => setData('university_id', e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="M seguido de 9 dígitos"
+                            placeholder="M ثم 9 أرقام، مثال: M123456789"
                             required
                         />
                         {errors.university_id && <span className="mt-1 text-sm text-red-600">{errors.university_id}</span>}
@@ -85,6 +76,7 @@ export default function LoginStudentPage() {
                         </button>
                     </div>
                 </form>
+                <div className="text-center"><Link href={route('register')} className="text-indigo-600">إنشاء حساب طالب جديد</Link></div>
                 <div className="mt-6 text-center text-sm text-gray-500">
                     هل أنت مسؤول؟
                     <Link

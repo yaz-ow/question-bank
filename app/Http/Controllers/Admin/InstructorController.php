@@ -6,12 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Support\Facades\Inertia;
-use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class InstructorController extends Controller
 {
@@ -50,7 +46,7 @@ class InstructorController extends Controller
         // Check the instructor creation code
         $code = config('admin.creation_code');
 
-        if (empty($code) || !hash_equals($code, $request->instructor_creation_code)) {
+        if (empty($code) || ! hash_equals($code, $request->instructor_creation_code)) {
             return back()
                 ->withInput($request->except('password', 'password_confirmation', 'instructor_creation_code'))
                 ->withErrors(['instructor_creation_code' => 'رمز إنشاء المدرب غير صحيح']);

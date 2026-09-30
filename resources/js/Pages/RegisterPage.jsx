@@ -13,11 +13,7 @@ export default function RegisterPage() {
     const submit = (e) => {
         e.preventDefault()
         post(route('register'), {
-            onSuccess: () => reset(),
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
+            onSuccess: () => reset()
         })
     }
 
@@ -74,7 +70,7 @@ export default function RegisterPage() {
                             value={data.university_id}
                             onChange={(e) => setData('university_id', e.target.value)}
                             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            placeholder="M seguido de 9 dígitos"
+                            placeholder="M ثم 9 أرقام، مثال: M123456789"
                             required
                         />
                         {errors.university_id && <span className="mt-1 text-sm text-red-600">{errors.university_id}</span>}
@@ -109,18 +105,6 @@ export default function RegisterPage() {
                         />
                         {errors.password_confirmation && <span className="mt-1 text-sm text-red-600">{errors.password_confirmation}</span>}
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <input
-                                id="terms"
-                                type="checkbox"
-                                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="terms" className="ml-2 block text-sm text-gray-900">
-                                أتفق على الشروط والأحكام
-                            </label>
-                        </div>
-                    </div>
                     <div className="flex w-full justify-center">
                         <button
                             type="submit"
@@ -132,7 +116,7 @@ export default function RegisterPage() {
                     </div>
                 </form>
                 <div className="text-center text-sm text-gray-500">
-                    هل لديك حساب already?
+                    هل لديك حساب بالفعل؟
                     <Link
                         href="/login/student"
                         className="font-medium text-indigo-600 hover:text-indigo-500"

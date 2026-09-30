@@ -15,10 +15,6 @@ export default function InstructorCreationPage() {
     const submit = (e) => {
         e.preventDefault()
         post(route('admin.instructors.store'), {
-            onError: (page) => {
-                // Set form errors from the response
-                setData(page.props.errors || data)
-            }
         })
     }
 

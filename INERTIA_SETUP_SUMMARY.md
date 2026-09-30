@@ -1,93 +1,48 @@
-# Inertia.js Setup Verification & Fix Summary
+# React, authentication and course-management integration
 
-## ✅ Verification Completed
+The application uses Laravel 12, Inertia and React. HTTP middleware is configured
+in `bootstrap/app.php`; the obsolete application Kernel has been removed.
 
-### 1. Package Installation Confirmed
-- **Backend**: `inertiajs/inertia-laravel` v3.4 installed via Composer
-- **Frontend**: `@inertiajs/react` v3.7.1 and `@inertiajs/progress` v0.2.7 installed via npm
-- Laravel auto-discovery working (no manual registration needed)
+## Runtime fixes
 
-### 2. Middleware Verified
-- **File**: `app/Http/Middleware/HandleInertiaRequests.php` ✅
-- Properly configured with rootView = 'app'
-- Shares flash messages, auth user, and Ziggy route data
+- The Blade root renders `@inertia`, live Ziggy routes and Vite React refresh.
+- The React entry mounts with `createRoot` and discovers `./Pages/**/*.jsx`.
+- Vite's React plugin compiles every referenced JSX page, including student and
+  admin dashboards and course-management pages.
+- Forms rely on Inertia's built-in validation errors; server flash messages are
+  shown after redirects. Student toggling uses the router outside React hooks.
+- Named routes come from the server, without a stale generated Ziggy file.
 
-### 3. Root Blade Template Verified
-- **File**: `resources/views/app.blade.php` ✅
-- Includes `@vite` directive for assets
-- Includes `@inertiaHead` for Inertia head assets
-- Contains `<div id="app">` with `@ inertia` directive
+## Authentication and authorization
 
-### 4. React Entry Point Verified
-- **File**: `resources/js/app.js` ✅
-- Properly configured `createInertiaApp` from `@inertiajs/react`
-- Uses `resolvePageComponent` from `laravel-vite-plugin`
-- Includes progress bar configuration
+- Guests redirect to the correct login portal; student and staff dashboards
+  enforce their respective roles and active status.
+- Admin-only account actions have explicit authorization gates. Administrators
+  and instructors can manage subjects; students cannot.
+- Password reset links use the account role. Laravel's password broker checks
+  token validity, expiry and one-time usage; the URL itself is not signed.
+- Password reset rotates remember tokens, removes database sessions when that
+  driver is configured, and protected routes check session password hashes.
+- Authentication rate limits are scoped to endpoint, IP and account. Read-only
+  login pages do not consume submission limits.
 
-### 5. Routes Verified & Fixed
-**File**: `routes/web.php` ✅
+## Validation
 
-**BEFORE (Problematic)**:
-```php
-// Both routes had same URL - only first would work
-Route::post('/password/reset', [ResetPasswordController::class, 'studentStore'])->name('password-reset.student.store');
-Route::post('/password/reset', [ResetPasswordController::class, 'adminStore'])->name('password-reset.admin.store');
+Run from the project root:
+
+```sh
+composer install
+npm ci
+npm run build
+php artisan test
 ```
 
-**AFTER (Fixed)**:
-```php
-// Distinct URLs for each flow
-Route::post('/password/reset/student', [ResetPasswordController::class, 'studentStore'])->name('password-reset.student.store');
-Route::post('/password/reset/admin', [ResetPasswordController::class, 'adminStore'])->name('password-reset.admin.store');
-```
+For Sail, prefix PHP commands with `./vendor/bin/sail` (for example,
+`./vendor/bin/sail artisan test`). GitHub Actions runs the build and PHP tests.
+The PHP suite uses an in-memory SQLite database and disables Vite rendering;
+the separate production build verifies that all React pages compile.
 
-### 6. React Components Verified
-- **Student Form** (`resources/js/Pages/ResetPasswordStudentPage.jsx`): ✅
-  - Uses `route('password-reset.student.store')`
-- **Admin Form** (`resources/js/Pages/ResetPasswordAdminPage.jsx`): ✅
-  - Uses `route('password-reset.admin.store')`
-
-### 7. Controller Methods Verified
-- **File**: `app/Http/Controllers/Auth/ResetPasswordController.php` ✅
-- `public function studentStore(Request $request)` exists
-- `public function adminStore(Request $request)` exists
-
-### 8. Route Validation
-```bash
-php artisan route:list | grep -E "password/reset"
-```
-Output shows:
-- `POST /password/reset/admin` → `password-reset.admin.store` ✅
-- `POST /password/reset/student` → `password-reset.student.store` ✅
-- GET routes preserved for both flows ✅
-
-### 9. Syntax Check
-```bash
-php -l routes/web.php
-```
-Result: `OK` ✅
-
-## 🎯 Fix Applied
-
-**Issue**: Password-reset POST routes for student and admin both used `/password/reset` URL, causing route conflicts where only the student route would ever be called.
-
-**Solution**: Gave each flow a distinct URL while preserving route names:
-- Student: `POST /password/reset/student` → `ResetPasswordController@studentStore`
-- Admin: `POST /password/reset/admin` → `ResetPasswordController@adminStore`
-
-**Impact**:
-- ✅ React forms continue to work unchanged (same route names)
-- ✅ Student and admin password reset flows are now properly separated
-- ✅ All GET routes and other functionality preserved
-- ✅ No breaking changes to existing code
-
-## 📋 Final Status
-
-The Inertia.js setup is **fully functional** with:
-- Proper backend-frontend communication via Inertia
-- Correct middleware sharing authentication and flash data
-- Working React components with proper form handling
-- Distinct, working URLs for both password reset flows
-- All existing routes and functionality preserved
-
-**No further action needed** - the setup is complete and ready to use.
+Configure `ADMIN_CREATION_CODE` before creating instructors. Configure a real
+mail transport to deliver reset emails (`MAIL_MAILER=log` only logs messages).
+Do not use `migrate:fresh` on an existing database; normal updates use
+`php artisan migrate`.

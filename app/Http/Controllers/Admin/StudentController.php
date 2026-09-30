@@ -5,8 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Inertia;
+use Inertia\Inertia;
 
 class StudentController extends Controller
 {
@@ -17,6 +16,7 @@ class StudentController extends Controller
     {
         $this->authorize('admin', User::class);
 
+        $request->validate(['search' => ['nullable', 'string', 'max:255']]);
         $search = $request->input('search');
 
         $students = User::where('role', 'student')
@@ -58,7 +58,7 @@ class StudentController extends Controller
             return back()->with('error', 'يمكن فقط تبديل حالة الحساب للطلاب');
         }
 
-        $user->toggle('is_active');
+        $user->update(['is_active' => ! $user->is_active]);
 
         return redirect()->back()->with(
             $user->is_active ? 'success' : 'error',
