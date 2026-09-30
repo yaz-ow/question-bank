@@ -24,3 +24,7 @@ Homestead.yaml
 Thumbs.db
 
 /.claude/
+
+/debug-output.txt
+/test-output*.txt
+*.bak

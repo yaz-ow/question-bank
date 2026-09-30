@@ -9,8 +9,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Inertia;
 
 class RegisterController extends Controller
 {
@@ -19,7 +21,7 @@ class RegisterController extends Controller
      */
     public function create()
     {
-        return view('auth.register');
+        return Inertia::render('RegisterPage');
     }
 
     /**
@@ -27,24 +29,30 @@ class RegisterController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique(User::class),
-            ],
-            'university_id' => [
-                'required',
-                'string',
-                'max:10',
-                Rule::unique(User::class),
-                'regex:/^M[0-9]{9}$/',
-            ],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
+        try {
+            $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => [
+                    'required',
+                    'string',
+                    'email',
+                    'max:255',
+                    'unique:users,email',
+                ],
+                'university_id' => [
+                    'required',
+                    'string',
+                    'max:10',
+                    'unique:users,university_id',
+                    'regex:/^M[0-9]{9}$/',
+                ],
+                'password' => ['required', 'confirmed', Password::defaults()],
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->route('register')
+                ->withInput($request->only('name', 'email', 'university_id'))
+                ->withErrors($e->errors());
+        }
 
         // Normalize university ID (trim whitespace, uppercase)
         $university_id = strtoupper(trim($request->university_id));
@@ -62,7 +70,9 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('student.dashboard')
+        $request->session()->regenerate();
+
+        return redirect()->intended(route('student.dashboard'))
             ->with('success', 'حسابك تم إنشاؤه بنجاح'); // Arabic: Your account has been created successfully
     }
 }

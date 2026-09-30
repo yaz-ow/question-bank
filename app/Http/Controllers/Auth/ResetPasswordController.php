@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\Inertia;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
 
@@ -18,7 +19,7 @@ class ResetPasswordController extends Controller
      */
     public function studentShow(string $token)
     {
-        return view('auth.reset-student', ['token' => $token]);
+        return Inertia::render('ResetPasswordStudentPage', ['token' => $token]);
     }
 
     /**
@@ -26,12 +27,18 @@ class ResetPasswordController extends Controller
      */
     public function studentStore(Request $request): RedirectResponse
     {
-        $request->validate([
-            'token' => 'required',
-            'university_id' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'confirmed', PasswordRule::defaults()],
-        ]);
+        try {
+            $request->validate([
+                'token' => 'required',
+                'university_id' => ['required', 'string'],
+                'email' => ['required', 'string', 'email'],
+                'password' => ['required', 'confirmed', PasswordRule::defaults()],
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->withErrors($e->errors());
+        }
 
         // Normalize university ID input
         $university_id = strtoupper(trim($request->university_id));
@@ -52,10 +59,11 @@ class ResetPasswordController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
+                // Update the password and clear the remember token to log out from all devices
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    // Ensure the account remains student and active status unchanged
-                ])->setRememberToken(Hash::make($password))->save();
+                    'remember_token' => null,
+                ])->save();
             }
         );
 
@@ -74,7 +82,7 @@ class ResetPasswordController extends Controller
      */
     public function adminShow(string $token)
     {
-        return view('auth.reset-admin', ['token' => $token]);
+        return Inertia::render('ResetPasswordAdminPage', ['token' => $token]);
     }
 
     /**
@@ -82,11 +90,17 @@ class ResetPasswordController extends Controller
      */
     public function adminStore(Request $request): RedirectResponse
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'confirmed', PasswordRule::defaults()],
-        ]);
+        try {
+            $request->validate([
+                'token' => 'required',
+                'email' => ['required', 'string', 'email'],
+                'password' => ['required', 'confirmed', PasswordRule::defaults()],
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withInput($request->only('email'))
+                ->withErrors($e->errors());
+        }
 
         // Find user by email and check if they are instructor or admin
         $user = User::where('email', $request->email)
@@ -103,10 +117,11 @@ class ResetPasswordController extends Controller
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
+                // Update the password and clear the remember token to log out from all devices
                 $user->forceFill([
                     'password' => Hash::make($password),
-                    // Ensure role and active status remain unchanged
-                ])->setRememberToken(Hash::make($password))->save();
+                    'remember_token' => null,
+                ])->save();
             }
         );
 

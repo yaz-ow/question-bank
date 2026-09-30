@@ -14,6 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserHasRole::class,
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+            'inertia' => \App\Http\Middleware\HandleInertiaRequests::class,
+        ]);
+
+        $middleware->web(append: [
+            'inertia',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

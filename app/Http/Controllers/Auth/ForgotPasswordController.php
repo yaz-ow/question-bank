@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Inertia;
 use Illuminate\Validation\ValidationException;
 
 class ForgotPasswordController extends Controller
@@ -17,7 +17,7 @@ class ForgotPasswordController extends Controller
      */
     public function studentShow()
     {
-        return view('auth.forgot-student');
+        return Inertia::render('ForgotPasswordStudentPage');
     }
 
     /**
@@ -25,10 +25,16 @@ class ForgotPasswordController extends Controller
      */
     public function studentStore(Request $request): RedirectResponse
     {
-        $request->validate([
-            'university_id' => ['required', 'string'],
-            'email' => ['required', 'string', 'email'],
-        ]);
+        try {
+            $request->validate([
+                'university_id' => ['required', 'string'],
+                'email' => ['required', 'string', 'email'],
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->route('password-request-student.show')
+                ->withInput($request->only('university_id', 'email'))
+                ->withErrors($e->errors());
+        }
 
         // Normalize university ID input
         $university_id = strtoupper(trim($request->university_id));
@@ -42,18 +48,14 @@ class ForgotPasswordController extends Controller
         // Always show same message to prevent information disclosure
         // But only actually send reset link if credentials match
         if ($user) {
-            $status = Password::sendResetLink(
+            Password::sendResetLink(
                 $user->only('email')
             );
-
-            return $status === Password::RESET_LINK_SENT
-                ? back()->with(['status' => __($status)])
-                : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
         }
 
         // Generic response regardless of whether account exists
-        return back()->with(['status' => 'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني']); // Arabic: If details are correct, password reset link will be sent to your email
+        return redirect()->route('password-request-student.show')
+            ->with(['status' => 'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني']);
     }
 
     /**
@@ -61,7 +63,7 @@ class ForgotPasswordController extends Controller
      */
     public function adminShow()
     {
-        return view('auth.forgot-admin');
+        return Inertia::render('ForgotPasswordAdminPage');
     }
 
     /**
@@ -69,9 +71,15 @@ class ForgotPasswordController extends Controller
      */
     public function adminStore(Request $request): RedirectResponse
     {
-        $request->validate([
-            'email' => ['required', 'string', 'email'],
-        ]);
+        try {
+            $request->validate([
+                'email' => ['required', 'string', 'email'],
+            ]);
+        } catch (ValidationException $e) {
+            return redirect()->route('password-request-admin.show')
+                ->withInput($request->only('email'))
+                ->withErrors($e->errors());
+        }
 
         // Find user by email and check if they are instructor or admin
         $user = User::where('email', $request->email)
@@ -80,17 +88,13 @@ class ForgotPasswordController extends Controller
 
         // Always show same message to prevent information disclosure
         if ($user) {
-            $status = Password::sendResetLink(
+            Password::sendResetLink(
                 $user->only('email')
             );
-
-            return $status === Password::RESET_LINK_SENT
-                ? back()->with(['status' => __($status)])
-                : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
         }
 
         // Generic response regardless of whether account exists
-        return back()->with(['status' => 'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني']); // Arabic: If details are correct, password reset link will be sent to your email
+        return redirect()->route('password-request-admin.show')
+            ->with(['status' => 'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني']);
     }
 }
