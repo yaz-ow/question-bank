@@ -29,13 +29,13 @@ export default function Show({ attempt, course, question, feedback }) {
         setError('');
     }, [question.position]);
 
-    useEffect(() => {
-        if (!feedback) return;
-        const timer = window.setTimeout(() => {
-            if (!leaving.current) submit('next', { position: question.position });
-        }, 2000);
-        return () => window.clearTimeout(timer);
-    }, [feedback, question.position, submit]);
+    // useEffect(() => {
+    //     if (!feedback) return;
+    //     const timer = window.setTimeout(() => {
+    //         if (!leaving.current) submit('next', { position: question.position });
+    //     }, 2000);
+    //     return () => window.clearTimeout(timer);
+    // }, [feedback, question.position, submit]);
 
     useEffect(() => {
         const warn = (event) => {
