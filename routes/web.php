@@ -83,16 +83,16 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
     // Student academic browsing
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
         Route::post('courses/{subject}/quizzes', [QuizController::class, 'store'])
-            ->name('quizzes.store')->middleware('throttle:10,1');
+            ->name('quizzes.store')->middleware('throttle:quiz-starts');
         Route::get('quizzes/{attempt}', [QuizController::class, 'show'])->name('quizzes.show');
         Route::post('quizzes/{attempt}/answer', [QuizController::class, 'answer'])
-            ->name('quizzes.answer')->middleware('throttle:120,1');
+            ->name('quizzes.answer')->middleware('throttle:quiz-actions');
         Route::post('quizzes/{attempt}/next', [QuizController::class, 'next'])
-            ->name('quizzes.next')->middleware('throttle:120,1');
+            ->name('quizzes.next')->middleware('throttle:quiz-actions');
         Route::post('quizzes/{attempt}/abandon', [QuizController::class, 'abandon'])
-            ->name('quizzes.abandon')->middleware('throttle:120,1');
+            ->name('quizzes.abandon')->middleware('throttle:quiz-actions');
         Route::post('quizzes/{attempt}/retry', [QuizController::class, 'retry'])
-            ->name('quizzes.retry')->middleware('throttle:10,1');
+            ->name('quizzes.retry')->middleware('throttle:quiz-starts');
     });
 
     Route::get('/student/levels', [\App\Http\Controllers\Student\AcademicController::class, 'levels'])

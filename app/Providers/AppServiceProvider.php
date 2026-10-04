@@ -34,5 +34,7 @@ class AppServiceProvider extends ServiceProvider
         });
         RateLimiter::for('registration', fn (Request $request) => Limit::perMinute(5)->by('register|'.$request->ip()));
         RateLimiter::for('admin-actions', fn (Request $request) => Limit::perMinute(60)->by('admin|'.$request->user()->id));
+        RateLimiter::for('quiz-starts', fn (Request $request) => Limit::perMinute(10)->by('quiz-start|'.$request->user()->id));
+        RateLimiter::for('quiz-actions', fn (Request $request) => Limit::perMinute(120)->by('quiz-action|'.$request->user()->id));
     }
 }
