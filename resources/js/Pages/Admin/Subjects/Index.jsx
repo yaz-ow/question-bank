@@ -4,7 +4,7 @@ import FlashMessages from '../../../Components/FlashMessages';
 export default function SubjectIndex({ subjects, filters = {} }) {
     const { data, setData, get, processing } = useForm({ search: filters.search || '', level: filters.level || '' });
     const remove = (subject) => {
-        if (window.confirm(`هل تريد حذف المقرر «${subject.name}»؟`)) {
+        if (window.confirm(`هل تريد حذف المقرر «${subject.name}»؟ سيتم حذف أسئلته ومحاولات الطلاب ونتائجها المرتبطة به نهائيًا.`)) {
             router.delete(route('admin.subjects.destroy', subject.id));
         }
     };

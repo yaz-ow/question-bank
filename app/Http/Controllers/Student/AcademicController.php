@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
+use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -82,7 +83,10 @@ class AcademicController extends Controller
             ->firstOrFail();
 
         return Inertia::render('Student/CourseDetails', [
-            'course' => $course,
+            'course' => $course->loadCount('questions'),
+            'questionCounts' => QuizAttempt::QUESTION_COUNTS,
+            'activeAttempt' => $request->user()->quizAttempts()->where('status', 'in_progress')
+                ->first(['id', 'subject_id', 'question_count']),
         ]);
     }
 }

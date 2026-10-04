@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Student\QuizController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Excel;
 use Inertia\Inertia;
@@ -80,6 +81,20 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
     })->name('student.dashboard')->middleware('role:student');
 
     // Student academic browsing
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::post('courses/{subject}/quizzes', [QuizController::class, 'store'])
+            ->name('quizzes.store')->middleware('throttle:10,1');
+        Route::get('quizzes/{attempt}', [QuizController::class, 'show'])->name('quizzes.show');
+        Route::post('quizzes/{attempt}/answer', [QuizController::class, 'answer'])
+            ->name('quizzes.answer')->middleware('throttle:120,1');
+        Route::post('quizzes/{attempt}/next', [QuizController::class, 'next'])
+            ->name('quizzes.next')->middleware('throttle:120,1');
+        Route::post('quizzes/{attempt}/abandon', [QuizController::class, 'abandon'])
+            ->name('quizzes.abandon')->middleware('throttle:120,1');
+        Route::post('quizzes/{attempt}/retry', [QuizController::class, 'retry'])
+            ->name('quizzes.retry')->middleware('throttle:10,1');
+    });
+
     Route::get('/student/levels', [\App\Http\Controllers\Student\AcademicController::class, 'levels'])
         ->name('student.levels')->middleware('role:student');
     Route::get('/student/level/{level}/courses', [\App\Http\Controllers\Student\AcademicController::class, 'levelCourses'])
