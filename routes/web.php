@@ -3,11 +3,13 @@
 use App\Http\Controllers\Admin\InstructorController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\Questions\QuestionController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Excel;
 use Inertia\Inertia;
 
 /*
@@ -77,12 +79,35 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
         return Inertia::render('StudentDashboardPage');
     })->name('student.dashboard')->middleware('role:student');
 
-    Route::middleware(['role:admin,instructor'])->group(function () {
+    // Student academic browsing
+    Route::get('/student/levels', [\App\Http\Controllers\Student\AcademicController::class, 'levels'])
+        ->name('student.levels')->middleware('role:student');
+    Route::get('/student/level/{level}/courses', [\App\Http\Controllers\Student\AcademicController::class, 'levelCourses'])
+        ->name('student.level.courses')->middleware('role:student');
+    Route::get('/student/level/{level}/course/{id}', [\App\Http\Controllers\Student\AcademicController::class, 'courseDetails'])
+        ->name('student.course.details')->middleware('role:student');
+
+    Route::middleware(['auth', 'active', 'auth.session', 'role:admin,instructor'])->group(function () {
         Route::get('/admin/dashboard', function () {
             return Inertia::render('AdminDashboardPage');
         })->name('admin.dashboard');
 
         Route::resource('admin/subjects', SubjectController::class)->names('admin.subjects');
+
+        // Question management routes nested under subjects
+        Route::prefix('admin/subjects/{subject}')->group(function () {
+            // Excel import/export routes
+            Route::get('questions/download-template', [QuestionController::class, 'downloadTemplate'])
+                ->name('admin.questions.download.template');
+            Route::post('questions/upload-preview', [QuestionController::class, 'uploadPreview'])
+                ->name('admin.questions.upload.preview');
+            Route::post('questions/import-confirm', [QuestionController::class, 'importConfirm'])
+                ->name('admin.questions.import.confirm');
+
+            Route::resource('questions', QuestionController::class)
+                ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
+                ->names('admin.questions');
+        });
 
         Route::middleware(['role:admin'])->group(function () {
             // Admin student management

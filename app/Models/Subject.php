@@ -40,4 +40,12 @@ class Subject extends Model
     {
         return 'id';
     }
+
+    /**
+     * Get the questions for the subject.
+     */
+    public function questions()
+    {
+        return $this->hasMany(Question::class);
+    }
 }

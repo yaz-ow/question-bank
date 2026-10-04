@@ -6,6 +6,7 @@ export default function SubjectShow({ subject }) {
         <p>المستوى: {subject.level}</p>
         <div className="flex gap-4">
             <Link href={route('admin.subjects.edit', subject.id)}>تعديل المقرر</Link>
+            <Link href={route('admin.questions.index', { subject: subject.id })}>إدارة الأسئلة ({subject.questions_count || 0} سؤال)</Link>
             <Link href={route('admin.subjects.index')}>العودة إلى المقررات</Link>
         </div>
     </main>;

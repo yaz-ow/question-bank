@@ -46,7 +46,9 @@ class SubjectController extends Controller
     {
         $this->authorize('manage-subjects');
 
-        return Inertia::render('Admin/Subjects/Show', ['subject' => $subject]);
+        return Inertia::render('Admin/Subjects/Show', [
+            'subject' => $subject->loadCount('questions'),
+        ]);
     }
 
     public function edit(Subject $subject)
