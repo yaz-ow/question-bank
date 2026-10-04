@@ -212,47 +212,15 @@ class QuestionController extends Controller
             'file' => ['required', 'file', 'max:5120'], // 5MB limit
         ]);
 
+        $key = 'excel_import_' . $subject->id . '_' . $request->user()->id;
+        session()->forget($key);
+
         $import = new QuestionsImport($subject->id);
         $import->file = $request->file('file');
 
         try {
             $sheets = $import->toCollection($import->file);
             $rows = $sheets->first()?->toArray() ?? [];
-
-            // Validate the rows with proper rules
-            $validator = Validator::make(
-                $rows,
-                [
-                    '*' => [
-                        'required',
-                        'array',
-                        function ($attribute, $value, $fail) {
-                            if (!is_array($value)) {
-                                $fail('يجب أن يكون الصف مصفوفة');
-                            }
-                        }
-                    ],
-                    '*.question_text' => ['required', 'string'],
-                    '*.option_a' => ['required', 'string', 'max:255'],
-                    '*.option_b' => ['required', 'string', 'max:255'],
-                    '*.option_c' => ['required', 'string', 'max:255'],
-                    '*.option_d' => ['required', 'string', 'max:255'],
-                    '*.correct_answer' => ['required', 'string', Rule::in(['A', 'B', 'C', 'D'])],
-                ],
-                [
-                    '*.question_text.required' => 'نص السؤال مطلوب',
-                    '*.option_a.required' => 'الخيار أ مطلوب',
-                    '*.option_b.required' => 'الخيار ب مطلوب',
-                    '*.option_c.required' => 'الخيار ج مطلوب',
-                    '*.option_d.required' => 'الخيار د مطلوب',
-                    '*.correct_answer.required' => 'الإجابة الصحيحة مطلوبة',
-                    '*.correct_answer.in' => 'الإجابة الصحيحة يجب أن تكون أ، ب، ج، أو د',
-                    '*.option_a.max' => 'الخيار أ لا يمكن أن يتجاوز 255 حرفًا',
-                    '*.option_b.max' => 'الخيار ب لا يمكن أن يتجاوز 255 حرفًا',
-                    '*.option_c.max' => 'الخيار ج لا يمكن أن يتجاوز 255 حرفًا',
-                    '*.option_d.max' => 'الخيار د لا يمكن أن يتجاوز 255 حرفًا',
-                ]
-            );
 
             // Normalize data before validation
             $normalized = [];
@@ -267,6 +235,10 @@ class QuestionController extends Controller
                         'correct_answer' => isset($row['correct_answer']) ? strtoupper(trim($row['correct_answer'])) : '',
                     ];
                 }
+            }
+
+            if ($normalized === []) {
+                return Redirect::back()->withErrors(['file' => 'الملف لا يحتوي على أسئلة.']);
             }
 
             // Validate normalized data
@@ -410,7 +382,7 @@ class QuestionController extends Controller
         $rows = $data['rows'];
 
         try {
-            return DB::transaction(function () use ($subject, $rows) {
+            [$imported, $skipped] = DB::transaction(function () use ($subject, $rows) {
                 $imported = 0;
                 $skipped = 0;
 
@@ -448,8 +420,7 @@ class QuestionController extends Controller
                     }
                 }
 
-                return redirect()->route('admin.questions.index', $subject->id)
-                    ->with('success', "تم استيراد $imported سؤال بنجاح وتخطي $skipped سؤال مكرر.");
+                return [$imported, $skipped];
             });
 
             // Clear the session data after successful import

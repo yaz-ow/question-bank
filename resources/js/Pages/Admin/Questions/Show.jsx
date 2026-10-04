@@ -16,7 +16,7 @@ export default function QuestionsShow({ subject, question }) {
                     العودة إلى قائمة الأسئلة
                 </Link>
                 <Link
-                    href={route('admin.questions.edit', { subject: subject.id, id: question.id })}
+                    href={route('admin.questions.edit', { subject: subject.id, question: question.id })}
                     className="text-sm text-blue-700 hover:underline"
                 >
                     تعديل السؤال

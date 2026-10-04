@@ -2,7 +2,7 @@ import { Link, router, useForm } from '@inertiajs/react';
 import FlashMessages from '../../../Components/FlashMessages';
 
 export default function QuestionsImportPreview({ subject, rows, validCount, duplicateCount, errorCount, hasErrors }) {
-    const { data, setData, post, processing } = useForm({});
+    const { post, processing, errors } = useForm({});
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -75,12 +75,12 @@ export default function QuestionsImportPreview({ subject, rows, validCount, dupl
                         <div className="border-b pb-4">
                             <h2 className="text-xl font-bold">تنسيق الملف المطلوب</h2>
                             <p className="text-sm">يرجى تنزيل القالب للتأكد من التنسيق الصحيح:</p>
-                            <Link
+                            <a
                                 href={route('admin.questions.download.template', { subject: subject.id })}
                                 className="inline-block mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                             >
                                 تنزيل القالب
-                            </Link>
+                            </a>
                         </div>
                     </>
                 )}
@@ -115,26 +115,9 @@ export default function QuestionsImportPreview({ subject, rows, validCount, dupl
                         إلغاء
                     </button>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="flex items-center">
-                            <input
-                                type="file"
-                                id="excel-file"
-                                name="file"
-                                accept=".xlsx"
-                                className="hidden"
-                                onChange={e => {
-                                    if (e.target.files.length > 0) {
-                                        setData('file', e.target.files[0]);
-                                    }
-                                }}
-                            />
-                            <label
-                                htmlFor="excel-file"
-                                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                            >
-                                اختيار ملف آخر
-                            </label>
-                        </div>
+                        {Object.entries(errors).map(([field, message]) => (
+                            <p key={field} className="text-sm text-red-600" role="alert">{message}</p>
+                        ))}
                         <button
                             type="submit"
                             disabled={processing}

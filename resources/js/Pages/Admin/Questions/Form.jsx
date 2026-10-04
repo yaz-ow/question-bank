@@ -2,7 +2,7 @@ import { Link, router, useForm } from '@inertiajs/react';
 import FlashMessages from '../../../Components/FlashMessages';
 
 export default function QuestionsForm({ subject, question }) {
-    const isEdit = question !== null;
+    const isEdit = question != null;
 
     const defaultData = {
         question_text: '',
@@ -22,13 +22,13 @@ export default function QuestionsForm({ subject, question }) {
         correct_answer: question.correct_answer,
     } : defaultData;
 
-    const { data, setData, post, processing, reset, recentSuccessful, errors } = useForm(initialData);
+    const { data, setData, post, put, processing, reset, recentSuccessful, errors } = useForm(initialData);
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         if (isEdit) {
-            post(route('admin.questions.update', { subject: subject.id, id: question.id }), {
+            put(route('admin.questions.update', { subject: subject.id, question: question.id }), {
                 onSuccess: () => reset(),
                 onError: () => {},
             });
@@ -194,7 +194,8 @@ export default function QuestionsForm({ subject, question }) {
             <div className="flex flex-wrap items-center justify-between gap-4">
                 {isEdit && (
                     <button
-                        onClick={() => router.delete(route('admin.questions.destroy', { subject: subject.id, id: question.id }))}
+                        type="button"
+                        onClick={() => router.delete(route('admin.questions.destroy', { subject: subject.id, question: question.id }))}
                         className="text-red-700 hover:underline"
                     >
                         حذف السؤال

@@ -4,9 +4,16 @@ import FlashMessages from '../../../Components/FlashMessages';
 export default function QuestionsIndex({ subject, questions, filters = {} }) {
     const { data, setData, get, processing } = useForm({ search: filters.search || '' });
 
+    const upload = useForm({ file: null });
+
+    const handleUpload = (event) => {
+        event.preventDefault();
+        upload.post(route('admin.questions.upload.preview', { subject: subject.id }));
+    };
+
     const handleDelete = (question) => {
         if (window.confirm(`هل تريد حذف السؤال «${question.question_text.substring(0, 30)}...»؟`)) {
-            router.delete(route('admin.questions.destroy', { subject: subject.id, id: question.id }));
+            router.delete(route('admin.questions.destroy', { subject: subject.id, question: question.id }));
         }
     };
 
@@ -38,6 +45,23 @@ export default function QuestionsIndex({ subject, questions, filters = {} }) {
 
         <FlashMessages />
 
+        <form onSubmit={handleUpload} className="space-y-3 rounded border bg-white p-4">
+            <label htmlFor="questions-file" className="block font-medium">استيراد الأسئلة من Excel</label>
+            <input
+                id="questions-file"
+                type="file"
+                accept=".xlsx"
+                required
+                onChange={event => upload.setData('file', event.target.files[0] ?? null)}
+            />
+            {Object.entries(upload.errors).map(([field, message]) => (
+                <p key={field} className="text-sm text-red-600" role="alert">{message}</p>
+            ))}
+            <button type="submit" disabled={upload.processing || !upload.data.file} className="rounded bg-blue-700 px-4 py-2 text-white disabled:opacity-50">
+                معاينة الملف
+            </button>
+        </form>
+
         <form className="flex flex-wrap gap-3" onSubmit={e => { e.preventDefault(); get(route('admin.questions.index', { subject: subject.id })); }}>
             <input
                 aria-label="البحث بنص السؤال"
@@ -58,8 +82,8 @@ export default function QuestionsIndex({ subject, questions, filters = {} }) {
                     <td className="p-3">{question.question_text}</td>
                     <td>{question.correct_answer}</td>
                     <td className="space-x-3">
-                        <Link className="text-blue-700" href={route('admin.questions.show', { subject: subject.id, id: question.id })}>عرض</Link>
-                        <Link className="text-blue-700" href={route('admin.questions.edit', { subject: subject.id, id: question.id })}>تعديل</Link>
+                        <Link className="text-blue-700" href={route('admin.questions.show', { subject: subject.id, question: question.id })}>عرض</Link>
+                        <Link className="text-blue-700" href={route('admin.questions.edit', { subject: subject.id, question: question.id })}>تعديل</Link>
                         <button className="text-red-700" onClick={() => handleDelete(question)}>حذف</button>
                     </td>
                 </tr>)}
