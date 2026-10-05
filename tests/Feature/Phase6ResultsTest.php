@@ -83,8 +83,8 @@ class Phase6ResultsTest extends TestCase
             $this->get($url)->assertRedirect();
         }
         foreach (['admin', 'instructor'] as $role) {
-            $this->actingAs(User::factory()->create(['role' => $role]))->get(route('student.results.index'))->assertForbidden();
-            $this->get(route('student.results.show', $attempt))->assertForbidden();
+            $this->actingAs(User::factory()->create(['role' => $role]))->get(route('student.results.index'))->assertRedirect('/')->assertSessionHas('error', 'غير مسموح لك بالوصول إلى هذه الصفحة');
+            $this->get(route('student.results.show', $attempt))->assertRedirect('/')->assertSessionHas('error', 'غير مسموح لك بالوصول إلى هذه الصفحة');
         }
         $student->update(['is_active' => false]);
         $this->actingAs($student)->get(route('student.results.index'))->assertRedirect('/');
