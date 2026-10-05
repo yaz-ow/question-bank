@@ -25,6 +25,8 @@ export default function Summary({ attempt, course, canRetry }) {
                 {errors.question_count && <p role="alert" className="text-red-700">{errors.question_count}</p>}
             </div>}
             <div className="flex flex-wrap justify-center gap-5 pt-4">
+                <Link href={route('student.results.index')} className="text-blue-700 underline">سجل النتائج</Link>
+                {completed && <Link href={route('student.results.show', attempt.id)} className="text-blue-700 underline">مراجعة الإجابات</Link>}
                 <Link href={route('student.course.details', { level: course.level, id: course.id })} className="text-blue-700 underline">العودة إلى المقرر</Link>
                 <Link href={route('student.levels')} className="text-blue-700 underline">تصفح المستويات</Link>
             </div>

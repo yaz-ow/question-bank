@@ -82,6 +82,8 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
 
     // Student academic browsing
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::get('results', [\App\Http\Controllers\Student\ResultController::class, 'index'])->name('results.index');
+        Route::get('results/{attempt}', [\App\Http\Controllers\Student\ResultController::class, 'show'])->name('results.show');
         Route::post('courses/{subject}/quizzes', [QuizController::class, 'store'])
             ->name('quizzes.store')->middleware('throttle:quiz-starts');
         Route::get('quizzes/{attempt}', [QuizController::class, 'show'])->name('quizzes.show');

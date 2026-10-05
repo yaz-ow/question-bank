@@ -18,6 +18,7 @@ export default function StudentDashboardPage() {
                     </p>
                 </div>
                 <div className="space-y-4">
+                    <Link href={route('student.results.index')} className="w-full flex justify-center rounded-md bg-[#001F3F] px-4 py-2 text-white">سجل النتائج</Link>
                     <Link
                         href="/student/levels"
                         className="w-full flex justify-center py-2 px-4 border rounded-md bg-blue-600 text-white"

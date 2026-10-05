@@ -4,7 +4,7 @@
 
 - Start from a student's course details page. Choose 10, 20, or 30 questions; unavailable sizes are disabled and also rejected by the server.
 - Questions are selected randomly from that course without repetition inside an attempt. There is no exam timer.
-- Only the current question is sent to the browser. Selecting an option saves it permanently and reveals that question's correct answer. The interface advances after two seconds, with a Next button available as well.
+- Only the current question is sent to the browser. Selecting an option saves it permanently and reveals that question's correct answer. The interface waits for the student to press Next after reviewing feedback.
 - Attempt state and question snapshots live in the database. Reloading resumes the same question and feedback. Editing or deleting a bank question does not change an existing attempt.
 - Each student has at most one ongoing attempt through the application: repeated starts resume it, including starts from another course. Starts lock the student's row; answer/advance/exit operations lock the attempt.
 - Explicit exit asks for confirmation and marks the attempt abandoned with a null score. Closing the tab or navigating away leaves an incomplete, ungraded attempt that can be resumed from a course page. Browser unload events are not treated as reliable completion events.
@@ -35,7 +35,7 @@ There are no new Composer/npm packages or environment variables. Migration creat
 Manual walkthrough:
 
 1. Log in as a student and open a course with at least 10 questions. Check 10/20/30 availability.
-2. Start a quiz, answer one correctly and one incorrectly, and check feedback and automatic advancement.
+2. Start a quiz, answer one correctly and one incorrectly, and check feedback and manual advancement with Next.
 3. Refresh during a question or during feedback; verify the same saved state returns.
 4. Exit and confirm: no grade should appear. Start again and complete every question to see a score.
 5. Retry and verify the same count/course with a new random selection, subject to the bank size.
