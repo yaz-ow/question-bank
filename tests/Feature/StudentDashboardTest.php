@@ -40,6 +40,8 @@ class StudentDashboardTest extends TestCase
                 ->where('levels.0.level', 1)->where('levels.0.course_count', 0)
                 ->where('levels.1.level', 2)->where('levels.1.course_count', 2)
                 ->where('levels.8.level', 9)->where('levels.8.course_count', 1)
+                ->has('resultCourses', 1)
+                ->where('resultCourses.0.id', $subject->id)
                 ->missing('courses')->missing('recentResults'));
 
     }
@@ -52,8 +54,43 @@ class StudentDashboardTest extends TestCase
             ->assertInertia(fn (Assert $page) => $page->component('StudentDashboardPage')
                 ->where('statistics.completed_count', 0)
                 ->where('statistics.average_percentage', null)
+                ->has('resultCourses', 0)
                 ->has('levels', 9)
                 ->where('levels', fn ($levels) => collect($levels)->pluck('level')->all() === range(1, 9)
                     && collect($levels)->every(fn ($level) => $level['course_count'] === 0)));
     }
+    public function test_sidebar_courses_require_the_students_own_scored_completed_attempt(): void
+    {
+        $student = User::factory()->create(['role' => 'student', 'is_active' => true]);
+        $other = User::factory()->create(['role' => 'student', 'is_active' => true]);
+        $scored = Subject::factory()->create();
+        $unfinished = Subject::factory()->create();
+        $unscored = Subject::factory()->create();
+        $otherCourse = Subject::factory()->create();
+        foreach ([0, 8] as $score) {
+            $student->quizAttempts()->create([
+                'subject_id' => $scored->id, 'question_count' => 10,
+                'status' => 'completed', 'score' => $score, 'completed_at' => now(),
+            ]);
+        }
+        foreach (['abandoned', 'in_progress'] as $status) {
+            $student->quizAttempts()->create([
+                'subject_id' => $unfinished->id, 'question_count' => 10, 'status' => $status,
+            ]);
+        }
+        $student->quizAttempts()->create([
+            'subject_id' => $unscored->id, 'question_count' => 10, 'status' => 'completed',
+        ]);
+        $other->quizAttempts()->create([
+            'subject_id' => $otherCourse->id, 'question_count' => 10,
+            'status' => 'completed', 'score' => 10, 'completed_at' => now(),
+        ]);
+
+        $this->actingAs($student)->get(route('student.dashboard'))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('StudentDashboardPage')
+                ->has('resultCourses', 1)
+                ->where('resultCourses.0.id', $scored->id)
+                ->where('resultCourses.0.name', $scored->name));
+    }
+
 }

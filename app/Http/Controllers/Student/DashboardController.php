@@ -23,6 +23,11 @@ class DashboardController extends Controller
                 'completed_count' => (clone $completed)->count(),
                 'average_percentage' => $average === null ? null : round((float) $average, 1),
             ],
+            'resultCourses' => Subject::whereHas('quizAttempts', fn ($query) => $query
+                ->where('user_id', $request->user()->id)
+                ->where('status', 'completed')
+                ->whereNotNull('score'))
+                ->orderBy('name')->get(['id', 'name']),
             'levels' => collect(range(1, 9))->map(fn ($level) => [
                 'level' => $level,
                 'course_count' => (int) ($counts[$level] ?? 0),
