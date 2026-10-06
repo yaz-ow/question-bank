@@ -36,15 +36,17 @@ export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
                     key={level.level}
                     href={route('student.level.courses', { level: level.level })}
                     aria-label={`المستوى ${levelNames[level.level - 1]}، ${courseLabel(level.course_count)}`}
-                    className="group relative isolate overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/40 sm:p-6"
+                    className="group relative isolate flex min-h-40 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/20"
                 >
-                    <span aria-hidden="true" dir="ltr" className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-6xl font-bold leading-none text-gray-600">{level.level}</span>
-                    <div className="mb-5 flex items-center justify-end">
-                        <span className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><StudentIcon className="size-6" /></span>
+                    <span aria-hidden="true" dir="ltr" className="pointer-events-none absolute right-5 top-7 -z-10 select-none text-[96px] font-bold leading-none text-gray-300">{level.level}</span>
+                    <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 pt-1">
+                            <h3 className="text-lg font-bold leading-7">المستوى {levelNames[level.level - 1]}</h3>
+                            <p className="mt-1 text-xs leading-6 text-slate-500">{courseLabel(level.course_count)}</p>
+                        </div>
+                        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-800"><StudentIcon className="size-6" /></span>
                     </div>
-                    <h3 className="relative max-w-[calc(50%-1.5rem)] text-base font-bold leading-7">المستوى {levelNames[level.level - 1]}</h3>
-                    <div className="mt-3 flex items-center justify-between gap-2">
-                        <p className="text-xs leading-6 text-slate-500">{courseLabel(level.course_count)}</p>
+                    <div className="mt-auto flex justify-end pt-5">
                         <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700"><StudentIcon name="arrow" className="size-4" /></span>
                     </div>
                 </Link>)}
