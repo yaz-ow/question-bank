@@ -8,7 +8,7 @@ export default function StudentLayout({ children }) {
     const name = auth?.user?.name || 'طالب';
     const nav = [
         { text: 'الرئيسية', icon: 'home', href: route('student.dashboard'), active: true },
-        { text: 'المستويات والمقررات', icon: 'book', href: route('student.levels') },
+        { text: 'المستويات', icon: 'book', href: route('student.levels') },
         { text: 'سجل النتائج', icon: 'chart', href: route('student.results.index') },
     ];
     return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">

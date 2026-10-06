@@ -15,23 +15,18 @@ class DashboardController extends Controller
         $average = (clone $completed)
             ->selectRaw('AVG(100.0 * score / question_count) as average')->value('average');
 
+        $counts = Subject::selectRaw('level, COUNT(*) as course_count')
+            ->groupBy('level')->pluck('course_count', 'level');
+
         return Inertia::render('StudentDashboardPage', [
             'statistics' => [
                 'completed_count' => (clone $completed)->count(),
                 'average_percentage' => $average === null ? null : round((float) $average, 1),
-                'available_courses' => Subject::count(),
             ],
-            'courses' => Subject::withCount('questions')->orderBy('level')->orderBy('name')
-                ->limit(3)->get(['id', 'name', 'level']),
-            'recentResults' => (clone $completed)->with('subject:id,name,level')
-                ->latest('completed_at')->latest('id')->limit(5)->get()
-                ->map(fn ($attempt) => [
-                    'id' => $attempt->id,
-                    'score' => $attempt->score,
-                    'question_count' => $attempt->question_count,
-                    'completed_at' => $attempt->completed_at?->toIso8601String(),
-                    'course' => $attempt->subject?->only(['id', 'name', 'level']),
-                ]),
+            'levels' => collect(range(1, 9))->map(fn ($level) => [
+                'level' => $level,
+                'course_count' => (int) ($counts[$level] ?? 0),
+            ]),
         ]);
     }
 }

@@ -4,35 +4,63 @@ import StudentIcon from '../Components/StudentIcon';
 import StudentLayout from '../Layouts/StudentLayout';
 
 const number = value => new Intl.NumberFormat('ar-SA').format(value);
-const date = value => value ? new Intl.DateTimeFormat('ar-SA', { dateStyle: 'medium', calendar: 'gregory' }).format(new Date(value)) : '—';
+const levelNames = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع'];
+const courseLabel = count => {
+    if (count === 0) return 'لا توجد مقررات حاليًا';
+    if (count === 1) return 'مقرر واحد';
+    if (count === 2) return 'مقرران دراسيان';
+    return `${number(count)} ${count <= 10 ? 'مقررات دراسية' : 'مقررًا دراسيًا'}`;
+};
 
-export default function StudentDashboardPage({ statistics = {}, courses = [], recentResults = [] }) {
+export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
     const { auth } = usePage().props;
-    const cards = [
-        { title: 'الاختبارات المكتملة', value: number(statistics.completed_count ?? 0), note: 'محاولات أكملتها بنجاح', icon: 'check', color: 'bg-violet-50 text-violet-600' },
-        { title: 'متوسط النتائج', value: statistics.average_percentage == null ? '—' : `${number(statistics.average_percentage)}٪`, note: 'متوسط درجات الاختبارات المكتملة', icon: 'chart', color: 'bg-emerald-50 text-emerald-700' },
-        { title: 'المقررات المتاحة', value: number(statistics.available_courses ?? 0), note: 'استكشف مقررات المستويات', icon: 'book', color: 'bg-blue-50 text-blue-600' },
-    ];
+
     return <StudentLayout>
         <Head title="لوحة الطالب" />
         <FlashMessages />
-        <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
-            <div><p className="mb-2 text-xs font-semibold text-slate-500">كل خطوة تقرّبك من هدفك</p><h1 className="text-3xl font-bold tracking-tight sm:text-4xl">مرحبًا، {auth?.user?.name || 'طالب'} <span className="text-emerald-600">.</span></h1><p className="mt-3 text-sm leading-7 text-slate-500">جاهز لمراجعة مقرراتك؟ ابدأ تدريبًا جديدًا وتابع تقدّمك.</p></div>
-            <Link href={route('student.levels')} className="inline-flex items-center justify-center gap-3 self-start rounded-xl bg-[#001f3f] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#143b61] sm:self-auto"><StudentIcon />تصفح المقررات<StudentIcon name="arrow" className="size-4" /></Link>
+
+        <section className="border-b border-slate-200/70 pb-6">
+            <h1 className="text-3xl font-bold leading-relaxed tracking-tight sm:text-4xl">
+                مرحبًا، {auth?.user?.name || 'طالب'}<span className="text-emerald-600">.</span>
+            </h1>
+            <p className="mt-2 text-sm leading-7 text-slate-500 sm:text-base">مستوياتك الدراسية، في مكان واحد</p>
         </section>
-        <section aria-label="ملخص تقدّمك" className="grid gap-4 sm:grid-cols-3">
-            {cards.map(card => <article key={card.title} className="rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm"><div className="flex items-center justify-between gap-2"><h2 className="text-sm font-semibold text-slate-600">{card.title}</h2><span className={`flex size-11 items-center justify-center rounded-xl ${card.color}`}><StudentIcon name={card.icon} className="size-6" /></span></div><p className="mt-4 text-3xl font-bold tabular-nums">{card.value}</p><p className="mt-2 text-xs leading-5 text-slate-500">{card.note}</p></article>)}
+
+        <section aria-labelledby="levels-heading">
+            <div className="mb-5 flex items-center justify-between gap-3">
+                <h2 id="levels-heading" className="text-xl font-bold">المستويات الدراسية</h2>
+                <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">٩ مستويات</span>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {levels.map(level => <Link
+                    key={level.level}
+                    href={route('student.level.courses', { level: level.level })}
+                    aria-label={`المستوى ${levelNames[level.level - 1]}، ${courseLabel(level.course_count)}`}
+                    className="group relative isolate overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/40 sm:p-6"
+                >
+                    <span aria-hidden="true" className="pointer-events-none absolute -bottom-5 left-5 -z-10 select-none text-[112px] font-bold leading-none text-slate-50 group-hover:text-blue-100/60">{number(level.level)}</span>
+                    <div className="mb-5 flex items-center justify-between">
+                        <span className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><StudentIcon className="size-6" /></span>
+                        <span className="text-xs font-semibold tabular-nums tracking-widest text-slate-400" aria-hidden="true">{String(level.level).padStart(2, '0')}</span>
+                    </div>
+                    <h3 className="text-lg font-bold">المستوى {levelNames[level.level - 1]}</h3>
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                        <p className="text-xs leading-6 text-slate-500">{courseLabel(level.course_count)}</p>
+                        <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700"><StudentIcon name="arrow" className="size-4" /></span>
+                    </div>
+                </Link>)}
+            </div>
         </section>
-        <section aria-labelledby="courses-heading">
-            <div className="mb-4 flex items-center justify-between gap-3"><div><h2 id="courses-heading" className="text-xl font-bold">مقررات متاحة</h2><p className="mt-1 text-xs text-slate-500">اختر مقررًا وابدأ مراجعتك</p></div><Link href={route('student.levels')} className="inline-flex items-center gap-2 text-xs font-semibold text-blue-800 hover:underline">جميع المستويات<StudentIcon name="arrow" className="size-4" /></Link></div>
-            {courses.length ? <div className="grid gap-4 md:grid-cols-3">{courses.map((course, index) => <article key={course.id} className="flex flex-col rounded-2xl border border-slate-200/70 bg-white p-5 shadow-sm">
-                <div className="flex items-start gap-3"><span className={`flex size-12 shrink-0 items-center justify-center rounded-xl ${['bg-blue-50 text-blue-600', 'bg-emerald-50 text-emerald-700', 'bg-amber-50 text-amber-700'][index % 3]}`}><StudentIcon name={index === 0 ? 'code' : 'book'} className="size-6" /></span><div><h3 className="text-base font-bold leading-7">{course.name}</h3><span className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-1 text-xs text-slate-600">المستوى {number(course.level)}</span></div></div>
-                <div className="mt-6 flex items-center justify-between gap-3 border-t border-slate-100 pt-4"><span className="inline-flex items-center gap-2 text-xs text-slate-500"><StudentIcon name="file" className="size-4" />{number(course.questions_count)} سؤال</span><Link href={route('student.course.details', { level: course.level, id: course.id })} className="rounded-lg bg-[#001f3f] px-4 py-2 text-xs font-semibold text-white hover:bg-[#143b61]">تفاصيل المقرر</Link></div>
-            </article>)}</div> : <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">لم تُضف مقررات بعد. ستظهر هنا عندما تصبح متاحة.</div>}
-        </section>
-        <section aria-labelledby="results-heading" className="overflow-hidden rounded-2xl border border-slate-200/70 bg-white shadow-sm">
-            <div className="flex items-center justify-between gap-3 px-5 py-5"><h2 id="results-heading" className="text-xl font-bold">آخر النتائج</h2><Link href={route('student.results.index')} className="inline-flex items-center gap-2 text-xs font-semibold text-blue-800 hover:underline">عرض السجل<StudentIcon name="arrow" className="size-4" /></Link></div>
-            {recentResults.length ? <div className="overflow-x-auto"><table className="w-full min-w-[540px] text-right text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr><th scope="col" className="px-5 py-3 font-medium">المقرر</th><th scope="col" className="px-5 py-3 font-medium">المستوى</th><th scope="col" className="px-5 py-3 font-medium">النتيجة</th><th scope="col" className="px-5 py-3 font-medium">التاريخ</th><th scope="col" className="px-5 py-3 font-medium"><span className="sr-only">التفاصيل</span></th></tr></thead><tbody className="divide-y divide-slate-100">{recentResults.map(result => <tr key={result.id} className="hover:bg-slate-50/70"><td className="px-5 py-4 font-semibold">{result.course?.name || 'مقرر غير متاح'}</td><td className="px-5 py-4 text-slate-500">{result.course ? number(result.course.level) : '—'}</td><td className="px-5 py-4"><span dir="ltr" className="inline-block rounded-lg bg-slate-100 px-3 py-1 font-semibold tabular-nums text-[#001f3f]">{result.score} / {result.question_count}</span></td><td className="px-5 py-4 text-xs text-slate-500">{date(result.completed_at)}</td><td className="px-5 py-4"><Link href={route('student.results.show', { attempt: result.id })} aria-label={`عرض نتيجة ${result.course?.name || 'الاختبار'}`} className="text-xs font-semibold text-blue-800 hover:underline">عرض</Link></td></tr>)}</tbody></table></div> : <div className="px-5 pb-8 pt-3 text-center"><span className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-slate-50 text-slate-400"><StudentIcon name="chart" /></span><p className="text-sm font-semibold">رحلة تقدّمك تبدأ من أول اختبار</p><p className="mt-2 text-xs text-slate-500">أكمل اختبارًا تدريبيًا لتظهر نتيجته هنا.</p></div>}
+
+        <section aria-label="ملخص نتائجك" className="grid gap-3 border-t border-slate-200/70 pt-5 sm:grid-cols-2">
+            <div className="flex items-center gap-3 rounded-xl border border-slate-200/60 bg-white px-4 py-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600"><StudentIcon name="check" /></span>
+                <div className="flex flex-1 items-center justify-between gap-3"><h2 className="text-xs font-medium text-slate-500">الاختبارات المكتملة</h2><p className="text-xl font-bold tabular-nums">{number(statistics.completed_count ?? 0)}</p></div>
+            </div>
+            <div className="flex items-center gap-3 rounded-xl border border-slate-200/60 bg-white px-4 py-3">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><StudentIcon name="chart" /></span>
+                <div className="flex flex-1 items-center justify-between gap-3"><h2 className="text-xs font-medium text-slate-500">متوسط النتائج</h2><p className="text-xl font-bold tabular-nums" aria-label={statistics.average_percentage == null ? 'لا توجد نتائج بعد' : undefined}>{statistics.average_percentage == null ? '—' : `${number(statistics.average_percentage)}٪`}</p></div>
+            </div>
         </section>
     </StudentLayout>;
 }
