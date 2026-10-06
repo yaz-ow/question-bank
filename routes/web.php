@@ -76,9 +76,8 @@ Route::get('/', function () {
 
 // Student and admin dashboards
 Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
-    Route::get('/student/dashboard', function () {
-        return Inertia::render('StudentDashboardPage');
-    })->name('student.dashboard')->middleware('role:student');
+    Route::get('/student/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])
+        ->name('student.dashboard')->middleware('role:student');
 
     // Student academic browsing
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
