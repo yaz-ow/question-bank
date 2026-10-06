@@ -8,23 +8,36 @@ export default function StudentLayout({ children }) {
     const [levelsOpen, setLevelsOpen] = useState(false);
     const [resultsOpen, setResultsOpen] = useState(false);
     const name = auth?.user?.name || 'طالب';
-    const levelNames = ['الأول', 'الثاني', 'الثالث', 'الرابع', 'الخامس', 'السادس', 'السابع', 'الثامن', 'التاسع'];
+    const [allLevels, setAllLevels] = useState(false);
+    const [allResults, setAllResults] = useState(false);
     const renderNavigation = (mobile = false) => {
         const prefix = mobile ? 'student-mobile' : 'student-sidebar';
         const buttonClass = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-right text-sm transition-colors ${mobile ? 'hover:bg-slate-100' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`;
-        const linkClass = `block rounded-lg px-4 py-2 text-sm transition-colors ${mobile ? 'hover:bg-slate-100' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`;
-        const chevron = open => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true" className={`mr-auto size-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>;
+        const groupClass = 'overflow-hidden bg-[#f8fafc] text-[#476582]';
+        const headingClass = 'flex w-full items-center gap-3 bg-[#f1f3f5] px-4 py-3 text-right text-sm font-normal hover:bg-slate-200/70';
+        const linkClass = 'block w-full px-7 py-3 text-right text-sm text-[#71849b] transition-colors hover:bg-slate-100 hover:text-[#24476b]';
+        const chevron = open => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true" className={`size-3 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>;
         const closeMobile = () => { if (mobile) setMenuOpen(false); };
         return <>
             <Link href={route('student.dashboard')} onClick={closeMobile} aria-current="page" className={`${buttonClass} ${mobile ? 'bg-slate-100' : 'bg-white/15 font-bold text-white'}`}><StudentIcon name="home" />الرئيسية</Link>
-            <button type="button" className={buttonClass} onClick={() => setLevelsOpen(open => !open)} aria-expanded={levelsOpen} aria-controls={`${prefix}-levels`}><StudentIcon name="book" />المستويات والمقررات{chevron(levelsOpen)}</button>
-            <div id={`${prefix}-levels`} hidden={!levelsOpen} className="mr-5 space-y-1 border-r border-current/20 pr-2">
-                {levels.map(item => <Link key={item.level} href={route('student.level.courses', { level: item.level })} onClick={closeMobile} className={linkClass}>المستوى {levelNames[item.level - 1] || item.level}</Link>)}
-            </div>
-            <button type="button" className={buttonClass} onClick={() => setResultsOpen(open => !open)} aria-expanded={resultsOpen} aria-controls={`${prefix}-results`}><StudentIcon name="chart" />سجل النتائج{chevron(resultsOpen)}</button>
-            <div id={`${prefix}-results`} hidden={!resultsOpen} className="mr-5 space-y-1 border-r border-current/20 pr-2">
-                {resultCourses.length ? resultCourses.map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={linkClass}>{course.name}</Link>) : <p className="px-4 py-3 text-xs leading-6">لا توجد نتائج اختبارات مسجلة بعد.</p>}
-            </div>
+            <section className={groupClass}>
+                <button type="button" className={headingClass} onClick={() => setLevelsOpen(open => !open)} aria-expanded={levelsOpen} aria-controls={`${prefix}-levels`}>
+                    {chevron(levelsOpen)}<span className="flex-1">المستويات الدراسية</span><StudentIcon name="layers" />
+                </button>
+                <div id={`${prefix}-levels`} hidden={!levelsOpen}>
+                    {(allLevels ? levels : levels.slice(0, 2)).map(item => <Link key={item.level} href={route('student.level.courses', { level: item.level })} onClick={closeMobile} className={linkClass}>المستوى {item.level}</Link>)}
+                    {levels.length > 2 && <button type="button" className={linkClass} aria-expanded={allLevels} onClick={() => setAllLevels(all => !all)}>{allLevels ? 'عرض أقل' : 'المزيد ...'}</button>}
+                </div>
+            </section>
+            <section className={groupClass}>
+                <button type="button" className={headingClass} onClick={() => setResultsOpen(open => !open)} aria-expanded={resultsOpen} aria-controls={`${prefix}-results`}>
+                    {chevron(resultsOpen)}<span className="flex-1">سجل النتائج</span><StudentIcon name="chart" />
+                </button>
+                <div id={`${prefix}-results`} hidden={!resultsOpen}>
+                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={linkClass}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 text-[#71849b]">لا توجد نتائج اختبارات مسجلة بعد.</p>}
+                    {resultCourses.length > 2 && <button type="button" className={linkClass} aria-expanded={allResults} onClick={() => setAllResults(all => !all)}>{allResults ? 'عرض أقل' : 'المزيد ...'}</button>}
+                </div>
+            </section>
         </>;
     };
     return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">

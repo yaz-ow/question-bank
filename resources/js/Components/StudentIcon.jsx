@@ -1,6 +1,7 @@
 export default function StudentIcon({ name = 'book', className = 'size-5' }) {
     const paths = {
         book: <><path d="M12 5v15M3 4c3-1 6 0 9 2 3-2 6-3 9-2v15c-3-1-6 0-9 2-3-2-6-3-9-2Z" /></>,
+        layers: <><path d="m12 3 9 7-9 7-9-7 9-7Zm-9 12 9 7 9-7" /></>,
         home: <><path d="m3 10 9-7 9 7M5 9v12h14V9M9 21v-8h6v8" /></>,
         chart: <><path d="M4 20V10m8 10V4m8 16v-7" /></>,
         check: <><rect x="4" y="3" width="16" height="18" rx="3" /><path d="m8 12 3 3 5-6" /></>,
