@@ -38,12 +38,11 @@ export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
                     aria-label={`المستوى ${levelNames[level.level - 1]}، ${courseLabel(level.course_count)}`}
                     className="group relative isolate overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/40 sm:p-6"
                 >
-                    <span aria-hidden="true" className="pointer-events-none absolute -bottom-5 left-5 -z-10 select-none text-[112px] font-bold leading-none text-slate-50 group-hover:text-blue-100/60">{number(level.level)}</span>
-                    <div className="mb-5 flex items-center justify-between">
+                    <span aria-hidden="true" dir="ltr" className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-6xl font-bold leading-none text-gray-600">{level.level}</span>
+                    <div className="mb-5 flex items-center justify-end">
                         <span className="flex size-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700"><StudentIcon className="size-6" /></span>
-                        <span className="text-xs font-semibold tabular-nums tracking-widest text-slate-400" aria-hidden="true">{String(level.level).padStart(2, '0')}</span>
                     </div>
-                    <h3 className="text-lg font-bold">المستوى {levelNames[level.level - 1]}</h3>
+                    <h3 className="relative max-w-[calc(50%-1.5rem)] text-base font-bold leading-7">المستوى {levelNames[level.level - 1]}</h3>
                     <div className="mt-3 flex items-center justify-between gap-2">
                         <p className="text-xs leading-6 text-slate-500">{courseLabel(level.course_count)}</p>
                         <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700"><StudentIcon name="arrow" className="size-4" /></span>
