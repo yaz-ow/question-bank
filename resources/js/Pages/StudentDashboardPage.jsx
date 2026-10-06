@@ -1,4 +1,4 @@
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import FlashMessages from '../Components/FlashMessages';
 import StudentIcon from '../Components/StudentIcon';
 import StudentLayout from '../Layouts/StudentLayout';
@@ -13,20 +13,11 @@ const courseLabel = count => {
 };
 
 export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
-    const { auth } = usePage().props;
-
     return <StudentLayout>
         <Head title="لوحة الطالب" />
-        <FlashMessages />
-
-        <section className="border-b border-slate-200/70 pb-6">
-            <h1 className="text-3xl font-bold leading-relaxed tracking-tight sm:text-4xl">
-                مرحبًا، {auth?.user?.name || 'طالب'}<span className="text-emerald-600">.</span>
-            </h1>
-            <p className="mt-2 text-sm leading-7 text-slate-500 sm:text-base">مستوياتك الدراسية، في مكان واحد</p>
-        </section>
 
         <section aria-labelledby="levels-heading">
+            <FlashMessages />
             <div className="mb-5 flex items-center justify-between gap-3">
                 <h2 id="levels-heading" className="text-xl font-bold">المستويات الدراسية</h2>
                 <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500">٩ مستويات</span>

@@ -25,12 +25,18 @@ export default function StudentLayout({ children }) {
         <div className="lg:mr-64">
             <header className="border-b border-slate-200/70 bg-white">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
-                    <div className="flex items-center gap-3"><button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="student-mobile-nav" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} className="rounded-lg border border-slate-200 p-2 lg:hidden"><StudentIcon name={menuOpen ? 'close' : 'menu'} /></button><span className="text-sm font-bold">لوحة الطالب</span></div>
-                    <div className="flex items-center gap-3"><span className="max-w-44 truncate text-sm font-medium">{name}</span><span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600" aria-hidden="true">{name.trim().slice(0, 1)}</span></div>
+                    <div className="flex min-w-0 items-center gap-3">
+                        <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="student-mobile-nav" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} className="shrink-0 rounded-lg border border-slate-200 p-2 lg:hidden"><StudentIcon name={menuOpen ? 'close' : 'menu'} /></button>
+                        <div className="min-w-0">
+                            <h1 className="break-words text-xl font-bold leading-8 sm:text-2xl">مرحبًا، <bdi>{name}</bdi></h1>
+                            <p className="mt-1 text-xs leading-6 text-slate-500 sm:text-sm">مستوياتك الدراسية، في مكان واحد</p>
+                        </div>
+                    </div>
+                    <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600" aria-hidden="true">{name.trim().slice(0, 1)}</span>
                 </div>
                 {menuOpen && <nav id="student-mobile-nav" aria-label="تنقل الطالب على الجوال" className="space-y-1 border-t border-slate-100 px-5 py-3 lg:hidden">{nav.map(item => <Link key={item.text} href={item.href} onClick={() => setMenuOpen(false)} aria-current={item.active ? 'page' : undefined} className="block rounded-lg px-3 py-3 text-sm hover:bg-slate-100">{item.text}</Link>)}<Link href={route('logout')} as="button" method="post" className="w-full px-3 py-3 text-right text-sm text-red-700">تسجيل الخروج</Link></nav>}
             </header>
-            <main className="mx-auto max-w-7xl space-y-8 px-5 py-8 sm:px-8 sm:py-10">{children}</main>
+            <main className="mx-auto max-w-7xl space-y-8 px-5 py-6 sm:px-8">{children}</main>
             <footer className="mx-auto max-w-7xl px-5 pb-6 text-xs text-slate-500 sm:px-8">بنك الأسئلة · تعلّم، تدرّب، وتابع تقدّمك</footer>
         </div>
     </div>;
