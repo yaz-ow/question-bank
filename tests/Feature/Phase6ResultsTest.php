@@ -74,6 +74,44 @@ class Phase6ResultsTest extends TestCase
         $this->get(route('student.results.show', $attempt))->assertNotFound();
     }
 
+    public function test_summary_shares_real_dates_navigation_and_hides_ungraded_scores(): void
+    {
+        $student = User::factory()->create(['role' => 'student']);
+        $subject = Subject::factory()->create(['level' => 2]);
+        Question::factory()->count(10)->create(['subject_id' => $subject->id]);
+        $completedAt = now()->subHour()->startOfSecond();
+        $attempt = $student->quizAttempts()->create([
+            'subject_id' => $subject->id, 'question_count' => 10,
+            'status' => 'completed', 'score' => 8, 'completed_at' => $completedAt,
+        ]);
+        $other = User::factory()->create(['role' => 'student']);
+        $other->quizAttempts()->create([
+            'subject_id' => Subject::factory()->create()->id, 'question_count' => 10,
+            'status' => 'completed', 'score' => 10,
+        ]);
+
+        $this->actingAs($student)->get(route('student.quizzes.show', $attempt))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Student/Quizzes/Summary')
+                ->where('attempt.score', 8)
+                ->where('attempt.completed_at', $completedAt->toIso8601String())
+                ->where('attempt.created_at', $attempt->created_at->toIso8601String())
+                ->where('canRetry', true)
+                ->has('levels', 9)->has('resultCourses', 1)
+                ->where('resultCourses.0.id', $subject->id)
+                ->missing('attempt.items')->missing('attempt.user_id'));
+
+        $abandonedAt = now()->startOfSecond();
+        $abandoned = $student->quizAttempts()->create([
+            'subject_id' => $subject->id, 'question_count' => 10,
+            'status' => 'abandoned', 'score' => null, 'abandoned_at' => $abandonedAt,
+        ]);
+        $this->get(route('student.quizzes.show', $abandoned))->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Student/Quizzes/Summary')
+                ->where('attempt.score', null)->where('canRetry', false)
+                ->where('attempt.completed_at', null)
+                ->where('attempt.abandoned_at', $abandonedAt->toIso8601String()));
+    }
+
     public function test_guests_instructors_and_inactive_students_cannot_access_results(): void
     {
         $student = User::factory()->create(['role' => 'student']);

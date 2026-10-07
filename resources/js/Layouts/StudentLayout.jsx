@@ -2,16 +2,16 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import StudentIcon from '../Components/StudentIcon';
 
-export default function StudentLayout({ children, title, description = 'مستوياتك الدراسية، في مكان واحد' }) {
+export default function StudentLayout({ children, title, description = 'مستوياتك الدراسية، في مكان واحد', activeNav, selectedResultCourseId }) {
     const { auth, levels = [], resultCourses = [], level } = usePage().props;
     const isDashboard = route().current('student.dashboard');
     const isAcademic = route().current('student.level*') || route().current('student.course.details');
     const [menuOpen, setMenuOpen] = useState(false);
     const [levelsOpen, setLevelsOpen] = useState(false);
-    const [resultsOpen, setResultsOpen] = useState(false);
+    const [resultsOpen, setResultsOpen] = useState(activeNav === 'results');
     const name = auth?.user?.name || 'طالب';
     const [allLevels, setAllLevels] = useState(false);
-    const [allResults, setAllResults] = useState(false);
+    const [allResults, setAllResults] = useState(activeNav === 'results');
     const renderNavigation = (mobile = false) => {
         const prefix = mobile ? 'student-mobile' : 'student-sidebar';
         const buttonClass = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-right text-sm transition-colors ${mobile ? 'hover:bg-slate-100' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`;
@@ -32,11 +32,11 @@ export default function StudentLayout({ children, title, description = 'مستو
                 </div>
             </section>
             <section className={groupClass}>
-                <button type="button" className={headingClass} onClick={() => setResultsOpen(open => !open)} aria-expanded={resultsOpen} aria-controls={`${prefix}-results`}>
+                <button type="button" className={`${headingClass} ${activeNav === 'results' ? (mobile ? 'bg-slate-100 font-bold' : 'bg-white/15 font-bold text-white') : ''}`} onClick={() => setResultsOpen(open => !open)} aria-expanded={resultsOpen} aria-controls={`${prefix}-results`}>
                     {chevron(resultsOpen)}<span className="flex-1">سجل النتائج</span><StudentIcon name="chart" />
                 </button>
                 <div id={`${prefix}-results`} hidden={!resultsOpen}>
-                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={linkClass}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 opacity-75">لا توجد نتائج اختبارات مسجلة بعد.</p>}
+                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={`${linkClass} ${Number(selectedResultCourseId) === course.id ? (mobile ? 'font-bold text-blue-800' : 'font-bold text-white') : ''}`}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 opacity-75">لا توجد نتائج اختبارات مسجلة بعد.</p>}
                     {resultCourses.length > 2 && <button type="button" className={linkClass} aria-expanded={allResults} onClick={() => setAllResults(all => !all)}>{allResults ? 'عرض أقل' : 'المزيد ...'}</button>}
                 </div>
             </section>
@@ -60,7 +60,7 @@ export default function StudentLayout({ children, title, description = 'مستو
                         <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="student-mobile-nav" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} className="shrink-0 rounded-lg border border-slate-200 p-2 lg:hidden"><StudentIcon name={menuOpen ? 'close' : 'menu'} /></button>
                         <div className="min-w-0">
                             <h1 className="break-words text-xl font-bold leading-8 sm:text-2xl">{title || <>مرحبًا، <bdi>{name}</bdi></>}</h1>
-                            <p className="mt-1 text-xs leading-6 text-slate-500 sm:text-sm">{description}</p>
+                            {description && <p className="mt-1 text-xs leading-6 text-slate-500 sm:text-sm">{description}</p>}
                         </div>
                     </div>
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600" aria-hidden="true">{name.trim().slice(0, 1)}</span>

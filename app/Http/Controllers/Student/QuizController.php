@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\QuizAttempt;
 use App\Models\Subject;
 use App\Models\User;
+use App\Support\StudentNavigation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -33,8 +34,12 @@ class QuizController extends Controller
 
         if ($attempt->status !== 'in_progress') {
             return Inertia::render('Student/Quizzes/Summary', [
+                ...StudentNavigation::props($request->user()),
                 'attempt' => array_merge($summary, [
                     'score' => $attempt->status === 'completed' ? $attempt->score : null,
+                    'created_at' => $attempt->created_at?->toIso8601String(),
+                    'completed_at' => $attempt->completed_at?->toIso8601String(),
+                    'abandoned_at' => $attempt->abandoned_at?->toIso8601String(),
                 ]),
                 'course' => $subject->only(['id', 'name', 'level']),
                 'canRetry' => $attempt->status === 'completed'
