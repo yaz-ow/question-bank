@@ -12,25 +12,13 @@ use Inertia\Inertia;
 class AcademicController extends Controller
 {
     /**
-     * Show the student levels landing page.
+     * Redirect saved levels links to the dashboard's level cards.
      */
     public function levels(Request $request)
     {
         $this->authorize('student', request()->user());
 
-        // Get all levels 1-9 with course counts
-        $levels = [];
-        for ($level = 1; $level <= 9; $level++) {
-            $courseCount = Subject::where('level', $level)->count();
-            $levels[] = [
-                'level' => $level,
-                'course_count' => $courseCount,
-            ];
-        }
-
-        return Inertia::render('Student/LevelsIndex', [
-            'levels' => $levels,
-        ]);
+        return to_route('student.dashboard');
     }
 
     /**
@@ -71,7 +59,7 @@ class AcademicController extends Controller
     }
 
     /**
-     * Show course details.
+     * Redirect saved course details links to the current course cards.
      */
     public function courseDetails(Request $request, $level, $id)
     {
@@ -84,15 +72,10 @@ class AcademicController extends Controller
         }
 
         // Get the course and verify it belongs to the specified level
-        $course = Subject::where('id', $id)
+        Subject::where('id', $id)
             ->where('level', $level)
             ->firstOrFail();
 
-        return Inertia::render('Student/CourseDetails', [
-            'course' => $course->loadCount('questions'),
-            'questionCounts' => QuizAttempt::QUESTION_COUNTS,
-            'activeAttempt' => $request->user()->quizAttempts()->where('status', 'in_progress')
-                ->first(['id', 'subject_id', 'question_count']),
-        ]);
+        return to_route('student.level.courses', ['level' => $level]);
     }
 }

@@ -45,10 +45,10 @@ class Phase5QuizTest extends TestCase
     {
         $subject = $this->bank(12);
         $this->actingAs(User::factory()->create(['role' => 'student']))
-            ->get(route('student.course.details', ['level' => $subject->level, 'id' => $subject->id]))
-            ->assertInertia(fn (Assert $page) => $page->component('Student/CourseDetails')
-                ->where('questionCounts', [10, 20, 30])->where('course.questions_count', 12)
-                ->missing('course.questions')->where('activeAttempt', null));
+            ->get(route('student.level.courses', ['level' => $subject->level]))
+            ->assertInertia(fn (Assert $page) => $page->component('Student/LevelCourses')
+                ->where('questionCounts', [10, 20, 30])->where('courses.data.0.questions_count', 12)
+                ->missing('courses.data.0.questions')->where('activeAttempt', null));
     }
 
     public function test_level_courses_provide_question_counts_and_only_the_students_active_attempt(): void

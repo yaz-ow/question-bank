@@ -40,14 +40,6 @@ export default function Show({ attempt, course, question, feedback }) {
     }, [question.position]);
 
     useEffect(() => {
-        if (!feedback || busy || exitOpen || error) return;
-        const timer = window.setTimeout(() => {
-            submit('next', { position: question.position });
-        }, 3000);
-        return () => window.clearTimeout(timer);
-    }, [feedback, busy, exitOpen, error, question.position, submit]);
-
-    useEffect(() => {
         const warn = event => {
             event.preventDefault();
             event.returnValue = '';
@@ -153,7 +145,7 @@ export default function Show({ attempt, course, question, feedback }) {
                     <div aria-live="polite" aria-atomic="true">
                         {feedback && <div className={`rounded-xl border p-4 ${feedback.is_correct ? 'border-emerald-200 bg-emerald-50 text-emerald-900' : 'border-red-200 bg-red-50 text-red-900'}`}>
                             <p className="font-bold">{feedback.is_correct ? 'إجابة صحيحة، أحسنت!' : `إجابة غير صحيحة. الإجابة الصحيحة: ${labels[feedback.correct_answer]}`}</p>
-                            {!error && <p className="mt-2 text-sm leading-6">{lastQuestion ? 'سيتم عرض النتيجة تلقائيًا بعد التصحيح.' : 'سيتم الانتقال تلقائيًا إلى السؤال التالي بعد التصحيح.'}</p>}
+                            <p className="mt-2 text-sm leading-6">{lastQuestion ? 'راجع إجابتك ثم اضغط «عرض النتيجة» لإنهاء الاختبار.' : 'راجع إجابتك ثم اضغط «السؤال التالي» للمتابعة.'}</p>
                         </div>}
                         {!feedback && busy && <p className="text-sm text-slate-500">جارٍ حفظ الإجابة...</p>}
                     </div>

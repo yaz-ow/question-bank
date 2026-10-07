@@ -12,7 +12,7 @@ class Phase3AcademicTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
-    public function student_can_browse_levels_page()
+    public function legacy_levels_page_redirects_to_dashboard()
     {
         $student = User::factory()->create([
             'role' => 'student',
@@ -20,9 +20,12 @@ class Phase3AcademicTest extends TestCase
 
         $this->actingAs($student)
             ->get(route('student.levels'))
+            ->assertRedirect(route('student.dashboard'));
+
+        $this->get(route('student.dashboard'))
             ->assertOk()
             ->assertInertia(function ($page) {
-                $page->component('Student/LevelsIndex')
+                $page->component('StudentDashboardPage')
                     ->has('levels', 9); // Should have all 9 levels
             });
     }
@@ -56,7 +59,7 @@ class Phase3AcademicTest extends TestCase
     }
 
     /** @test */
-    public function student_can_view_course_details()
+    public function legacy_course_details_redirects_to_level_course_cards()
     {
         $student = User::factory()->create([
             'role' => 'student',
@@ -72,11 +75,14 @@ class Phase3AcademicTest extends TestCase
                 'level' => $course->level,
                 'id' => $course->id
             ]))
+            ->assertRedirect(route('student.level.courses', ['level' => $course->level]));
+
+        $this->get(route('student.level.courses', ['level' => $course->level]))
             ->assertOk()
             ->assertInertia(function ($page) {
-                $page->component('Student/CourseDetails')
-                    ->where('course.name', 'مقرر تفصيلي للاختبار')
-                    ->where('course.level', 3);
+                $page->component('Student/LevelCourses')
+                    ->where('courses.data.0.name', 'مقرر تفصيلي للاختبار')
+                    ->where('courses.data.0.level', 3);
             });
     }
 

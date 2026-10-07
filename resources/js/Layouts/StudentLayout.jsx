@@ -36,7 +36,8 @@ export default function StudentLayout({ children, title, description = 'مستو
                     {chevron(resultsOpen)}<span className="flex-1">سجل النتائج</span><StudentIcon name="chart" />
                 </button>
                 <div id={`${prefix}-results`} hidden={!resultsOpen}>
-                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={`${linkClass} ${Number(selectedResultCourseId) === course.id ? (mobile ? 'font-bold text-blue-800' : 'font-bold text-white') : ''}`}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 opacity-75">لا توجد نتائج اختبارات مسجلة بعد.</p>}
+                    <Link href={route('student.results.index')} onClick={closeMobile} aria-current={activeNav === 'results' && !selectedResultCourseId ? 'page' : undefined} className={`${linkClass} ${activeNav === 'results' && !selectedResultCourseId ? 'font-bold' : ''}`}>عرض جميع المحاولات</Link>
+                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={`${linkClass} ${Number(selectedResultCourseId) === course.id ? (mobile ? 'font-bold text-blue-800' : 'font-bold text-white') : ''}`}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 opacity-75">لا توجد اختبارات مكتملة بعد.</p>}
                     {resultCourses.length > 2 && <button type="button" className={linkClass} aria-expanded={allResults} onClick={() => setAllResults(all => !all)}>{allResults ? 'عرض أقل' : 'المزيد ...'}</button>}
                 </div>
             </section>
