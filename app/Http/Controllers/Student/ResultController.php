@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\QuizAttempt;
+use App\Support\StudentNavigation;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
@@ -31,6 +32,7 @@ class ResultController extends Controller
         }
 
         return Inertia::render('Student/Results/Index', [
+            ...StudentNavigation::props($request->user()),
             'attempts' => $query->with('subject:id,name,level')->latest('id')->paginate(15)->withQueryString()
                 ->through(fn ($attempt) => [
                     'id' => $attempt->id,
@@ -53,6 +55,7 @@ class ResultController extends Controller
         abort_unless($attempt->status === 'completed', 404);
 
         return Inertia::render('Student/Results/Show', [
+            ...StudentNavigation::props($request->user()),
             'attempt' => $attempt->only(['id', 'score', 'question_count', 'completed_at']),
             'course' => $attempt->subject->only(['id', 'name', 'level']),
             'items' => $attempt->items()->get()->map(fn ($item) => $item->only([

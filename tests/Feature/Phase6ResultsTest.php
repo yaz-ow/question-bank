@@ -24,6 +24,7 @@ class Phase6ResultsTest extends TestCase
         $other->quizAttempts()->create(['subject_id' => $course->id, 'question_count' => 10]);
         $this->actingAs($student)->get(route('student.results.index'))->assertInertia(fn (Assert $page) => $page
             ->component('Student/Results/Index')->where('attempts.total', 16)->has('attempts.data', 15)
+            ->has('levels', 9)->has('resultCourses', 1)->where('resultCourses.0.id', $course->id)
             ->where('statistics.completed_count', 16)->where('statistics.average_percentage', fn ($v) => (float) $v === 70.0)
             ->missing('attempts.data.0.items')->missing('attempts.data.0.user_id'));
     }
@@ -59,6 +60,7 @@ class Phase6ResultsTest extends TestCase
         $subject->questions()->update(['question_text' => 'New bank text']);
         $this->get(route('student.results.show', $attempt))->assertInertia(fn (Assert $page) => $page
             ->component('Student/Results/Show')->has('items', 10)->where('items.0.question_text', $original)
+            ->has('levels', 9)->has('resultCourses', 1)->where('resultCourses.0.id', $subject->id)
             ->where('items.0.correct_answer', 'B')->where('items.0.selected_answer', 'B')->where('attempt.score', 10));
         $this->post(route('student.quizzes.retry', $attempt))->assertRedirect();
         $this->assertSame(2, $student->quizAttempts()->count());
