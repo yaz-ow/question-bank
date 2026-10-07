@@ -86,11 +86,17 @@ class StudentDashboardTest extends TestCase
             'status' => 'completed', 'score' => 10, 'completed_at' => now(),
         ]);
 
-        $this->actingAs($student)->get(route('student.dashboard'))->assertOk()
-            ->assertInertia(fn (Assert $page) => $page->component('StudentDashboardPage')
-                ->has('resultCourses', 1)
-                ->where('resultCourses.0.id', $scored->id)
-                ->where('resultCourses.0.name', $scored->name));
+        foreach ([
+            route('student.dashboard') => 'StudentDashboardPage',
+            route('student.level.courses', ['level' => 1]) => 'Student/LevelCourses',
+        ] as $url => $component) {
+            $this->actingAs($student)->get($url)->assertOk()
+                ->assertInertia(fn (Assert $page) => $page->component($component)
+                    ->has('levels', 9)
+                    ->has('resultCourses', 1)
+                    ->where('resultCourses.0.id', $scored->id)
+                    ->where('resultCourses.0.name', $scored->name));
+        }
     }
 
 }

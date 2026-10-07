@@ -2,8 +2,10 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import StudentIcon from '../Components/StudentIcon';
 
-export default function StudentLayout({ children }) {
-    const { auth, levels = [], resultCourses = [] } = usePage().props;
+export default function StudentLayout({ children, title, description = 'مستوياتك الدراسية، في مكان واحد' }) {
+    const { auth, levels = [], resultCourses = [], level } = usePage().props;
+    const isDashboard = route().current('student.dashboard');
+    const isAcademic = route().current('student.level*') || route().current('student.course.details');
     const [menuOpen, setMenuOpen] = useState(false);
     const [levelsOpen, setLevelsOpen] = useState(false);
     const [resultsOpen, setResultsOpen] = useState(false);
@@ -13,19 +15,19 @@ export default function StudentLayout({ children }) {
     const renderNavigation = (mobile = false) => {
         const prefix = mobile ? 'student-mobile' : 'student-sidebar';
         const buttonClass = `flex w-full items-center gap-3 rounded-xl px-4 py-3 text-right text-sm transition-colors ${mobile ? 'hover:bg-slate-100' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`;
-        const groupClass = 'overflow-hidden bg-[#f8fafc] text-[#476582]';
-        const headingClass = 'flex w-full items-center gap-3 bg-[#f1f3f5] px-4 py-3 text-right text-sm font-normal hover:bg-slate-200/70';
-        const linkClass = 'block w-full px-7 py-3 text-right text-sm text-[#71849b] transition-colors hover:bg-slate-100 hover:text-[#24476b]';
+        const groupClass = `overflow-hidden rounded-xl ${mobile ? 'text-slate-600' : 'text-slate-300'}`;
+        const headingClass = `flex w-full items-center gap-3 px-4 py-3 text-right text-sm font-normal transition-colors ${mobile ? 'hover:bg-slate-100' : 'hover:bg-white/10 hover:text-white'}`;
+        const linkClass = `block w-full px-7 py-3 text-right text-sm transition-colors ${mobile ? 'text-slate-500 hover:bg-slate-100 hover:text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`;
         const chevron = open => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true" className={`size-3 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}><path d="m6 9 6 6 6-6" /></svg>;
         const closeMobile = () => { if (mobile) setMenuOpen(false); };
         return <>
-            <Link href={route('student.dashboard')} onClick={closeMobile} aria-current="page" className={`${buttonClass} ${mobile ? 'bg-slate-100' : 'bg-white/15 font-bold text-white'}`}><StudentIcon name="home" />الرئيسية</Link>
+            <Link href={route('student.dashboard')} onClick={closeMobile} aria-current={isDashboard ? 'page' : undefined} className={`${buttonClass} ${isDashboard ? (mobile ? 'bg-slate-100' : 'bg-white/15 font-bold text-white') : ''}`}><StudentIcon name="home" />الرئيسية</Link>
             <section className={groupClass}>
                 <button type="button" className={headingClass} onClick={() => setLevelsOpen(open => !open)} aria-expanded={levelsOpen} aria-controls={`${prefix}-levels`}>
                     {chevron(levelsOpen)}<span className="flex-1">المستويات الدراسية</span><StudentIcon name="layers" />
                 </button>
                 <div id={`${prefix}-levels`} hidden={!levelsOpen}>
-                    {(allLevels ? levels : levels.slice(0, 2)).map(item => <Link key={item.level} href={route('student.level.courses', { level: item.level })} onClick={closeMobile} className={linkClass}>المستوى {item.level}</Link>)}
+                    {(allLevels ? levels : levels.slice(0, 2)).map(item => <Link key={item.level} href={route('student.level.courses', { level: item.level })} onClick={closeMobile} aria-current={isAcademic && Number(level) === item.level ? 'page' : undefined} className={`${linkClass} ${isAcademic && Number(level) === item.level ? (mobile ? 'bg-slate-100 font-bold' : 'bg-white/15 font-bold text-white') : ''}`}>المستوى {item.level}</Link>)}
                     {levels.length > 2 && <button type="button" className={linkClass} aria-expanded={allLevels} onClick={() => setAllLevels(all => !all)}>{allLevels ? 'عرض أقل' : 'المزيد ...'}</button>}
                 </div>
             </section>
@@ -34,7 +36,7 @@ export default function StudentLayout({ children }) {
                     {chevron(resultsOpen)}<span className="flex-1">سجل النتائج</span><StudentIcon name="chart" />
                 </button>
                 <div id={`${prefix}-results`} hidden={!resultsOpen}>
-                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={linkClass}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 text-[#71849b]">لا توجد نتائج اختبارات مسجلة بعد.</p>}
+                    {resultCourses.length ? (allResults ? resultCourses : resultCourses.slice(0, 2)).map(course => <Link key={course.id} href={route('student.results.index', { subject_id: course.id, status: 'completed' })} onClick={closeMobile} className={linkClass}>{course.name}</Link>) : <p className="px-7 py-3 text-xs leading-6 opacity-75">لا توجد نتائج اختبارات مسجلة بعد.</p>}
                     {resultCourses.length > 2 && <button type="button" className={linkClass} aria-expanded={allResults} onClick={() => setAllResults(all => !all)}>{allResults ? 'عرض أقل' : 'المزيد ...'}</button>}
                 </div>
             </section>
@@ -57,8 +59,8 @@ export default function StudentLayout({ children }) {
                     <div className="flex min-w-0 items-center gap-3">
                         <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="student-mobile-nav" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} className="shrink-0 rounded-lg border border-slate-200 p-2 lg:hidden"><StudentIcon name={menuOpen ? 'close' : 'menu'} /></button>
                         <div className="min-w-0">
-                            <h1 className="break-words text-xl font-bold leading-8 sm:text-2xl">مرحبًا، <bdi>{name}</bdi></h1>
-                            <p className="mt-1 text-xs leading-6 text-slate-500 sm:text-sm">مستوياتك الدراسية، في مكان واحد</p>
+                            <h1 className="break-words text-xl font-bold leading-8 sm:text-2xl">{title || <>مرحبًا، <bdi>{name}</bdi></>}</h1>
+                            <p className="mt-1 text-xs leading-6 text-slate-500 sm:text-sm">{description}</p>
                         </div>
                     </div>
                     <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-slate-100 font-bold text-slate-600" aria-hidden="true">{name.trim().slice(0, 1)}</span>

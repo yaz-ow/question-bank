@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Student;
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use App\Models\QuizAttempt;
+use App\Support\StudentNavigation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -58,6 +59,7 @@ class AcademicController extends Controller
             ->withQueryString();
 
         return Inertia::render('Student/LevelCourses', [
+            ...StudentNavigation::props($request->user()),
             'level' => $level,
             'courses' => $courses,
             'search' => $search,
