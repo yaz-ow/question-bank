@@ -163,7 +163,7 @@ class QuizController extends Controller
             }
             if ($questions->count() < $count) {
                 throw ValidationException::withMessages([
-                    'question_count' => 'عدد أسئلة المقرر لا يكفي لهذا الاختبار. اختر عددًا أقل من صفحة المقرر.',
+                    'question_count' => 'عدد أسئلة المقرر لا يكفي لهذا الاختبار. اختر عددًا أقل لبدء الاختبار.',
                 ]);
             }
             $questions = $questions->shuffle()->values();

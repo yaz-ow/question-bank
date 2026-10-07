@@ -1,12 +1,15 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import QuizSetupModal from '../../Components/QuizSetupModal';
 import FlashMessages from '../../Components/FlashMessages';
 import StudentIcon from '../../Components/StudentIcon';
 import StudentLayout from '../../Layouts/StudentLayout';
 
 const number = value => new Intl.NumberFormat('ar-SA').format(value);
 
-export default function LevelCourses({ level, courses, search }) {
+export default function LevelCourses({ level, courses, search, questionCounts = [], activeAttempt }) {
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
+    const selectedCourse = courses.data.find(course => course.id === selectedCourseId);
     const { data, setData, get, processing } = useForm({ search: search || '' });
     useEffect(() => { setData('search', search || ''); }, [level, search]);
 
@@ -34,19 +37,19 @@ export default function LevelCourses({ level, courses, search }) {
             </form>
 
             {courses.data.length ? <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                {courses.data.map(course => <Link key={course.id} href={route('student.course.details', { level, id: course.id })} className="group flex min-h-44 flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/20">
+                {courses.data.map(course => <button type="button" key={course.id} onClick={() => setSelectedCourseId(course.id)} aria-haspopup="dialog" aria-label={`بدء الاختبار في ${course.name}`} className="group flex w-full text-right min-h-44 flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/20">
                     <div className="flex items-start justify-between gap-4">
                         <div className="min-w-0 pt-1">
                             <h3 className="break-words text-lg font-bold leading-7">{course.name}</h3>
-                            <p className="mt-1 text-xs leading-6 text-slate-500">المستوى {number(level)}</p>
+                            <p className="mt-1 text-xs leading-6 text-slate-500">الأسئلة المتاحة: {number(course.questions_count)}</p>
                         </div>
                         <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-800"><StudentIcon className="size-6" /></span>
                     </div>
                     <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-                        <span className="text-xs font-medium text-slate-500 group-hover:text-blue-700">عرض المقرر</span>
+                        <span className="text-xs font-medium text-slate-500 group-hover:text-blue-700">بدء الاختبار</span>
                         <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700"><StudentIcon name="arrow" className="size-4" /></span>
                     </div>
-                </Link>)}
+                </button>)}
             </div> : <div className="rounded-xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
                 <span className="mx-auto mb-4 flex size-14 items-center justify-center rounded-xl bg-blue-50 text-blue-800"><StudentIcon className="size-7" /></span>
                 <h3 className="font-bold">{search ? 'لا توجد مقررات تطابق بحثك' : 'لا توجد مقررات في هذا المستوى بعد'}</h3>
@@ -59,5 +62,6 @@ export default function LevelCourses({ level, courses, search }) {
                 {courses.next_page_url && <Link href={courses.next_page_url} className="rounded-lg border border-slate-200 bg-white px-4 py-2 hover:bg-slate-50">التالي</Link>}
             </nav>}
         </section>
+        {selectedCourse && <QuizSetupModal key={selectedCourse.id} course={selectedCourse} questionCounts={questionCounts} activeAttempt={activeAttempt} onClose={() => setSelectedCourseId(null)} />}
     </StudentLayout>;
 }

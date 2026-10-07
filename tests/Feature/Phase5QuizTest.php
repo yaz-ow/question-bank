@@ -51,6 +51,33 @@ class Phase5QuizTest extends TestCase
                 ->missing('course.questions')->where('activeAttempt', null));
     }
 
+    public function test_level_courses_provide_question_counts_and_only_the_students_active_attempt(): void
+    {
+        $subject = $this->bank(12);
+        $subject->update(['name' => 'A', 'level' => 2]);
+        Subject::factory()->create(['name' => 'B', 'level' => 2]);
+        $student = User::factory()->create(['role' => 'student']);
+        $other = User::factory()->create(['role' => 'student']);
+        $other->quizAttempts()->create(['subject_id' => $subject->id, 'question_count' => 10]);
+        $url = route('student.level.courses', ['level' => 2]);
+
+        $this->actingAs($student)->get($url)->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->component('Student/LevelCourses')
+                ->where('questionCounts', [10, 20, 30])
+                ->has('courses.data', 2)
+                ->where('courses.data.0.id', $subject->id)
+                ->where('courses.data.0.questions_count', 12)
+                ->where('courses.data.1.questions_count', 0)
+                ->missing('courses.data.0.questions')
+                ->where('activeAttempt', null));
+
+        $active = $student->quizAttempts()->create(['subject_id' => $subject->id, 'question_count' => 10]);
+        $this->get($url)->assertInertia(fn (Assert $page) => $page
+            ->where('activeAttempt.id', $active->id)
+            ->where('activeAttempt.subject_id', $subject->id)
+            ->missing('activeAttempt.items'));
+    }
+
     public function test_attempt_uses_distinct_questions_only_from_its_course_and_survives_reload(): void
     {
         $subject = $this->bank(20);

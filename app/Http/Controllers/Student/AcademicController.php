@@ -51,6 +51,7 @@ class AcademicController extends Controller
 
         // Get courses for this level
         $courses = Subject::where('level', $level)
+            ->withCount('questions')
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%");
             })
@@ -63,6 +64,9 @@ class AcademicController extends Controller
             'level' => $level,
             'courses' => $courses,
             'search' => $search,
+            'questionCounts' => QuizAttempt::QUESTION_COUNTS,
+            'activeAttempt' => $request->user()->quizAttempts()->where('status', 'in_progress')
+                ->first(['id', 'subject_id', 'question_count']),
         ]);
     }
 
