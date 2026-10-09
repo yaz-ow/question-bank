@@ -119,9 +119,14 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             Route::get('questions/download-template', [QuestionController::class, 'downloadTemplate'])
                 ->name('admin.questions.download.template');
             Route::post('questions/upload-preview', [QuestionController::class, 'uploadPreview'])
+                ->block(10, 10)
                 ->name('admin.questions.upload.preview');
             Route::post('questions/import-confirm', [QuestionController::class, 'importConfirm'])
+                ->block(10, 10)
                 ->name('admin.questions.import.confirm');
+            Route::delete('questions/import-preview', [QuestionController::class, 'cancelImport'])
+                ->block(10, 10)
+                ->name('admin.questions.import.cancel');
 
             Route::resource('questions', QuestionController::class)
                 ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])

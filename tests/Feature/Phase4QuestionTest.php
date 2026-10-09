@@ -355,11 +355,12 @@ class Phase4QuestionTest extends TestCase
             ->post(route('admin.questions.upload.preview', ['subject' => $subject->id]), [
                 'file' => $file
             ])
-            ->assertOk()
-            ->assertInertia(function ($page) use ($subject) {
-                $page->component('Admin/Questions/ImportPreview')
-                    ->where('subject.id', $subject->id);
-            });
+            ->assertRedirect(route('admin.questions.index', $subject->id));
+
+        $this->get(route('admin.questions.index', $subject->id))->assertInertia(function ($page) use ($subject) {
+            $page->component('Admin/Questions/Index')
+                ->where('subject.id', $subject->id);
+        });
     }
 
     /** @test */
@@ -404,11 +405,13 @@ class Phase4QuestionTest extends TestCase
             ->post(route('admin.questions.upload.preview', ['subject' => $subject->id]), [
                 'file' => $file
             ])
-            ->assertOk();
+            ->assertRedirect();
 
         // Now confirm the import
         $this->actingAs($admin)
-            ->post(route('admin.questions.import.confirm', ['subject' => $subject->id]))
+            ->post(route('admin.questions.import.confirm', ['subject' => $subject->id]), [
+                'import_token' => session('excel_import_'.$subject->id.'_'.$admin->id)['token'],
+            ])
             ->assertRedirect()
             ->assertSessionHas('success', 'تم استيراد 2 سؤال بنجاح وتخطي 0 سؤال مكرر.');
 

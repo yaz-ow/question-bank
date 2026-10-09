@@ -21,18 +21,14 @@ class QuestionsImportTemplate implements FromCollection, WithHeadings
         $this->subjectId = $subjectId;
     }
 
-    /**
-     * @return Collection
-     */
     public function collection(): Collection
     {
-        // Return an empty collection since this is just a template
-        return collect([]);
+        return collect([[
+            'أي بنية بيانات تعمل وفق مبدأ FIFO؟',
+            'المكدس', 'الطابور', 'الشجرة', 'الرسم البياني', 'B',
+        ]]);
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         return [
