@@ -3,10 +3,10 @@
     --qb-blue: #447fc4;
     --qb-ink: #132e4a;
     --qb-muted: #738197;
-    /* Grow the artwork on wide displays while fitting shorter laptop screens. */
+    /* Keep the choice artwork readable on desktop and shorter laptop screens. */
     --qb-card-width: clamp(
-        260px,
-        min(29vw, calc((100svh - 240px) * 0.64725)),
+        280px,
+        min(30vw, calc((100svh - 220px) * 0.64725)),
         480px
     );
     --qb-card-height: calc(var(--qb-card-width) * 601 / 389);
@@ -578,44 +578,71 @@
 .auth-entry .qb-form-panel:focus {
     outline: none;
 }
+/* Desktop controls follow the administration typography and 48px inputs. */
 @media (min-width: 641px) {
-    .auth-entry .qb-selected .qb-art {
-        flex-basis: var(--qb-card-width);
-        background-size: auto 121.13%;
-    }
-    /* Scale the contents with the artwork, not just the outer card. */
     .auth-entry {
-        --qb-control-height: clamp(
-            48px,
-            calc(var(--qb-card-width) * 0.13333),
-            64px
+        --qb-control-height: 48px;
+        --qb-form-gap: 16px;
+        --qb-link-size: 16px;
+        --qb-open-height: max(500px, var(--auth-form-height, 500px));
+        --qb-open-art-width: min(
+            var(--qb-card-width),
+            calc(var(--qb-open-height) * 389 / 601)
         );
-        --qb-form-gap: clamp(16px, calc(var(--qb-card-width) * 0.05), 24px);
-        --qb-link-size: clamp(13px, calc(var(--qb-card-width) * 0.03333), 16px);
+        font-size: 18px;
+    }
+    .auth-entry .qb-stage {
+        max-width: max(
+            calc(var(--qb-card-width) * 2 + var(--qb-card-gap)),
+            calc(var(--qb-open-art-width) + 600px)
+        );
+    }
+    .auth-entry .qb-top {
+        max-width: 1400px;
+    }
+    .auth-entry .qb-intro h1 {
+        font-size: clamp(28px, 1.75vw, 34px);
+        line-height: 1.4;
+        margin-bottom: 8px;
+    }
+    .auth-entry .qb-intro p {
+        font-size: 18px;
+    }
+    .auth-entry .qb-footer {
+        font-size: 14px;
     }
     .auth-entry .qb-choice {
-        font-size: clamp(28px, calc(var(--qb-card-width) * 0.09), 44px);
-        gap: clamp(14px, calc(var(--qb-card-width) * 0.045), 22px);
+        font-size: 32px;
+        gap: 16px;
     }
     .auth-entry .qb-select {
-        padding: clamp(26px, calc(var(--qb-card-width) * 0.08), 40px);
+        padding: 30px;
     }
     .auth-entry .qb-choice .auth-icon {
-        width: clamp(22px, calc(var(--qb-card-width) * 0.065), 32px);
-        height: clamp(22px, calc(var(--qb-card-width) * 0.065), 32px);
+        width: 28px;
+        height: 28px;
+    }
+    .auth-entry.qb-open .qb-stage {
+        height: calc(var(--qb-open-height) + 20px);
+    }
+    .auth-entry .qb-portal.qb-selected {
+        height: var(--qb-open-height);
+    }
+    .auth-entry .qb-selected .qb-art {
+        flex-basis: var(--qb-open-art-width);
+        background-size: auto 121.13%;
     }
     .auth-entry .qb-selected .qb-form-panel {
-        width: calc(100% - var(--qb-card-width));
+        width: calc(100% - var(--qb-open-art-width));
         align-self: center;
-        padding: clamp(24px, calc(var(--qb-card-width) * 0.075), 36px)
-            clamp(28px, calc(var(--qb-card-width) * 0.09), 44px);
+        padding: 24px 32px;
     }
     .auth-entry .qb-form-top {
         margin-bottom: var(--qb-form-gap);
     }
     .auth-entry .qb-badge {
-        font-size: var(--qb-link-size);
-        padding: 9px 12px;
+        font-size: 15px;
+        padding: 7px 10px;
         gap: 8px;
     }
     .auth-entry .qb-back {
@@ -623,29 +650,30 @@
         gap: 8px;
     }
     .auth-entry .qb-form-title {
-        font-size: clamp(26px, calc(var(--qb-card-width) * 0.075), 36px);
-        margin-bottom: 8px;
+        font-size: 28px;
+        margin-bottom: 4px;
+        line-height: 1.4;
     }
     .auth-entry .qb-subtitle {
-        font-size: clamp(14px, calc(var(--qb-card-width) * 0.0375), 18px);
+        font-size: 17px;
         margin-bottom: var(--qb-form-gap);
     }
     .auth-entry .qb-field {
-        font-size: clamp(14px, calc(var(--qb-card-width) * 0.0375), 18px);
+        font-size: 17px;
         margin-bottom: var(--qb-form-gap);
     }
     .auth-entry .qb-input-wrap {
-        margin-top: 10px;
+        margin-top: 8px;
     }
     .auth-entry input {
         height: var(--qb-control-height);
-        font-size: clamp(16px, calc(var(--qb-card-width) * 0.04167), 20px);
-        padding: 12px 18px;
-        border-radius: 12px;
+        font-size: 18px;
+        padding: 10px 16px;
+        border-radius: 9px;
         font-weight: 400;
     }
     .auth-entry input::placeholder {
-        font-size: clamp(15px, calc(var(--qb-card-width) * 0.0375), 18px);
+        font-size: 17px;
     }
     .auth-entry input[data-password] {
         padding-right: calc(var(--qb-control-height) + 4px);
@@ -656,12 +684,12 @@
     }
     .auth-entry .qb-forgot {
         font-size: var(--qb-link-size);
-        margin: -8px 0 var(--qb-form-gap) auto;
+        margin: -4px 0 var(--qb-form-gap) auto;
     }
     .auth-entry .qb-submit {
         height: var(--qb-control-height);
-        font-size: clamp(16px, calc(var(--qb-card-width) * 0.04167), 20px);
-        border-radius: 12px;
+        font-size: 18px;
+        border-radius: 9px;
     }
     .auth-entry .qb-register {
         font-size: var(--qb-link-size);
@@ -671,11 +699,25 @@
         font-size: inherit;
     }
     .auth-entry .qb-form-panel .auth-icon {
-        width: clamp(20px, calc(var(--qb-card-width) * 0.05), 24px);
-        height: clamp(20px, calc(var(--qb-card-width) * 0.05), 24px);
+        width: 22px;
+        height: 22px;
     }
     .auth-entry .qb-error {
-        font-size: var(--qb-link-size);
+        font-size: 15px;
+    }
+}
+@media (min-width: 641px) and (max-height: 850px) {
+    .auth-entry {
+        padding-block: 20px;
+    }
+    .auth-entry.qb-open .auth-main {
+        padding-block: 4px 12px;
+    }
+    .auth-entry.qb-open .qb-intro {
+        padding: 0 0 12px;
+    }
+    .auth-entry.qb-open .qb-intro p {
+        display: none;
     }
 }
 @media (max-width: 640px) {
