@@ -48,7 +48,7 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
             description: 'إنشاء مقرر جديد وإدارته',
             icon: 'book',
             tone: 'blue',
-            href: route('admin.subjects.create'),
+            href: `${route('admin.subjects.index')}#add-subject`,
         },
         ...(isFounder
             ? [
@@ -91,7 +91,7 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                 </div>
                 <Link
                     className="admin-button admin-button-primary"
-                    href={route('admin.subjects.create')}
+                    href={`${route('admin.subjects.index')}#add-subject`}
                 >
                     <AdminIcon name="plus" />
                     إضافة مقرر
@@ -215,8 +215,12 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                                             <Link
                                                 className="admin-edit-link"
                                                 href={route(
-                                                    'admin.subjects.edit',
-                                                    subject.id,
+                                                    'admin.subjects.index',
+                                                    {
+                                                        search: subject.name,
+                                                        level: subject.level,
+                                                        edit: subject.id,
+                                                    },
                                                 )}
                                                 aria-label={`تعديل مقرر ${subject.name}`}
                                             >
@@ -247,7 +251,7 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                             href={
                                 stats.subjects
                                     ? route('admin.dashboard')
-                                    : route('admin.subjects.create')
+                                    : `${route('admin.subjects.index')}#add-subject`
                             }
                         >
                             {stats.subjects ? 'عرض المقررات' : 'إضافة مقرر'}

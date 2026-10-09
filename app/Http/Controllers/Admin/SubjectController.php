@@ -20,6 +20,7 @@ class SubjectController extends Controller
 
         return Inertia::render('Admin/Subjects/Index', [
             'subjects' => Subject::query()
+                ->withCount('questions')
                 ->when($filters['search'] ?? null, fn ($q, $search) => $q->where('name', 'like', "%{$search}%"))
                 ->when($filters['level'] ?? null, fn ($q, $level) => $q->where('level', $level))
                 ->orderBy('level')->orderBy('name')->paginate(10)->withQueryString(),

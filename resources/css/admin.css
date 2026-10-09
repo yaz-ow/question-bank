@@ -816,3 +816,260 @@
         transition: none !important;
     }
 }
+
+/* Course management shares the desktop administration workspace. */
+.admin-subject-panel-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin: -24px -24px 16px;
+    padding: 12px 24px;
+    border-bottom: 1px solid #dfe8f2;
+}
+.admin-subject-create {
+    padding-bottom: 20px;
+}
+.admin-subject-panel-title > span {
+    color: #7890aa;
+    font-size: 16px;
+}
+.admin-subject-add-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr) minmax(180px, 0.7fr);
+    align-items: start;
+    gap: 18px;
+}
+.admin-subject-field label {
+    display: block;
+    font-weight: 650;
+    font-size: 17px;
+    line-height: 24px;
+    margin-bottom: 8px;
+}
+.admin-subject-input {
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    border: 1px solid #cedbea;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 17px;
+    line-height: 28px;
+    font-weight: 400;
+    color: var(--admin-ink);
+    background: #fff;
+}
+.admin-subject-input::placeholder {
+    color: #8393a9;
+}
+.admin-subject-input[aria-invalid='true'] {
+    border-color: #c33746;
+}
+.admin-add-subject-button {
+    margin-top: 32px;
+    min-height: 48px;
+    width: 100%;
+    font-size: 18px;
+}
+.admin-field-error {
+    margin: 7px 0 0;
+    color: #b42334;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.7;
+    white-space: normal;
+}
+.admin-subject-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 0 0 18px;
+}
+.admin-subject-filters .admin-search {
+    flex: 1 1 330px;
+    width: auto;
+}
+.admin-subject-filters select {
+    flex: 0 1 30%;
+    max-width: none;
+}
+.admin-subject-search-button {
+    min-width: 130px;
+    min-height: 48px;
+    background: #176fca;
+    color: #fff;
+    border-color: #176fca;
+    font-size: 17px;
+}
+.admin-subject-search-button:hover {
+    background: #125cac;
+}
+.admin-subject-reset {
+    color: #2668a9;
+    padding: 10px 4px;
+    font-size: 15px;
+}
+.admin-subject-table th:first-child {
+    width: 36%;
+}
+.admin-subject-table :is(th, td) {
+    padding: 6px 18px;
+}
+.admin-subject-table th:nth-child(2) {
+    width: 22%;
+}
+.admin-subject-table th:nth-child(3) {
+    width: 15%;
+}
+.admin-subject-table th:last-child {
+    width: 27%;
+}
+.admin-subject-table .admin-row-actions {
+    gap: 10px;
+}
+.admin-subject-table .admin-edit-link {
+    flex-shrink: 0;
+}
+.admin-subject-table tbody td:nth-child(2) {
+    white-space: normal;
+}
+.admin-subject-editing,
+.admin-subject-table tbody tr.admin-subject-editing:hover {
+    background: #e9f4ff;
+}
+.admin-edit-label {
+    display: block;
+    color: #2873b8;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 3px;
+}
+.admin-subject-editing td {
+    vertical-align: middle;
+}
+.admin-delete-subject {
+    color: #c72839;
+    border-color: #f2c6cc;
+    background: #fff;
+}
+.admin-delete-subject:hover {
+    background: #fff0f2;
+}
+.admin-save-edit {
+    color: #fff;
+    background: #07965b;
+    border-color: #07965b;
+}
+.admin-save-edit:hover {
+    background: #07794a;
+}
+.admin-delete-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+.admin-delete-note .admin-icon {
+    width: 18px;
+    height: 18px;
+}
+.admin-subject-footer {
+    font-size: 15px;
+}
+.admin-pagination-disabled {
+    color: #97a6b7;
+    background: #f5f8fb;
+}
+.admin-delete-dialog {
+    max-width: 530px;
+    width: calc(100% - 32px);
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #e1e9f3;
+    border-radius: 16px;
+    color: #173650;
+    background: #fff;
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+    box-shadow: 0 24px 90px #06274640;
+}
+.admin-delete-dialog::backdrop {
+    background: #06274680;
+    backdrop-filter: blur(3px);
+}
+.admin-delete-symbol {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    background: #fff0f2;
+    color: #c72839;
+    margin-bottom: 16px;
+}
+.admin-delete-symbol .admin-icon {
+    width: 28px;
+    height: 28px;
+}
+.admin-delete-dialog h2 {
+    font-size: 26px;
+    font-weight: 750;
+    margin: 0 0 12px;
+}
+.admin-delete-dialog p {
+    font-size: 17px;
+    line-height: 1.8;
+    margin: 0 0 12px;
+}
+.admin-delete-dialog strong {
+    overflow-wrap: anywhere;
+}
+.admin-dialog-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+}
+.admin-cancel-delete {
+    border-color: #d7e2ee;
+    background: #fff;
+    color: #26496c;
+}
+.admin-confirm-delete {
+    background: #c72839;
+    border-color: #c72839;
+    color: #fff;
+}
+.admin-confirm-delete:hover {
+    background: #a21e2d;
+}
+.admin-subject-input:focus-visible,
+.admin-delete-dialog :is(button, input, select):focus-visible {
+    outline: 3px solid #74baff;
+    outline-offset: 3px;
+}
+@media (max-width: 767px) {
+    .admin-subject-create {
+        padding-bottom: 16px;
+    }
+    .admin-subject-panel-title {
+        margin: -16px -16px 18px;
+        padding: 16px;
+    }
+    .admin-subject-add-form {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    .admin-add-subject-button {
+        margin-top: 0;
+    }
+    .admin-subject-filters .admin-search,
+    .admin-subject-filters select {
+        flex: 1 1 100%;
+    }
+    .admin-subject-search-button {
+        flex: 1;
+    }
+    .admin-delete-dialog {
+        padding: 24px;
+    }
+}
