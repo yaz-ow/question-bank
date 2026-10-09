@@ -90,16 +90,6 @@ export default function QuestionsIndex({
                     </p>
                 </div>
                 <div className="admin-question-toolbar">
-                    <a
-                        className="admin-button admin-excel-button"
-                        href={route('admin.questions.download.template', {
-                            subject: subject.id,
-                        })}
-                        download
-                    >
-                        <AdminIcon name="download" />
-                        تحميل قالب Excel
-                    </a>
                     <button
                         type="button"
                         className="admin-button admin-excel-button"

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import AdminIcon from '../AdminIcon';
 
 export const choices = [
-    { key: 'A', label: 'أ', field: 'option_a' },
-    { key: 'B', label: 'ب', field: 'option_b' },
-    { key: 'C', label: 'ج', field: 'option_c' },
-    { key: 'D', label: 'د', field: 'option_d' },
+    { key: 'A', label: 'A', field: 'option_a' },
+    { key: 'B', label: 'B', field: 'option_b' },
+    { key: 'C', label: 'C', field: 'option_c' },
+    { key: 'D', label: 'D', field: 'option_d' },
 ];
 export const number = (value) => new Intl.NumberFormat('en-US').format(value);
 export const emptyQuestion = {
