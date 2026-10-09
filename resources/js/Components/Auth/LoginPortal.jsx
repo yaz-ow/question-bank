@@ -7,7 +7,7 @@ import '../../../css/auth-portals.css';
 
 const EMPTY_ERRORS = {};
 
-function PortalIcon({ name }) {
+export function PortalIcon({ name }) {
     if (name === 'eye' || name === 'eye-off') {
         return (
             <svg

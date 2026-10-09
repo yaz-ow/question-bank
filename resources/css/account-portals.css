@@ -1,0 +1,119 @@
+.auth-entry.qb-account .qb-account-card {
+    display: flex;
+    direction: ltr;
+    width: 100%;
+    max-width: 1040px;
+    min-height: 500px;
+    margin: 0 auto;
+    border: 1px solid #d7e1ee;
+    border-radius: 23px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 20px 55px #183f6a1c;
+}
+.auth-entry.qb-account .qb-art {
+    flex-basis: calc(var(--qb-account-height) * 389 / 601);
+    height: var(--qb-account-height);
+    transition: none;
+}
+.auth-entry.qb-account .qb-form-panel {
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    align-self: center;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    padding: 24px 32px;
+    transition: none;
+}
+.auth-entry.qb-account .qb-account-fields {
+    display: grid;
+    gap: 16px 20px;
+    margin-bottom: 20px;
+}
+.auth-entry.qb-account .qb-account-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.auth-entry.qb-account .qb-field-wide {
+    grid-column: 1 / -1;
+}
+.auth-entry.qb-account .qb-field {
+    margin-bottom: 0;
+}
+.auth-entry.qb-account .qb-error,
+.auth-entry.qb-account .qb-field-hint {
+    display: block;
+    margin-top: 6px;
+    line-height: 1.5;
+}
+.auth-entry.qb-account .qb-field-hint {
+    font-size: 14px;
+    color: var(--qb-muted);
+}
+.auth-entry.qb-account .qb-subtitle {
+    line-height: 1.7;
+}
+.auth-entry.qb-account .qb-account-flash {
+    font-size: 16px;
+    line-height: 1.7;
+}
+.auth-entry.qb-account .qb-recovery-link {
+    display: block;
+    margin-top: 12px;
+    text-align: center;
+    font-size: 15px;
+    color: var(--qb-blue);
+}
+.auth-entry.qb-account a:focus-visible {
+    outline: 3px solid #6399dc;
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+@media (min-width: 641px) and (max-height: 850px) {
+    .auth-entry.qb-account {
+        padding-block: 16px;
+    }
+    .auth-entry.qb-account .auth-main {
+        padding-block: 4px 8px;
+    }
+    .auth-entry.qb-account .qb-intro {
+        padding: 0 0 12px;
+    }
+}
+@media (max-width: 900px) {
+    .auth-entry.qb-account .qb-art {
+        display: none;
+    }
+    .auth-entry.qb-account .qb-account-card {
+        max-width: 680px;
+    }
+}
+@media (max-width: 640px) {
+    .auth-entry.qb-account .qb-account-card {
+        min-height: 0;
+        border-radius: 18px;
+    }
+    .auth-entry.qb-account .qb-form-panel {
+        padding: 24px 20px;
+    }
+    .auth-entry.qb-account .qb-account-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .auth-entry.qb-account .qb-account-fields {
+        gap: 18px;
+    }
+    .auth-entry.qb-account .qb-form-top {
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .auth-entry.qb-account .qb-form-title {
+        font-size: 26px;
+    }
+    .auth-entry.qb-account .qb-subtitle {
+        font-size: 15px;
+    }
+    .auth-entry.qb-account .qb-register {
+        font-size: 15px;
+    }
+}
