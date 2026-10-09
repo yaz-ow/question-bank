@@ -27,13 +27,17 @@ Route::post('/register', [RegisterController::class, 'store'])->middleware('thro
 
 // Student login
 Route::get('/login/student', function () {
-    return Inertia::render('LoginStudentPage');
+    return Inertia::render('LoginStudentPage', [
+        'universityId' => session()->getOldInput('university_id', ''),
+    ]);
 })->name('login-student.show');
 Route::post('/login/student', [LoginController::class, 'studentStore'])->name('login-student.store')->middleware('throttle:authentication');
 
 // Admin login
 Route::get('/login/admin', function () {
-    return Inertia::render('LoginAdminPage');
+    return Inertia::render('LoginAdminPage', [
+        'email' => session()->getOldInput('email', ''),
+    ]);
 })->name('login-admin.show');
 Route::post('/login/admin', [LoginController::class, 'adminStore'])->name('login-admin.store')->middleware('throttle:authentication');
 
