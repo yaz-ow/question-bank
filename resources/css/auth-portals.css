@@ -3,6 +3,14 @@
     --qb-blue: #447fc4;
     --qb-ink: #132e4a;
     --qb-muted: #738197;
+    /* Grow the artwork on wide displays while fitting shorter laptop screens. */
+    --qb-card-width: clamp(
+        260px,
+        min(29vw, calc((100svh - 240px) * 0.64725)),
+        480px
+    );
+    --qb-card-height: calc(var(--qb-card-width) * 601 / 389);
+    --qb-card-gap: clamp(28px, 3vw, 56px);
     font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
     color: var(--qb-ink);
     background: radial-gradient(
@@ -62,7 +70,7 @@
     transition: opacity 0.25s;
 }
 .auth-entry .qb-intro h1 {
-    font-size: 28px;
+    font-size: clamp(28px, 2vw, 36px);
     font-weight: 800;
     line-height: 1.5;
     margin: 0 0 4px;
@@ -76,16 +84,16 @@
 }
 .auth-entry .qb-stage {
     position: relative;
-    max-width: 850px;
-    height: 478px;
-    margin: auto;
+    max-width: max(850px, calc(var(--qb-card-width) + 560px));
+    height: calc(var(--qb-card-height) + 24px);
+    margin: 0 auto;
     direction: ltr;
 }
 .auth-entry .qb-portal {
     position: absolute;
     top: 12px;
-    width: 270px;
-    height: 418px;
+    width: var(--qb-card-width);
+    height: var(--qb-card-height);
     display: flex;
     direction: ltr;
     background: #fff;
@@ -104,10 +112,10 @@
         border-color 0.4s;
 }
 .auth-entry .qb-portal[data-role='student'] {
-    left: calc(50% + 19px);
+    left: calc(50% + var(--qb-card-gap) / 2);
 }
 .auth-entry .qb-portal[data-role='admin'] {
-    left: calc(50% - 289px);
+    left: calc(50% - var(--qb-card-gap) / 2 - var(--qb-card-width));
 }
 .auth-entry .qb-art {
     position: relative;
@@ -500,10 +508,12 @@
     width: 100%;
 }
 .auth-entry.qb-open .qb-stage {
-    height: calc(max(500px, var(--auth-form-height, 500px)) + 20px);
+    height: calc(
+        max(500px, var(--qb-card-height), var(--auth-form-height, 500px)) + 20px
+    );
 }
 .auth-entry .qb-portal.qb-selected {
-    height: max(500px, var(--auth-form-height, 500px));
+    height: max(500px, var(--qb-card-height), var(--auth-form-height, 500px));
 }
 .auth-entry .qb-form-panel {
     align-self: flex-start;
@@ -570,7 +580,12 @@
 }
 @media (min-width: 641px) {
     .auth-entry .qb-selected .qb-art {
+        flex-basis: var(--qb-card-width);
         background-size: auto 121.13%;
+    }
+    .auth-entry .qb-selected .qb-form-panel {
+        width: calc(100% - var(--qb-card-width));
+        align-self: center;
     }
 }
 @media (max-width: 640px) {
