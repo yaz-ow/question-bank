@@ -108,9 +108,8 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
         ->name('student.course.details')->middleware('role:student');
 
     Route::middleware(['auth', 'active', 'auth.session', 'role:admin,instructor'])->group(function () {
-        Route::get('/admin/dashboard', function () {
-            return Inertia::render('AdminDashboardPage');
-        })->name('admin.dashboard');
+        Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
+            ->name('admin.dashboard');
 
         Route::resource('admin/subjects', SubjectController::class)->names('admin.subjects');
 
