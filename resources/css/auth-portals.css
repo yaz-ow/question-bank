@@ -583,9 +583,99 @@
         flex-basis: var(--qb-card-width);
         background-size: auto 121.13%;
     }
+    /* Scale the contents with the artwork, not just the outer card. */
+    .auth-entry {
+        --qb-control-height: clamp(
+            48px,
+            calc(var(--qb-card-width) * 0.13333),
+            64px
+        );
+        --qb-form-gap: clamp(16px, calc(var(--qb-card-width) * 0.05), 24px);
+        --qb-link-size: clamp(13px, calc(var(--qb-card-width) * 0.03333), 16px);
+    }
+    .auth-entry .qb-choice {
+        font-size: clamp(28px, calc(var(--qb-card-width) * 0.09), 44px);
+        gap: clamp(14px, calc(var(--qb-card-width) * 0.045), 22px);
+    }
+    .auth-entry .qb-select {
+        padding: clamp(26px, calc(var(--qb-card-width) * 0.08), 40px);
+    }
+    .auth-entry .qb-choice .auth-icon {
+        width: clamp(22px, calc(var(--qb-card-width) * 0.065), 32px);
+        height: clamp(22px, calc(var(--qb-card-width) * 0.065), 32px);
+    }
     .auth-entry .qb-selected .qb-form-panel {
         width: calc(100% - var(--qb-card-width));
         align-self: center;
+        padding: clamp(24px, calc(var(--qb-card-width) * 0.075), 36px)
+            clamp(28px, calc(var(--qb-card-width) * 0.09), 44px);
+    }
+    .auth-entry .qb-form-top {
+        margin-bottom: var(--qb-form-gap);
+    }
+    .auth-entry .qb-badge {
+        font-size: var(--qb-link-size);
+        padding: 9px 12px;
+        gap: 8px;
+    }
+    .auth-entry .qb-back {
+        font-size: var(--qb-link-size);
+        gap: 8px;
+    }
+    .auth-entry .qb-form-title {
+        font-size: clamp(26px, calc(var(--qb-card-width) * 0.075), 36px);
+        margin-bottom: 8px;
+    }
+    .auth-entry .qb-subtitle {
+        font-size: clamp(14px, calc(var(--qb-card-width) * 0.0375), 18px);
+        margin-bottom: var(--qb-form-gap);
+    }
+    .auth-entry .qb-field {
+        font-size: clamp(14px, calc(var(--qb-card-width) * 0.0375), 18px);
+        margin-bottom: var(--qb-form-gap);
+    }
+    .auth-entry .qb-input-wrap {
+        margin-top: 10px;
+    }
+    .auth-entry input {
+        height: var(--qb-control-height);
+        font-size: clamp(16px, calc(var(--qb-card-width) * 0.04167), 20px);
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 400;
+    }
+    .auth-entry input::placeholder {
+        font-size: clamp(15px, calc(var(--qb-card-width) * 0.0375), 18px);
+    }
+    .auth-entry input[data-password] {
+        padding-right: calc(var(--qb-control-height) + 4px);
+    }
+    .auth-entry .qb-eye {
+        width: calc(var(--qb-control-height) - 2px);
+        height: calc(var(--qb-control-height) - 2px);
+    }
+    .auth-entry .qb-forgot {
+        font-size: var(--qb-link-size);
+        margin: -8px 0 var(--qb-form-gap) auto;
+    }
+    .auth-entry .qb-submit {
+        height: var(--qb-control-height);
+        font-size: clamp(16px, calc(var(--qb-card-width) * 0.04167), 20px);
+        border-radius: 12px;
+    }
+    .auth-entry .qb-register {
+        font-size: var(--qb-link-size);
+        margin-top: var(--qb-form-gap);
+    }
+    .auth-entry .qb-text-button {
+        font-size: inherit;
+    }
+    .auth-entry .qb-form-panel .auth-icon {
+        width: clamp(20px, calc(var(--qb-card-width) * 0.05), 24px);
+        height: clamp(20px, calc(var(--qb-card-width) * 0.05), 24px);
+    }
+    .auth-entry .qb-error {
+        font-size: var(--qb-link-size);
     }
 }
 @media (max-width: 640px) {
