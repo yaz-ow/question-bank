@@ -216,8 +216,14 @@
         height: 256px;
     }
     .student-dashboard .student-quiz-content {
-        grid-template-columns: clamp(280px, 19vw, 340px) minmax(0, 1fr);
+        max-width: 1440px;
+        margin-inline: auto;
+        grid-template-columns: clamp(280px, 21vw, 300px) minmax(0, 1fr);
         gap: 24px;
+    }
+    .student-dashboard:has(.student-quiz-content) :is(.student-topbar, .student-footer) {
+        max-width: 1440px;
+        margin-inline: auto;
     }
     .student-dashboard .student-quiz-progress > section {
         padding: 24px;
