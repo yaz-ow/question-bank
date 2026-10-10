@@ -46,7 +46,7 @@ export default function Show({ attempt, course, items }) {
                         {letters.map(letter => {
                             const correct = letter === item.correct_answer;
                             const selected = letter === item.selected_answer;
-                            return <li key={letter} className={`flex flex-wrap items-center gap-3 rounded-xl border p-4 ${correct ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : selected ? 'border-red-400 bg-red-50 text-red-900' : 'border-slate-200 text-slate-600'}`}>
+                            return <li key={letter} className={`student-review-option flex flex-wrap items-center gap-3 rounded-xl border p-4 ${correct ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : selected ? 'border-red-400 bg-red-50 text-red-900' : 'border-slate-200 text-slate-600'}`}>
                                 <span aria-hidden="true" className={`flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold ${correct ? 'bg-emerald-100' : selected ? 'bg-red-100' : 'bg-slate-100'}`}>{labels[letter]}</span>
                                 <span dir="auto" className="min-w-0 flex-1 whitespace-pre-wrap break-words text-start text-sm leading-7">{item[`option_${letter.toLowerCase()}`]}</span>
                                 {(correct || selected) && <span className="flex basis-full flex-wrap items-center gap-1 text-xs font-bold sm:basis-auto"><StudentIcon name={correct ? 'tick' : 'close'} className="size-4" />{selected && 'إجابتك'}{selected && correct && ' · '}{correct && 'الإجابة الصحيحة'}</span>}

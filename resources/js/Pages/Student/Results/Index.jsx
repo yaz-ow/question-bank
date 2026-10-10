@@ -38,7 +38,7 @@ export default function Index({ attempts, courses, filters, statistics }) {
             </div>
             <p className="text-xs leading-6 text-slate-500">الإحصاءات تخص الاختبارات المكتملة {selectedCourse ? `في ${selectedCourse.name}` : 'في جميع المقررات'}، ولا تتأثر بتصفية الحالة.</p>
         </section>
-        <form aria-label="تصفية النتائج" onSubmit={event => { event.preventDefault(); get(route('student.results.index'), { preserveScroll: true }); }} className="flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <form aria-label="تصفية النتائج" onSubmit={event => { event.preventDefault(); get(route('student.results.index'), { preserveScroll: true }); }} className="student-results-filter flex flex-wrap items-end gap-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <div className="min-w-0 flex-1 basis-52 text-sm font-medium"><label htmlFor="history-subject">المقرر</label>
                 <select id="history-subject" className="mt-2 block w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm" value={data.subject_id} onChange={event => setData('subject_id', event.target.value)}><option value="">كل المقررات</option>{courses.map(course => <option key={course.id} value={course.id}>{course.name}</option>)}</select>
             </div>
@@ -60,7 +60,7 @@ export default function Index({ attempts, courses, filters, statistics }) {
             {attempts.data.map(attempt => {
                 const completed = attempt.status === 'completed';
                 const status = statuses[attempt.status];
-                return <article key={attempt.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                return <article key={attempt.id} className="student-attempt-card overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
                     <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                         <div className="min-w-0 space-y-3">
                             <div className="flex flex-wrap items-center gap-3"><h3 className="break-words text-lg font-bold">{attempt.course.name}</h3><span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs ${status.className}`}><StudentIcon name={status.icon} className="size-3.5" />{status.label}</span></div>

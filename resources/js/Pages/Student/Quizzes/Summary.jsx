@@ -56,7 +56,7 @@ export default function Summary({ attempt, course, canRetry }) {
                     {!completed && <p className="mx-auto mt-6 max-w-md text-base leading-8 text-slate-600">انتهى الاختبار قبل إكماله، لذلك لم تُحتسب لك درجة. يمكنك العودة إلى المقررات وبدء اختبار جديد.</p>}
                 </div>
                 {completed && <div className="flex justify-center border-t border-slate-100 pt-8 md:border-r md:border-t-0 md:pt-0">
-                    <div role="img" aria-label={`نتيجتك ${attempt.score} من ${attempt.question_count}، بنسبة ${percentage} بالمئة`} className="relative size-56 shrink-0 sm:size-64">
+                    <div role="img" aria-label={`نتيجتك ${attempt.score} من ${attempt.question_count}، بنسبة ${percentage} بالمئة`} className="student-score-ring relative size-56 shrink-0 sm:size-64">
                         <svg viewBox="0 0 200 200" aria-hidden="true" className="size-full -rotate-90">
                             <circle cx="100" cy="100" r="82" fill="none" stroke="#e2e8f0" strokeWidth="15" />
                             <circle cx="100" cy="100" r="82" fill="none" stroke="#001f3f" strokeWidth="15" strokeDasharray={circumference} strokeDashoffset={circumference * (1 - percentage / 100)} />

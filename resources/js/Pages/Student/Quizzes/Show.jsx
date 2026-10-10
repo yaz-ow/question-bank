@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import StudentIcon from '../../../Components/StudentIcon';
+import '../../../../css/student.css';
 
 const letters = ['A', 'B', 'C', 'D'];
 const labels = { A: 'أ', B: 'ب', C: 'ج', D: 'د' };
@@ -78,7 +79,7 @@ export default function Show({ attempt, course, question, feedback }) {
     return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">
         <Head title={`اختبار ${course.name}`} />
         <header className="border-b border-slate-200/70 bg-white">
-            <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8">
+            <div className="student-topbar mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8">
                 <div className="flex min-w-0 items-center gap-4 sm:gap-6">
                     <span className="hidden items-center gap-2 whitespace-nowrap text-lg font-bold sm:flex"><StudentIcon className="size-7" />بنك الأسئلة</span>
                     <div className="min-w-0 sm:border-r sm:border-slate-200 sm:pr-6">
@@ -90,8 +91,8 @@ export default function Show({ attempt, course, question, feedback }) {
             </div>
         </header>
 
-        <main className="mx-auto grid max-w-7xl items-start gap-6 px-5 py-6 sm:px-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:py-8">
-            <aside aria-label="تقدم الاختبار" className="order-2 space-y-4 lg:order-1">
+        <main className="student-content student-quiz-content mx-auto grid max-w-7xl items-start gap-6 px-5 py-6 sm:px-8 lg:grid-cols-[16rem_minmax(0,1fr)] lg:py-8">
+            <aside aria-label="تقدم الاختبار" className="student-quiz-progress order-2 space-y-4 lg:order-1">
                 <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm" aria-labelledby="progress-title">
                     <div className="flex items-center justify-between gap-3"><h2 id="progress-title" className="text-sm font-bold">تقدّمك في الاختبار</h2><StudentIcon name="chart" className="size-5 text-slate-400" /></div>
                     <div className="mb-2 mt-5 flex items-center justify-between gap-3 text-xs"><span className="text-slate-500">تمت الإجابة</span><span className="font-bold">{number(answered)} من {number(attempt.question_count)}</span></div>
@@ -121,7 +122,7 @@ export default function Show({ attempt, course, question, feedback }) {
                 </div>
             </aside>
 
-            <section aria-labelledby="question-title" className="order-1 min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:order-2">
+            <section aria-labelledby="question-title" className="student-question-panel order-1 min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm lg:order-2">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-blue-50/60 px-5 py-4 sm:px-8">
                     <span className="text-sm font-bold">السؤال {number(question.position)} من {number(attempt.question_count)}</span>
                     <span className="rounded-full bg-white px-3 py-1 text-xs text-slate-500">اختيار من متعدد</span>
@@ -129,7 +130,7 @@ export default function Show({ attempt, course, question, feedback }) {
                 <div className="space-y-6 p-5 sm:p-8">
                     <h2 id="question-title" ref={questionHeading} tabIndex={-1} dir="auto" className="whitespace-pre-wrap break-words text-start text-xl font-semibold leading-10 outline-none sm:text-2xl sm:leading-10">{question.question_text}</h2>
                     <p className="text-sm leading-6 text-slate-500">اختر إجابة واحدة؛ تُحفظ إجابتك ويظهر التصحيح مباشرة.</p>
-                    <div role="group" aria-label="خيارات الإجابة" className="space-y-3">
+                    <div role="group" aria-label="خيارات الإجابة" className="student-question-options space-y-3">
                         {letters.map(letter => {
                             const correct = feedback?.correct_answer === letter;
                             const wrong = feedback?.selected_answer === letter && !correct;
@@ -157,9 +158,9 @@ export default function Show({ attempt, course, question, feedback }) {
                 </div>
             </section>
         </main>
-        <footer className="mx-auto max-w-7xl px-5 pb-6 text-center text-xs leading-6 text-slate-400 sm:px-8">بنك الأسئلة · تعلّم، تدرّب، وتابع تقدّمك</footer>
+        <footer className="student-footer mx-auto max-w-7xl px-5 pb-6 text-center text-xs leading-6 text-slate-400 sm:px-8">بنك الأسئلة · تعلّم، تدرّب، وتابع تقدّمك</footer>
 
-        <dialog ref={exitDialog} dir="rtl" aria-labelledby="exit-title" aria-describedby="exit-description" onCancel={event => { event.preventDefault(); cancelExit(); }} className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-[#112d49] shadow-2xl backdrop:bg-slate-900/60 sm:p-8">
+        <dialog ref={exitDialog} dir="rtl" aria-labelledby="exit-title" aria-describedby="exit-description" onCancel={event => { event.preventDefault(); cancelExit(); }} className="student-dialog student-exit-dialog fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-6 text-[#112d49] shadow-2xl backdrop:bg-slate-900/60 sm:p-8">
             <h2 id="exit-title" className="text-xl font-bold">إنهاء الاختبار؟</h2>
             <p id="exit-description" className="mt-3 text-sm leading-7 text-slate-600">إذا أنهيت الاختبار الآن، فلن تُحتسب لك درجة. هل تريد المتابعة في الإنهاء؟</p>
             {error && exitOpen && <p role="alert" className="mt-3 text-sm text-red-700">{error}</p>}

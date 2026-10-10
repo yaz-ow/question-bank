@@ -1,0 +1,314 @@
+.student-dashboard {
+    --student-sidebar-width: clamp(260px, 15.5vw, 290px);
+    --student-gutter: clamp(24px, 2.4vw, 48px);
+    font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+.student-dashboard :is(a, button, input, select):focus-visible {
+    outline: 3px solid #5a94d8;
+    outline-offset: 4px;
+}
+.student-dashboard .student-workspace,
+.student-dashboard .student-content {
+    min-width: 0;
+}
+
+/* Match the administration's desktop workspace and readable control sizes. */
+@media (min-width: 1024px) {
+    .student-dashboard {
+        font-size: 18px;
+        line-height: 1.6;
+    }
+    .student-dashboard .text-xs {
+        font-size: 15px;
+        line-height: 1.7;
+    }
+    .student-dashboard .text-sm {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    .student-dashboard .text-base {
+        font-size: 18px;
+        line-height: 1.7;
+    }
+    .student-dashboard .text-lg {
+        font-size: 22px;
+        line-height: 1.5;
+    }
+    .student-dashboard .text-xl {
+        font-size: 26px;
+        line-height: 1.4;
+    }
+    .student-dashboard .text-2xl {
+        font-size: 28px;
+        line-height: 1.4;
+    }
+    .student-dashboard :is(.text-3xl, .text-4xl) {
+        font-size: 34px;
+        line-height: 1.4;
+    }
+    .student-dashboard .student-sidebar {
+        width: var(--student-sidebar-width);
+        padding: 32px 24px 28px;
+        background: linear-gradient(145deg, #062746, #103d64);
+    }
+    .student-dashboard .student-sidebar-logo {
+        font-size: 28px;
+        line-height: 1.5;
+        margin-bottom: 36px;
+        padding-inline: 0;
+        justify-content: center;
+    }
+    .student-dashboard .student-sidebar-logo svg {
+        width: 40px;
+        height: 40px;
+    }
+    .student-dashboard .student-sidebar nav :is(a, button),
+    .student-dashboard .student-sidebar > div a {
+        min-height: 56px;
+        font-size: 18px;
+        line-height: 1.6;
+    }
+    .student-dashboard .student-sidebar nav svg:not(.size-3) {
+        width: 26px;
+        height: 26px;
+    }
+    .student-dashboard .student-sidebar nav > section > button {
+        padding-inline: 8px;
+        gap: 8px;
+        font-size: 17px;
+    }
+    .student-dashboard .student-workspace {
+        margin-right: var(--student-sidebar-width);
+        display: flex;
+        flex-direction: column;
+        min-height: 100svh;
+    }
+    .student-dashboard :is(.student-topbar, .student-content, .student-footer) {
+        width: 100%;
+        max-width: none;
+        margin-inline: 0;
+        padding-inline: var(--student-gutter);
+    }
+    .student-dashboard .student-topbar {
+        min-height: 96px;
+        padding-block: 20px;
+    }
+    .student-dashboard .student-topbar h1 {
+        font-size: clamp(28px, 1.75vw, 34px);
+        line-height: 1.4;
+    }
+    .student-dashboard .student-topbar h1 + p {
+        font-size: 18px;
+        line-height: 1.6;
+        margin-top: 8px;
+    }
+    .student-dashboard .student-topbar > span {
+        width: 48px;
+        height: 48px;
+    }
+    .student-dashboard .student-content {
+        flex: 1;
+        padding-block: 24px;
+    }
+    .student-dashboard .student-content:not(.student-quiz-content) > :not(:first-child):not(dialog) {
+        margin-top: 24px;
+    }
+    .student-dashboard .student-footer {
+        font-size: 14px;
+        line-height: 1.6;
+        padding-bottom: 24px;
+    }
+    .student-dashboard :is(input:not([type='radio']), select) {
+        min-height: 48px;
+        padding: 10px 16px;
+        font-size: 18px;
+        line-height: 1.4;
+        border-radius: 9px;
+    }
+    .student-dashboard form label {
+        font-size: 17px;
+        line-height: 1.6;
+    }
+    .student-dashboard :is(button, a).rounded-lg {
+        min-height: 48px;
+        font-size: 18px;
+        line-height: 1.5;
+    }
+    .student-dashboard .student-card-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) {
+        min-height: clamp(168px, 17.5vh, 200px);
+        padding: 24px;
+        border-radius: 16px;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) h3 {
+        font-size: 22px;
+        line-height: 1.5;
+    }
+    .student-dashboard .student-level-card > span[aria-hidden='true'] {
+        top: auto;
+        right: auto;
+        left: 76px;
+        bottom: 16px;
+        font-size: 76px;
+        color: #e9eef5;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) p {
+        font-size: 16px;
+        line-height: 1.7;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) .size-12 {
+        width: 54px;
+        height: 54px;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) .size-6 {
+        width: 28px;
+        height: 28px;
+    }
+    .student-dashboard :is(.student-level-card, .student-course-card) .size-8 {
+        width: 36px;
+        height: 36px;
+    }
+    .student-dashboard .student-dashboard-stat {
+        padding: 20px 24px;
+        min-height: 88px;
+    }
+    .student-dashboard .student-dashboard-stat h2 {
+        font-size: 17px;
+    }
+    .student-dashboard .student-dashboard-stat p {
+        font-size: 30px;
+    }
+    .student-dashboard .student-course-search {
+        padding: 24px;
+        gap: 16px;
+    }
+    .student-dashboard .student-results-filter {
+        padding: 24px;
+        gap: 20px;
+    }
+    .student-dashboard .student-attempt-card > div:first-child {
+        padding: 24px 28px;
+    }
+    .student-dashboard .student-attempt-card > div:last-child {
+        padding: 16px 28px;
+    }
+    .student-dashboard .student-attempt-card {
+        border-radius: 16px;
+    }
+    .student-dashboard .student-review-option {
+        min-height: 72px;
+        padding: 16px 20px;
+    }
+    .student-dashboard .student-review-option > span:nth-child(2) {
+        font-size: 18px;
+        line-height: 1.7;
+    }
+    .student-dashboard .student-review-option > span:first-child {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    .student-dashboard .student-score-ring {
+        width: 256px;
+        height: 256px;
+    }
+    .student-dashboard .student-quiz-content {
+        grid-template-columns: clamp(280px, 19vw, 340px) minmax(0, 1fr);
+        gap: 24px;
+    }
+    .student-dashboard .student-quiz-progress > section {
+        padding: 24px;
+    }
+    .student-dashboard .student-quiz-progress h2,
+    .student-dashboard .student-quiz-progress h3 {
+        font-size: 18px;
+    }
+    .student-dashboard .student-quiz-progress ol li {
+        min-height: 42px;
+        font-size: 16px;
+    }
+    .student-dashboard .student-question-panel {
+        border-radius: 16px;
+    }
+    .student-dashboard #question-title {
+        font-size: 28px;
+        line-height: 1.7;
+    }
+    .student-dashboard .student-question-options button {
+        min-height: 76px;
+        padding: 16px 20px;
+        gap: 16px;
+    }
+    .student-dashboard .student-question-options button > span:first-child {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    .student-dashboard .student-question-options button > span:nth-child(2) {
+        font-size: 18px;
+        line-height: 1.7;
+    }
+    .student-dashboard .student-dialog {
+        max-width: 640px;
+        margin: auto;
+    }
+    .student-dashboard .student-exit-dialog {
+        max-width: 600px;
+    }
+    .student-dashboard .student-dialog > header {
+        padding: 24px 32px;
+    }
+    .student-dashboard .student-dialog > div {
+        padding: 28px 32px;
+    }
+    .student-dashboard .student-dialog header h2 {
+        font-size: 28px;
+        line-height: 1.4;
+    }
+    .student-dashboard .student-dialog legend {
+        font-size: 18px;
+        line-height: 1.7;
+    }
+    .student-dashboard .student-dialog input[type='radio'] + span {
+        min-height: 116px;
+        padding: 18px 8px;
+    }
+    .student-dashboard .student-dialog :is(button, a) {
+        min-height: 48px;
+        font-size: 18px;
+    }
+    .student-dashboard .student-dialog button[aria-label] {
+        width: 48px;
+        padding: 12px;
+    }
+}
+@media (min-width: 1024px) and (max-height: 850px) {
+    .student-dashboard:has(.student-quiz-content) .student-topbar {
+        padding-block: 16px;
+    }
+    .student-dashboard .student-quiz-content {
+        padding-block: 20px;
+    }
+    .student-dashboard .student-question-panel > div:first-child,
+    .student-dashboard .student-question-panel > div:last-child {
+        padding: 12px 24px;
+    }
+    .student-dashboard .student-question-panel > div:nth-child(2) {
+        display: grid;
+        gap: 16px;
+        padding: 20px 24px;
+    }
+    .student-dashboard .student-question-panel > div:nth-child(2) > * {
+        margin-block: 0;
+    }
+    .student-dashboard .student-question-panel [aria-live]:empty {
+        display: none;
+    }
+    .student-dashboard .student-question-options button {
+        min-height: 72px;
+        padding: 14px 16px;
+    }
+}

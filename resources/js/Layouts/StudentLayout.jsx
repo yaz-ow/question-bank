@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import StudentIcon from '../Components/StudentIcon';
+import '../../css/student.css';
 
 export default function StudentLayout({ children, title, description = 'مستوياتك الدراسية، في مكان واحد', activeNav, selectedResultCourseId }) {
     const { auth, levels = [], resultCourses = [], level } = usePage().props;
@@ -44,8 +45,8 @@ export default function StudentLayout({ children, title, description = 'مستو
         </>;
     };
     return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">
-        <aside className="fixed inset-y-0 right-0 z-30 hidden w-64 flex-col overflow-y-auto bg-[#001f3f] px-5 py-8 text-white lg:flex">
-            <Link href={route('student.dashboard')} className="mb-12 flex items-center gap-3 px-3 text-xl font-bold"><StudentIcon className="size-9" />بنك الأسئلة</Link>
+        <aside className="student-sidebar fixed inset-y-0 right-0 z-30 hidden w-64 flex-col overflow-y-auto bg-[#001f3f] px-5 py-8 text-white lg:flex">
+            <Link href={route('student.dashboard')} className="student-sidebar-logo mb-12 flex items-center gap-3 px-3 text-xl font-bold"><StudentIcon className="size-9" />بنك الأسئلة</Link>
             <p className="mb-3 px-3 text-xs font-medium tracking-wide text-slate-400">مساحتك التعليمية</p>
             <nav aria-label="تنقل الطالب" className="space-y-2">
                 {renderNavigation()}
@@ -54,9 +55,9 @@ export default function StudentLayout({ children, title, description = 'مستو
                 <Link href={route('logout')} method="post" as="button" className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300 hover:bg-white/10"><StudentIcon name="exit" />تسجيل الخروج</Link>
             </div>
         </aside>
-        <div className="lg:mr-64">
+        <div className="student-workspace lg:mr-64">
             <header className="border-b border-slate-200/70 bg-white">
-                <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
+                <div className="student-topbar mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
                     <div className="flex min-w-0 items-center gap-3">
                         <button type="button" onClick={() => setMenuOpen(!menuOpen)} aria-expanded={menuOpen} aria-controls="student-mobile-nav" aria-label={menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'} className="shrink-0 rounded-lg border border-slate-200 p-2 lg:hidden"><StudentIcon name={menuOpen ? 'close' : 'menu'} /></button>
                         <div className="min-w-0">
@@ -68,8 +69,8 @@ export default function StudentLayout({ children, title, description = 'مستو
                 </div>
                 {menuOpen && <nav id="student-mobile-nav" aria-label="تنقل الطالب على الجوال" className="space-y-1 border-t border-slate-100 px-5 py-3 lg:hidden">{renderNavigation(true)}<Link href={route('logout')} as="button" method="post" className="w-full px-3 py-3 text-right text-sm text-red-700">تسجيل الخروج</Link></nav>}
             </header>
-            <main className="mx-auto max-w-7xl space-y-8 px-5 py-6 sm:px-8">{children}</main>
-            <footer className="mx-auto max-w-7xl px-5 pb-6 text-xs text-slate-500 sm:px-8">بنك الأسئلة · تعلّم، تدرّب، وتابع تقدّمك</footer>
+            <main className="student-content mx-auto max-w-7xl space-y-8 px-5 py-6 sm:px-8">{children}</main>
+            <footer className="student-footer mx-auto max-w-7xl px-5 pb-6 text-xs text-slate-500 sm:px-8">بنك الأسئلة · تعلّم، تدرّب، وتابع تقدّمك</footer>
         </div>
     </div>;
 }

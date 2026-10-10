@@ -39,7 +39,7 @@ export default function QuizSetupModal({ course, questionCounts, activeAttempt, 
     }
 
     return <dialog ref={dialogRef} dir="rtl" aria-labelledby="quiz-setup-title" aria-describedby="quiz-setup-course" onCancel={event => { event.preventDefault(); close(); }}
-        className="fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 text-[#112d49] shadow-2xl backdrop:bg-slate-900/60">
+        className="student-dialog fixed inset-0 m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-md overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 text-[#112d49] shadow-2xl backdrop:bg-slate-900/60">
         <header className="flex items-start justify-between gap-4 bg-[#001f3f] px-6 py-6 text-white">
             <div className="min-w-0">
                 <h2 id="quiz-setup-title" className="text-2xl font-bold">تخصيص الاختبار</h2>
