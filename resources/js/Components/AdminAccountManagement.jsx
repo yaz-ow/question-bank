@@ -1,0 +1,214 @@
+import { Link, useForm } from '@inertiajs/react';
+import { Fragment, useEffect, useRef, useState } from 'react';
+import AdminIcon from './AdminIcon';
+
+const number = (value) => new Intl.NumberFormat('en-US').format(value);
+const date = (value) => value ? value.split('-').reverse().join('/') : '—';
+
+export function AccountMetrics({ stats, students = false }) {
+    const metrics = [
+        { label: students ? 'إجمالي الطلاب' : 'إجمالي المدرّسين', value: stats.total, tone: 'blue', icon: 'users' },
+        { label: 'حسابات نشطة', value: stats.active, tone: 'green', icon: 'user' },
+        { label: 'حسابات معطلة', value: stats.inactive, tone: 'red', icon: 'user-off' },
+        ...(students ? [{ label: 'طلاب هذا الشهر', value: stats.this_month, tone: 'blue', icon: 'calendar' }] : []),
+    ];
+    return <section className="admin-metrics admin-account-metrics" aria-label="إحصاءات الحسابات">
+        {metrics.map((metric) => <article key={metric.label} className={`admin-metric admin-tone-${metric.tone}`}>
+            <div><h2>{metric.label}</h2><p>{number(metric.value)}</p></div>
+            <span className="admin-metric-icon"><AdminIcon name={metric.icon} /></span>
+        </article>)}
+    </section>;
+}
+
+function AccountIdentity({ user }) {
+    return <div className="admin-account-identity">
+        <span className={`admin-account-initial admin-initial-${user.id % 4}`} aria-hidden="true">{Array.from(user.name)[0] || '؟'}</span>
+        <bdi>{user.name}</bdi>
+    </div>;
+}
+
+function AccountStatus({ active }) {
+    return <span className={`admin-account-status ${active ? 'is-active' : 'is-inactive'}`}>
+        <span aria-hidden="true" />{active ? 'نشط' : 'معطل'}
+    </span>;
+}
+
+export default function AccountList({ accounts, filters = {}, students = false, disabled = false, onBusy }) {
+    const prefix = students ? 'admin.students' : 'admin.instructors';
+    const label = students ? 'طالب' : 'مدرّس';
+    const title = students ? 'قائمة الطلاب' : 'المدرّسون المسجلون';
+    const [panel, setPanel] = useState(null);
+    const titleRef = useRef(null);
+    const panelRef = useRef(null);
+    const filter = useForm({ search: filters.search || '', status: filters.status || '' });
+    const edit = useForm({ name: '', email: '' });
+    const toggle = useForm({ is_active: false });
+    const processing = filter.processing || edit.processing || toggle.processing;
+    const busy = disabled || processing;
+    const selected = accounts.data.find((user) => user.id === panel?.id);
+    const hasFilters = !!(filters.search || filters.status);
+
+    useEffect(() => { onBusy?.(processing); }, [processing, onBusy]);
+    useEffect(() => {
+        filter.setData({ search: filters.search || '', status: filters.status || '' });
+    }, [filters.search, filters.status]);
+    useEffect(() => {
+        if (selected) panelRef.current?.querySelector(panel.kind === 'edit' ? 'input' : '[data-account-cancel]')?.focus();
+    }, [panel?.id, panel?.kind]);
+
+    const close = () => {
+        const id = panel?.id;
+        setPanel(null);
+        requestAnimationFrame(() => (document.getElementById(`account-${id}-toggle`) || titleRef.current)?.focus());
+    };
+    const open = (user, kind) => {
+        edit.clearErrors();
+        toggle.clearErrors();
+        if (kind === 'edit') edit.setData({ name: user.name, email: user.email });
+        setPanel({ id: user.id, kind });
+    };
+    const search = (event) => {
+        event.preventDefault();
+        filter.get(route(`${prefix}.index`), {
+            preserveScroll: true, preserveState: true, errorBag: 'accountFilters', onSuccess: () => setPanel(null),
+        });
+    };
+    const save = (event) => {
+        event.preventDefault();
+        edit.put(route('admin.instructors.update', selected.id), {
+            preserveScroll: true, errorBag: 'updateInstructor', onSuccess: close,
+        });
+    };
+    const confirm = () => {
+        toggle.transform(() => ({ is_active: !selected.is_active }));
+        toggle.post(route(`${prefix}.toggle`, selected.id), {
+            preserveScroll: true, errorBag: 'toggleAccount', onSuccess: close,
+        });
+    };
+    const clearFilters = (event) => {
+        event.preventDefault();
+        filter.setData({ search: '', status: '' });
+        filter.transform(() => ({}));
+        filter.get(route(`${prefix}.index`), {
+            preserveScroll: true, preserveState: true, onSuccess: () => setPanel(null),
+            onFinish: () => filter.transform((data) => data),
+        });
+    };
+
+    return <section className="admin-panel admin-account-list" aria-labelledby="account-list-title">
+        <div className="admin-account-list-heading">
+            <h2 id="account-list-title" ref={titleRef} tabIndex={-1}>{title}</h2>
+            <form className="admin-course-filters admin-account-filters" onSubmit={search}>
+                <label className="admin-search">
+                    <AdminIcon name="search" />
+                    <input aria-label={students ? 'البحث عن طالب' : 'البحث عن مدرّس'}
+                        placeholder={students ? 'ابحث بالاسم أو الرقم الجامعي أو البريد الإلكتروني' : 'ابحث باسم المدرّس أو البريد الإلكتروني'}
+                        maxLength={255} value={filter.data.search} disabled={busy}
+                        onChange={(e) => filter.setData('search', e.target.value)} />
+                </label>
+                <select aria-label="تصفية حسب حالة الحساب" value={filter.data.status} disabled={busy}
+                    onChange={(e) => filter.setData('status', e.target.value)}>
+                    <option value="">كل الحالات</option><option value="active">نشط</option><option value="inactive">معطل</option>
+                </select>
+                <button className="admin-button admin-button-primary admin-account-search-button" disabled={busy} type="submit">
+                    <AdminIcon name="search" />{filter.processing ? 'جارٍ البحث…' : 'بحث'}
+                </button>
+                {hasFilters && <button type="button" className="admin-subject-reset" onClick={clearFilters} disabled={busy}>مسح الفلاتر</button>}
+            </form>
+        </div>
+        {Object.values(filter.errors).map((error, index) => <p className="admin-field-error" role="alert" key={index}>{error}</p>)}
+        <div className="admin-table-scroll">
+            <table className={`admin-table admin-account-table ${students ? 'admin-students-table' : 'admin-instructors-table'}`}>
+                <caption className="sr-only">{title} وحالة الحساب وإجراءات الإدارة</caption>
+                <thead><tr>
+                    <th scope="col">{students ? 'الطالب' : 'المدرّس'}</th>
+                    {students && <th scope="col">الرقم الجامعي</th>}
+                    <th scope="col">البريد الإلكتروني</th><th scope="col">{students ? 'تاريخ التسجيل' : 'تاريخ الإضافة'}</th>
+                    <th scope="col">الحالة</th><th scope="col">{students ? 'الإجراء' : 'الإجراءات'}</th>
+                </tr></thead>
+                <tbody>
+                    {accounts.data.map((user) => <Fragment key={user.id}>
+                        <tr className={selected?.id === user.id ? 'admin-account-selected' : undefined}>
+                            <th scope="row"><AccountIdentity user={user} /></th>
+                            {students && <td><bdi>{user.university_id || '—'}</bdi></td>}
+                            <td className="admin-account-email"><bdi>{user.email}</bdi></td>
+                            <td className="admin-account-date"><bdi>{date(user.created_at)}</bdi></td>
+                            <td><AccountStatus active={user.is_active} /></td>
+                            <td><div className="admin-row-actions">
+                                {!students && <button className="admin-account-action admin-account-edit" type="button"
+                                    aria-label={`تعديل ${user.name}`} aria-expanded={selected?.id === user.id && panel?.kind === 'edit'}
+                                    aria-controls={selected?.id === user.id && panel?.kind === 'edit' ? `account-panel-${user.id}` : undefined}
+                                    disabled={busy} onClick={() => open(user, 'edit')}><AdminIcon name="edit" />تعديل</button>}
+                                <button id={`account-${user.id}-toggle`} type="button"
+                                    className={`admin-account-action ${user.is_active ? 'admin-account-deactivate' : 'admin-account-activate'}`}
+                                    aria-label={`${user.is_active ? 'تعطيل' : 'تفعيل'} ${user.name}`} disabled={busy}
+                                    aria-expanded={selected?.id === user.id && panel?.kind === 'toggle'}
+                                    aria-controls={selected?.id === user.id && panel?.kind === 'toggle' ? `account-panel-${user.id}` : undefined}
+                                    onClick={() => open(user, 'toggle')}>
+                                    {!students && <AdminIcon name={user.is_active ? 'ban' : 'tick'} />}{user.is_active ? 'تعطيل' : 'تفعيل'}
+                                </button>
+                            </div></td>
+                        </tr>
+                        {selected?.id === user.id && <tr className="admin-account-panel-row">
+                            <td colSpan={students ? 6 : 5}>
+                                <div id={`account-panel-${user.id}`} ref={panelRef} className={`admin-account-inline ${panel.kind === 'edit' ? 'is-editing' : 'is-confirming'}`}
+                                    onKeyDown={(event) => { if (event.key === 'Escape' && !busy) { event.stopPropagation(); close(); } }}>
+                                    {panel.kind === 'edit' ? <form onSubmit={save} className="admin-account-edit-form" aria-label={`تعديل بيانات ${user.name}`}>
+                                        <div className="admin-subject-field">
+                                            <label htmlFor={`edit-name-${user.id}`}>اسم المدرّس</label>
+                                            <input id={`edit-name-${user.id}`} className="admin-subject-input" required maxLength={255}
+                                                value={edit.data.name} disabled={busy} aria-invalid={!!edit.errors.name}
+                                                aria-describedby={edit.errors.name ? 'edit-name-error' : undefined}
+                                                onChange={(e) => edit.setData('name', e.target.value)} />
+                                            {edit.errors.name && <p id="edit-name-error" className="admin-field-error" role="alert">{edit.errors.name}</p>}
+                                        </div>
+                                        <div className="admin-subject-field">
+                                            <label htmlFor={`edit-email-${user.id}`}>البريد الإلكتروني</label>
+                                            <input id={`edit-email-${user.id}`} className="admin-subject-input" type="email" dir="ltr" required maxLength={255}
+                                                value={edit.data.email} disabled={busy} aria-invalid={!!edit.errors.email}
+                                                aria-describedby={edit.errors.email ? 'edit-email-error' : undefined}
+                                                onChange={(e) => edit.setData('email', e.target.value)} />
+                                            {edit.errors.email && <p id="edit-email-error" className="admin-field-error" role="alert">{edit.errors.email}</p>}
+                                        </div>
+                                        <div className="admin-account-inline-actions admin-account-edit-buttons">
+                                            <button type="submit" className="admin-button admin-save-edit" disabled={busy}><AdminIcon name="tick" />{edit.processing ? 'جارٍ الحفظ…' : 'حفظ التعديل'}</button>
+                                            <button type="button" data-account-cancel className="admin-button admin-account-cancel" disabled={busy} onClick={close}>إلغاء</button>
+                                        </div>
+                                    </form> : <>
+                                        <div className="admin-account-confirm-text"><AdminIcon name="alert" />
+                                            <div><h3>{user.is_active ? 'تعطيل' : 'تفعيل'} حساب <bdi>{user.name}</bdi>؟</h3>
+                                                <p>{user.is_active ? `لن يتمكن ال${label} من تسجيل الدخول حتى إعادة التفعيل.` : `سيتمكن ال${label} من تسجيل الدخول واستخدام حسابه مجددًا.`}</p>
+                                                {Object.values(toggle.errors).map((error, index) => <p className="admin-field-error" role="alert" key={index}>{error}</p>)}
+                                            </div>
+                                        </div>
+                                        <div className="admin-account-inline-actions">
+                                            <button type="button" className={`admin-button ${user.is_active ? 'admin-account-confirm-deactivate' : 'admin-save-edit'}`} disabled={busy} onClick={confirm}>
+                                                {toggle.processing ? 'جارٍ التحديث…' : user.is_active ? 'تأكيد التعطيل' : 'تأكيد التفعيل'}
+                                            </button>
+                                            <button type="button" data-account-cancel className="admin-button admin-account-cancel" disabled={busy} onClick={close}>إلغاء</button>
+                                        </div>
+                                    </>}
+                                </div>
+                            </td>
+                        </tr>}
+                    </Fragment>)}
+                </tbody>
+            </table>
+        </div>
+        {!accounts.data.length && <div className="admin-empty">
+            <AdminIcon name="users" /><h3>{hasFilters ? 'لا توجد حسابات مطابقة' : students ? 'لا توجد حسابات طلاب بعد' : 'أضف أول مدرّس'}</h3>
+            <p>{hasFilters ? 'جرّب اسمًا آخر أو اختر كل الحالات.' : students ? 'ستظهر حسابات الطلاب هنا بعد تسجيلهم في المنصة.' : 'أنشئ الحساب باستخدام النموذج أعلاه.'}</p>
+            {hasFilters && <button type="button" className="admin-button admin-filter-button" disabled={busy} onClick={clearFilters}>عرض كل الحسابات</button>}
+        </div>}
+        <div className="admin-table-footer admin-account-footer">
+            <span>{accounts.total ? `عرض ${number(accounts.from)}–${number(accounts.to)} من ${number(accounts.total)} ${students ? 'طالبًا' : 'مدرّسًا'}` : 'لا توجد حسابات للعرض'}</span>
+            <nav className="admin-pagination" aria-label={students ? 'صفحات الطلاب' : 'صفحات المدرّسين'}>
+                {[{ href: accounts.prev_page_url, text: 'السابق' }, { text: `صفحة ${number(accounts.current_page)} من ${number(accounts.last_page)}` }, { href: accounts.next_page_url, text: 'التالي' }].map((item, index) =>
+                    index === 1 ? <span key={index}>{item.text}</span> : item.href && !busy ?
+                        <Link key={index} className="admin-pagination-link" href={item.href} preserveScroll preserveState onSuccess={() => setPanel(null)}>{item.text}</Link> :
+                        <span key={index} className="admin-pagination-link admin-pagination-disabled" aria-disabled="true">{item.text}</span>
+                )}
+            </nav>
+        </div>
+    </section>;
+}

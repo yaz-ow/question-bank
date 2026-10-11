@@ -2,6 +2,11 @@ import StudentIcon from './StudentIcon';
 
 export default function AdminIcon({ name = 'book', className = '' }) {
     const paths = {
+        ban: <><circle cx="12" cy="12" r="9" /><path d="m6 6 12 12" /></>,
+        alert: <><circle cx="12" cy="12" r="9" /><path d="M12 7v6m0 4h.01" /></>,
+        shield: <path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6l8-3Zm0 0v18" />,
+        'user-off': <><circle cx="9" cy="7" r="3" /><path d="M3 21v-3a6 6 0 0 1 12 0v3H3Zm14-10 5 5m-5 0 5-5" /></>,
+        'eye-off': <><path d="M3 3l18 18M9 5a12 12 0 0 1 3 0c6 0 10 7 10 7a20 20 0 0 1-3 4M6 6a20 20 0 0 0-4 6s4 7 10 7a12 12 0 0 0 5-1M10 10a3 3 0 0 0 4 4" /></>,
         grid: (
             <>
                 <rect x="3" y="3" width="7" height="7" rx="1" />

@@ -35,9 +35,9 @@ export default function AdminLayout({
                   },
                   {
                       key: 'instructors',
-                      label: 'إضافة مدرّس',
+                      label: 'إدارة المدرّسين',
                       icon: 'user-plus',
-                      href: route('admin.instructors.create'),
+                      href: route('admin.instructors.index'),
                   },
               ]
             : []),

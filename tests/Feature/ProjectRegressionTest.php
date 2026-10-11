@@ -44,7 +44,7 @@ class ProjectRegressionTest extends TestCase
             ->assertSessionHasErrors('instructor_creation_code');
         $this->assertDatabaseMissing('users', ['email' => 'instructor@example.com']);
         $this->post('/admin/instructors', $data + ['instructor_creation_code' => 'test-creation-code'])
-            ->assertRedirect('/admin/dashboard');
+            ->assertRedirect('/admin/instructors');
         $this->assertDatabaseHas('users', ['email' => 'instructor@example.com', 'role' => 'instructor']);
     }
 

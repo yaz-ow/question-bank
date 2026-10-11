@@ -60,11 +60,11 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                       href: route('admin.students.index'),
                   },
                   {
-                      label: 'إضافة مدرّس',
-                      description: 'إضافة حساب مدرّس جديد',
+                      label: 'إدارة المدرّسين',
+                      description: 'إضافة المدرّسين وإدارة حساباتهم',
                       icon: 'user-plus',
                       tone: 'gold',
-                      href: route('admin.instructors.create'),
+                      href: route('admin.instructors.index'),
                   },
               ]
             : []),

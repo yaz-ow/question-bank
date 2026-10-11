@@ -138,9 +138,12 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             Route::get('/admin/students', [StudentController::class, 'index'])->name('admin.students.index');
             Route::post('/admin/students/{user}/toggle', [StudentController::class, 'toggle'])->name('admin.students.toggle')->middleware('throttle:admin-actions');
 
-            // Admin instructor creation
+            // Founder-only instructor management
+            Route::get('/admin/instructors', [InstructorController::class, 'index'])->name('admin.instructors.index');
             Route::get('/admin/instructors/create', [InstructorController::class, 'create'])->name('admin.instructors.create');
             Route::post('/admin/instructors', [InstructorController::class, 'store'])->name('admin.instructors.store')->middleware('throttle:admin-actions');
+            Route::put('/admin/instructors/{user}', [InstructorController::class, 'update'])->name('admin.instructors.update')->middleware('throttle:admin-actions');
+            Route::post('/admin/instructors/{user}/toggle', [InstructorController::class, 'toggle'])->name('admin.instructors.toggle')->middleware('throttle:admin-actions');
         });
     });
 });
