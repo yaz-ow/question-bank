@@ -118,7 +118,10 @@ class ProjectRegressionTest extends TestCase
             ->where('questions.data.1.id', $question->id));
         $this->assertDatabaseCount('subjects', 1);
         $this->assertDatabaseCount('questions', 8);
-        $this->assertSame($original, $question->fresh()->getAttributes());
+        $current = $question->fresh()->getAttributes();
+        ksort($original);
+        ksort($current);
+        $this->assertSame($original, $current);
     }
 
     public function test_login_throttling_is_separate_from_page_visits_and_other_portals(): void
