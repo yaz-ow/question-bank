@@ -89,13 +89,6 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                             : 'نظرة عامة على المقررات والأسئلة'}
                     </p>
                 </div>
-                <Link
-                    className="admin-button admin-button-primary"
-                    href={`${route('admin.subjects.index')}#add-subject`}
-                >
-                    <AdminIcon name="plus" />
-                    إضافة مقرر
-                </Link>
             </div>
             <FlashMessages />
             <section className="admin-metrics" aria-label="إحصاءات بنك الأسئلة">

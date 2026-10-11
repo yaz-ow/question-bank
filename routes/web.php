@@ -143,6 +143,7 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             Route::post('/admin/instructors', [InstructorController::class, 'store'])->name('admin.instructors.store')->middleware('throttle:admin-actions');
             Route::put('/admin/instructors/{user}', [InstructorController::class, 'update'])->name('admin.instructors.update')->middleware('throttle:admin-actions');
             Route::post('/admin/instructors/{user}/toggle', [InstructorController::class, 'toggle'])->name('admin.instructors.toggle')->middleware('throttle:admin-actions');
+            Route::delete('/admin/instructors/{user}', [InstructorController::class, 'destroy'])->name('admin.instructors.destroy')->middleware('throttle:instructor-deletions');
         });
     });
 });

@@ -57,9 +57,6 @@ class StudentController extends Controller
                 'total' => $total,
                 'active' => $active,
                 'inactive' => $total - $active,
-                'this_month' => (clone $accounts)->whereBetween('created_at', [
-                    now()->startOfMonth(), now()->endOfMonth(),
-                ])->count(),
             ],
         ]);
     }

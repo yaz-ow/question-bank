@@ -1,7 +1,7 @@
 import { useForm } from '@inertiajs/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import AdminIcon from '../AdminIcon';
-import { choices, emptyQuestion, QuestionContent } from './QuestionPreview';
+import { choices, emptyQuestion } from './QuestionPreview';
 
 export default function QuestionEditor({
     subject,
@@ -15,7 +15,6 @@ export default function QuestionEditor({
 }) {
     const form = useForm({ ...emptyQuestion });
     const text = useRef(null);
-    const [previewOpen, setPreviewOpen] = useState(false);
     useEffect(() => {
         const values = Object.fromEntries(
             Object.keys(emptyQuestion).map((key) => [
@@ -26,7 +25,6 @@ export default function QuestionEditor({
         form.setDefaults(values);
         form.setData(values);
         form.clearErrors();
-        setPreviewOpen(false);
         if (question) requestAnimationFrame(() => text.current?.focus());
     }, [question?.id]);
     const submit = (event) => {
@@ -201,7 +199,6 @@ export default function QuestionEditor({
                         onClick={() => {
                             form.reset();
                             form.clearErrors();
-                            setPreviewOpen(false);
                             onCancel();
                         }}
                     >
@@ -209,24 +206,6 @@ export default function QuestionEditor({
                     </button>
                 </div>
             </form>
-            <button
-                type="button"
-                className="admin-draft-preview-toggle"
-                aria-expanded={previewOpen}
-                aria-controls="draft-question-preview"
-                onClick={() => setPreviewOpen(!previewOpen)}
-            >
-                <AdminIcon name="eye" />
-                <span>
-                    معاينة السؤال<small>كما يظهر للطالب</small>
-                </span>
-                <AdminIcon name="chevron" />
-            </button>
-            {previewOpen && (
-                <div id="draft-question-preview">
-                    <QuestionContent question={form.data} showAnswer={false} />
-                </div>
-            )}
         </section>
     );
 }

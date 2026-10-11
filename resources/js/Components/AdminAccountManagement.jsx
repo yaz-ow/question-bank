@@ -10,7 +10,6 @@ export function AccountMetrics({ stats, students = false }) {
         { label: students ? 'إجمالي الطلاب' : 'إجمالي المدرّسين', value: stats.total, tone: 'blue', icon: 'users' },
         { label: 'حسابات نشطة', value: stats.active, tone: 'green', icon: 'user' },
         { label: 'حسابات معطلة', value: stats.inactive, tone: 'red', icon: 'user-off' },
-        ...(students ? [{ label: 'طلاب هذا الشهر', value: stats.this_month, tone: 'blue', icon: 'calendar' }] : []),
     ];
     return <section className="admin-metrics admin-account-metrics" aria-label="إحصاءات الحسابات">
         {metrics.map((metric) => <article key={metric.label} className={`admin-metric admin-tone-${metric.tone}`}>
@@ -43,7 +42,8 @@ export default function AccountList({ accounts, filters = {}, students = false, 
     const filter = useForm({ search: filters.search || '', status: filters.status || '' });
     const edit = useForm({ name: '', email: '' });
     const toggle = useForm({ is_active: false });
-    const processing = filter.processing || edit.processing || toggle.processing;
+    const deletion = useForm({ instructor_creation_code: '' });
+    const processing = filter.processing || edit.processing || toggle.processing || deletion.processing;
     const busy = disabled || processing;
     const selected = accounts.data.find((user) => user.id === panel?.id);
     const hasFilters = !!(filters.search || filters.status);
@@ -53,17 +53,22 @@ export default function AccountList({ accounts, filters = {}, students = false, 
         filter.setData({ search: filters.search || '', status: filters.status || '' });
     }, [filters.search, filters.status]);
     useEffect(() => {
-        if (selected) panelRef.current?.querySelector(panel.kind === 'edit' ? 'input' : '[data-account-cancel]')?.focus();
+        if (selected) panelRef.current?.querySelector(panel.kind === 'toggle' ? '[data-account-cancel]' : 'input')?.focus();
     }, [panel?.id, panel?.kind]);
 
     const close = () => {
         const id = panel?.id;
+        const kind = panel?.kind;
+        deletion.reset();
+        deletion.clearErrors();
         setPanel(null);
-        requestAnimationFrame(() => (document.getElementById(`account-${id}-toggle`) || titleRef.current)?.focus());
+        requestAnimationFrame(() => (document.getElementById(`account-${id}-${kind}`) || titleRef.current)?.focus());
     };
     const open = (user, kind) => {
         edit.clearErrors();
         toggle.clearErrors();
+        deletion.reset();
+        deletion.clearErrors();
         if (kind === 'edit') edit.setData({ name: user.name, email: user.email });
         setPanel({ id: user.id, kind });
     };
@@ -83,6 +88,16 @@ export default function AccountList({ accounts, filters = {}, students = false, 
         toggle.transform(() => ({ is_active: !selected.is_active }));
         toggle.post(route(`${prefix}.toggle`, selected.id), {
             preserveScroll: true, errorBag: 'toggleAccount', onSuccess: close,
+        });
+    };
+    const deleteInstructor = (event) => {
+        event.preventDefault();
+        if (busy || students || !selected) return;
+        deletion.delete(route('admin.instructors.destroy', selected.id), {
+            preserveScroll: true,
+            errorBag: 'deleteInstructor',
+            onSuccess: close,
+            onFinish: () => deletion.reset('instructor_creation_code'),
         });
     };
     const clearFilters = (event) => {
@@ -135,7 +150,7 @@ export default function AccountList({ accounts, filters = {}, students = false, 
                             <td className="admin-account-date"><bdi>{date(user.created_at)}</bdi></td>
                             <td><AccountStatus active={user.is_active} /></td>
                             <td><div className="admin-row-actions">
-                                {!students && <button className="admin-account-action admin-account-edit" type="button"
+                                {!students && <button id={`account-${user.id}-edit`} className="admin-account-action admin-account-edit" type="button"
                                     aria-label={`تعديل ${user.name}`} aria-expanded={selected?.id === user.id && panel?.kind === 'edit'}
                                     aria-controls={selected?.id === user.id && panel?.kind === 'edit' ? `account-panel-${user.id}` : undefined}
                                     disabled={busy} onClick={() => open(user, 'edit')}><AdminIcon name="edit" />تعديل</button>}
@@ -147,11 +162,16 @@ export default function AccountList({ accounts, filters = {}, students = false, 
                                     onClick={() => open(user, 'toggle')}>
                                     {!students && <AdminIcon name={user.is_active ? 'ban' : 'tick'} />}{user.is_active ? 'تعطيل' : 'تفعيل'}
                                 </button>
+                                {!students && <button id={`account-${user.id}-delete`} type="button"
+                                    className="admin-account-action admin-account-delete" disabled={busy}
+                                    aria-label={`حذف ${user.name}`} aria-expanded={selected?.id === user.id && panel?.kind === 'delete'}
+                                    aria-controls={selected?.id === user.id && panel?.kind === 'delete' ? `account-panel-${user.id}` : undefined}
+                                    onClick={() => open(user, 'delete')}><AdminIcon name="trash" />حذف</button>}
                             </div></td>
                         </tr>
                         {selected?.id === user.id && <tr className="admin-account-panel-row">
                             <td colSpan={students ? 6 : 5}>
-                                <div id={`account-panel-${user.id}`} ref={panelRef} className={`admin-account-inline ${panel.kind === 'edit' ? 'is-editing' : 'is-confirming'}`}
+                                <div id={`account-panel-${user.id}`} ref={panelRef} className={`admin-account-inline ${panel.kind === 'edit' ? 'is-editing' : panel.kind === 'delete' ? 'is-deleting' : 'is-confirming'}`}
                                     onKeyDown={(event) => { if (event.key === 'Escape' && !busy) { event.stopPropagation(); close(); } }}>
                                     {panel.kind === 'edit' ? <form onSubmit={save} className="admin-account-edit-form" aria-label={`تعديل بيانات ${user.name}`}>
                                         <div className="admin-subject-field">
@@ -172,6 +192,27 @@ export default function AccountList({ accounts, filters = {}, students = false, 
                                         </div>
                                         <div className="admin-account-inline-actions admin-account-edit-buttons">
                                             <button type="submit" className="admin-button admin-save-edit" disabled={busy}><AdminIcon name="tick" />{edit.processing ? 'جارٍ الحفظ…' : 'حفظ التعديل'}</button>
+                                            <button type="button" data-account-cancel className="admin-button admin-account-cancel" disabled={busy} onClick={close}>إلغاء</button>
+                                        </div>
+                                    </form> : panel.kind === 'delete' ? <form onSubmit={deleteInstructor} className="admin-account-delete-form" aria-label={`تأكيد حذف ${user.name}`}>
+                                        <div className="admin-account-confirm-text"><AdminIcon name="alert" />
+                                            <div><h3>حذف حساب <bdi>{user.name}</bdi> نهائيًا؟</h3>
+                                                <p>ستبقى المقررات والأسئلة ونتائج الطلاب محفوظة.</p>
+                                            </div>
+                                        </div>
+                                        <div className="admin-subject-field">
+                                            <label htmlFor={`delete-code-${user.id}`}>رمز المؤسس</label>
+                                            <input id={`delete-code-${user.id}`} className="admin-subject-input" type="password" dir="ltr"
+                                                autoComplete="off" required maxLength={255} disabled={busy}
+                                                value={deletion.data.instructor_creation_code}
+                                                aria-invalid={!!deletion.errors.instructor_creation_code}
+                                                aria-describedby={`delete-code-help-${user.id}${deletion.errors.instructor_creation_code ? ` delete-code-error-${user.id}` : ''}`}
+                                                onChange={(e) => deletion.setData('instructor_creation_code', e.target.value)} />
+                                            <p id={`delete-code-help-${user.id}`} className="admin-account-field-help">نفس رمز التفويض المستخدم لإنشاء المدرّس.</p>
+                                            {Object.entries(deletion.errors).map(([field, message]) => <p key={field} id={field === 'instructor_creation_code' ? `delete-code-error-${user.id}` : undefined} className="admin-field-error" role="alert">{message}</p>)}
+                                        </div>
+                                        <div className="admin-account-inline-actions admin-account-delete-buttons">
+                                            <button type="submit" className="admin-button admin-account-confirm-deactivate" disabled={busy}><AdminIcon name="trash" />{deletion.processing ? 'جارٍ الحذف…' : 'تأكيد الحذف'}</button>
                                             <button type="button" data-account-cancel className="admin-button admin-account-cancel" disabled={busy} onClick={close}>إلغاء</button>
                                         </div>
                                     </form> : <>

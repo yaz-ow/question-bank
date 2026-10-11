@@ -343,28 +343,6 @@
 .admin-secondary-button:hover {
     background: #f2f7fe;
 }
-.admin-draft-preview-toggle {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    width: 100%;
-    padding: 12px 14px;
-    margin-top: 20px;
-    border: 1px solid #d9e5f4;
-    border-radius: 8px;
-    color: #386998;
-    background: #fff;
-    text-align: right;
-}
-.admin-draft-preview-toggle > span {
-    flex: 1;
-    font-size: 16px;
-}
-.admin-draft-preview-toggle small {
-    display: block;
-    color: #8597ad;
-    font-size: 13px;
-}
 .admin-full-question {
     font-size: 19px;
     color: #193954;

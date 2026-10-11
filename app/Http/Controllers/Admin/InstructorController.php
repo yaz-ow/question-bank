@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -130,5 +132,36 @@ class InstructorController extends Controller
 
         return back()->with('success', $user->is_active
             ? 'تم تفعيل حساب المدرّس بنجاح' : 'تم تعطيل حساب المدرّس بنجاح');
+    }
+
+    public function destroy(Request $request, User $user)
+    {
+        $this->authorize('admin', User::class);
+        abort_unless($user->role === 'instructor', 404);
+
+        $validator = Validator::make($request->all(), [
+            'instructor_creation_code' => ['required', 'string', 'max:255'],
+        ], [
+            'instructor_creation_code.required' => 'رمز المؤسس مطلوب لتأكيد الحذف',
+            'instructor_creation_code.string' => 'رمز المؤسس غير صحيح',
+            'instructor_creation_code.max' => 'رمز المؤسس غير صحيح',
+        ]);
+        // Return errors without flashing the secret into session input or page props.
+        if ($validator->fails()) {
+            return back()->withErrors($validator);
+        }
+
+        $code = config('admin.creation_code');
+        if (empty($code) || ! hash_equals((string) $code, $request->input('instructor_creation_code'))) {
+            return back()->withErrors(['instructor_creation_code' => 'رمز المؤسس غير صحيح']);
+        }
+
+        DB::transaction(function () use ($user) {
+            PasswordBroker::deleteToken($user);
+            $user->delete();
+        });
+
+        return redirect()->route('admin.instructors.index')
+            ->with('success', 'تم حذف حساب المدرّس بنجاح');
     }
 }

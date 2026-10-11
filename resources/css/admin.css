@@ -1119,11 +1119,12 @@
 .admin-students-table th:nth-child(4) { width: 15%; }
 .admin-students-table th:nth-child(5) { width: 10%; }
 .admin-students-table th:last-child { width: 10%; }
-.admin-instructors-table th:first-child { width: 26%; }
-.admin-instructors-table th:nth-child(2) { width: 30%; }
+.admin-instructors-table { min-width: 1040px; }
+.admin-instructors-table th:first-child { width: 22%; }
+.admin-instructors-table th:nth-child(2) { width: 24%; }
 .admin-instructors-table th:nth-child(3) { width: 16%; }
 .admin-instructors-table th:nth-child(4) { width: 10%; }
-.admin-instructors-table th:last-child { width: 18%; }
+.admin-instructors-table th:last-child { width: 28%; }
 .admin-account-identity { display: flex; align-items: center; gap: 12px; }
 .admin-account-identity bdi { min-width: 0; overflow-wrap: anywhere; }
 .admin-account-initial {
@@ -1173,6 +1174,8 @@
 .admin-account-edit:hover { background: #edf5ff; }
 .admin-account-deactivate { color: #c72b40; border-color: #ecacb7; }
 .admin-account-deactivate:hover { background: #fff0f3; }
+.admin-account-delete { color: #b42339; border-color: #e8a4af; }
+.admin-account-delete:hover { background: #ffe8ed; }
 .admin-account-activate { color: #087b43; border-color: #93d2b2; }
 .admin-account-activate:hover { background: #ecfaf3; }
 .admin-account-table .admin-row-actions { gap: 8px; }
@@ -1202,6 +1205,10 @@
 .admin-account-inline.is-editing { border-color: #c6dcf5; background: #eef6ff; }
 .admin-account-edit-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; width: 100%; gap: 20px; align-items: start; }
 .admin-account-edit-buttons { padding-top: 32px; }
+.admin-account-inline.is-deleting { border-color: #edb8c1; background: #fff3f5; }
+.admin-account-inline.is-deleting .admin-account-confirm-text > .admin-icon { color: #b42339; }
+.admin-account-delete-form { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 0.7fr) auto; width: 100%; gap: 20px; align-items: center; }
+.admin-account-delete-buttons { padding-top: 4px; }
 .admin-account-footer { font-size: 16px; }
 .admin-founder-badge { display: inline-flex; align-items: center; gap: 8px; color: #1969bd; background: #eaf4ff; border-radius: 20px; padding: 5px 14px; font-size: 15px; font-weight: 650; }
 .admin-founder-badge .admin-icon { width: 21px; height: 21px; }
@@ -1222,10 +1229,7 @@
 @media (min-width: 1024px) and (max-width: 1450px) {
     .admin-account-table :is(th, td) { padding: 10px 12px; }
     .admin-account-table .admin-account-action { padding: 6px 10px; }
-    .admin-instructors-table { min-width: 880px; }
-    .admin-instructors-table th:first-child { width: 24%; }
-    .admin-instructors-table th:nth-child(2) { width: 28%; }
-    .admin-instructors-table th:last-child { width: 22%; }
+    .admin-instructors-table { min-width: 1040px; }
     .admin-instructor-create-actions { flex-wrap: wrap; }
     .admin-instructor-create-actions .admin-account-cancel { padding: 8px 12px; }
 }
@@ -1233,6 +1237,7 @@
     .admin-instructor-create-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .admin-account-edit-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .admin-account-edit-buttons { grid-column: 1 / -1; padding-top: 0; }
+    .admin-account-delete-form { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
     .admin-instructor-create-form, .admin-account-edit-form { grid-template-columns: 1fr; }
