@@ -32,7 +32,7 @@ class SubjectController extends Controller
     {
         $this->authorize('manage-subjects');
 
-        return Inertia::render('Admin/Subjects/Form');
+        return redirect()->route('admin.subjects.index');
     }
 
     public function store(Request $request)
@@ -47,16 +47,17 @@ class SubjectController extends Controller
     {
         $this->authorize('manage-subjects');
 
-        return Inertia::render('Admin/Subjects/Show', [
-            'subject' => $subject->loadCount('questions'),
-        ]);
+        return redirect()->route('admin.questions.index', $subject->id);
     }
 
     public function edit(Subject $subject)
     {
         $this->authorize('manage-subjects');
 
-        return Inertia::render('Admin/Subjects/Form', ['subject' => $subject]);
+        return redirect()->route('admin.subjects.index', [
+            'level' => $subject->level,
+            'search' => $subject->name,
+        ]);
     }
 
     public function update(Request $request, Subject $subject)

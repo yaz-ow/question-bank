@@ -190,7 +190,7 @@ export default function AdminDashboardPage({ stats, subjects, filters = {} }) {
                                     <th scope="row">
                                         <Link
                                             href={route(
-                                                'admin.subjects.show',
+                                                'admin.questions.index',
                                                 subject.id,
                                             )}
                                         >

@@ -10,7 +10,6 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Student\QuizController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Excel;
 use Inertia\Inertia;
 
 /*

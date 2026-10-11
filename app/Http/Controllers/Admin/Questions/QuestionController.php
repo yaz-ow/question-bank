@@ -43,7 +43,7 @@ class QuestionController extends Controller
     {
         $this->authorize('manage-questions', $subject);
 
-        return Inertia::render('Admin/Questions/Form', ['subject' => $subject, 'question' => null]);
+        return redirect()->route('admin.questions.index', $subject->id);
     }
 
     public function store(Request $request, Subject $subject)
@@ -60,7 +60,7 @@ class QuestionController extends Controller
         $this->authorize('manage-questions', $subject);
         abort_unless($question->subject_id === $subject->id, 404);
 
-        return Inertia::render('Admin/Questions/Show', ['subject' => $subject, 'question' => $question]);
+        return $this->questionWorkspaceRedirect($subject, $question);
     }
 
     public function edit(Subject $subject, Question $question)
@@ -68,7 +68,18 @@ class QuestionController extends Controller
         $this->authorize('manage-questions', $subject);
         abort_unless($question->subject_id === $subject->id, 404);
 
-        return Inertia::render('Admin/Questions/Form', ['subject' => $subject, 'question' => $question]);
+        return $this->questionWorkspaceRedirect($subject, $question);
+    }
+
+    private function questionWorkspaceRedirect(Subject $subject, Question $question)
+    {
+        // Keep bookmarked questions visible in the replacement list, including older pages.
+        $preceding = $subject->questions()->where('id', '>', $question->id)->count();
+
+        return redirect()->route('admin.questions.index', [
+            'subject' => $subject->id,
+            'page' => intdiv($preceding, self::PAGE_SIZE) + 1,
+        ]);
     }
 
     public function update(Request $request, Subject $subject, Question $question)

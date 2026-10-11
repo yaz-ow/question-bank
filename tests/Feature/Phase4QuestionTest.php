@@ -438,7 +438,7 @@ class Phase4QuestionTest extends TestCase
     }
 
     /** @test */
-    public function question_count_updates_in_subject_show()
+    public function question_count_updates_in_question_workspace()
     {
         $admin = User::factory()->create([
             'role' => 'admin',
@@ -449,12 +449,12 @@ class Phase4QuestionTest extends TestCase
 
         // Initially no questions
         $this->actingAs($admin)
-            ->get(route('admin.subjects.show', ['subject' => $subject->id]))
+            ->get(route('admin.questions.index', ['subject' => $subject->id]))
             ->assertOk()
             ->assertInertia(function ($page) use ($subject) {
-                $page->component('Admin/Subjects/Show')
+                $page->component('Admin/Questions/Index')
                     ->where('subject.id', $subject->id)
-                    ->etc(['question_count' => 0]); // Assuming we added question count
+                    ->where('subject.questions_count', 0);
             });
 
         // Create a question
@@ -470,12 +470,12 @@ class Phase4QuestionTest extends TestCase
 
         // Check that question count increased
         $this->actingAs($admin)
-            ->get(route('admin.subjects.show', ['subject' => $subject->id]))
+            ->get(route('admin.questions.index', ['subject' => $subject->id]))
             ->assertOk()
             ->assertInertia(function ($page) use ($subject) {
-                $page->component('Admin/Subjects/Show')
+                $page->component('Admin/Questions/Index')
                     ->where('subject.id', $subject->id)
-                    ->etc(['question_count' => 1]);
+                    ->where('subject.questions_count', 1);
             });
     }
 }

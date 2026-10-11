@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Question;
 use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -70,14 +71,16 @@ class ProjectRegressionTest extends TestCase
     public function test_subject_crud_and_validation(): void
     {
         $this->actingAs(User::factory()->create(['role' => 'admin']));
-        $this->get('/admin/subjects/create')->assertOk();
+        $this->get('/admin/subjects/create')->assertRedirect('/admin/subjects');
         $this->post('/admin/subjects', ['name' => '  Algebra  ', 'level' => 2])->assertRedirect('/admin/subjects');
         $subject = Subject::firstOrFail();
         $this->assertSame('Algebra', $subject->name);
         $this->get('/admin/subjects?level=2&search=Alg')->assertOk()
             ->assertInertia(fn (Assert $page) => $page->component('Admin/Subjects/Index')->has('subjects.data', 1));
-        $this->get("/admin/subjects/{$subject->id}")->assertOk();
-        $this->get("/admin/subjects/{$subject->id}/edit")->assertOk();
+        $this->get("/admin/subjects/{$subject->id}")
+            ->assertRedirect(route('admin.questions.index', $subject->id));
+        $this->get("/admin/subjects/{$subject->id}/edit")
+            ->assertRedirect(route('admin.subjects.index', ['level' => 2, 'search' => 'Algebra']));
         $this->post('/admin/subjects', ['name' => 'Algebra', 'level' => 2])->assertSessionHasErrors('name');
         $this->post('/admin/subjects', ['name' => 'Invalid', 'level' => 10])->assertSessionHasErrors('level');
         $this->put("/admin/subjects/{$subject->id}", ['name' => 'Algebra', 'level' => 3])->assertRedirect('/admin/subjects');
@@ -92,6 +95,30 @@ class ProjectRegressionTest extends TestCase
         $this->actingAs(User::factory()->create())->get('/admin/subjects')->assertRedirect('/');
         $this->post('/admin/subjects', ['name' => 'Forbidden', 'level' => 1])->assertRedirect('/');
         $this->assertDatabaseCount('subjects', 0);
+    }
+
+    public function test_legacy_question_links_reach_the_workspace_without_changing_data(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $subject = Subject::factory()->create();
+        $question = Question::factory()->create(['subject_id' => $subject->id]);
+        Question::factory()->count(7)->create(['subject_id' => $subject->id]);
+        $original = $question->getAttributes();
+
+        $this->get(route('admin.questions.create', $subject))
+            ->assertRedirect(route('admin.questions.index', $subject));
+        $destination = route('admin.questions.index', ['subject' => $subject->id, 'page' => 2]);
+        foreach (['admin.questions.show', 'admin.questions.edit'] as $route) {
+            $this->get(route($route, ['subject' => $subject->id, 'question' => $question->id]))
+                ->assertRedirect($destination);
+        }
+        $this->get($destination)->assertOk()->assertInertia(fn (Assert $page) => $page
+            ->component('Admin/Questions/Index')
+            ->where('questions.current_page', 2)
+            ->where('questions.data.1.id', $question->id));
+        $this->assertDatabaseCount('subjects', 1);
+        $this->assertDatabaseCount('questions', 8);
+        $this->assertSame($original, $question->fresh()->getAttributes());
     }
 
     public function test_login_throttling_is_separate_from_page_visits_and_other_portals(): void
