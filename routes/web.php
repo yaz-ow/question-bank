@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\InstructorController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\StudentResultController;
 use App\Http\Controllers\Admin\SubjectController;
 use App\Http\Controllers\Admin\Questions\QuestionController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -111,6 +112,10 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             ->name('admin.dashboard');
 
         Route::resource('admin/subjects', SubjectController::class)->names('admin.subjects');
+
+        Route::get('/admin/student-results', [StudentResultController::class, 'index'])->name('admin.student-results.index');
+        Route::get('/admin/student-results/{subject}/students/{user}/attempts/{attempt}/answers.xlsx', [StudentResultController::class, 'export'])
+            ->name('admin.student-results.export')->middleware('throttle:admin-actions');
 
         // Question management routes nested under subjects
         Route::prefix('admin/subjects/{subject}')->group(function () {

@@ -25,6 +25,12 @@ export default function AdminLayout({
             icon: 'book',
             href: route('admin.subjects.index'),
         },
+        {
+            key: 'student-results',
+            label: 'نتائج الطلاب',
+            icon: 'chart',
+            href: route('admin.student-results.index'),
+        },
         ...(isFounder
             ? [
                   {

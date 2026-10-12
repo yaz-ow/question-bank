@@ -21,6 +21,8 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('manage-questions', fn (User $user) => $user->is_active
             && in_array($user->role, ['admin', 'instructor'], true));
         Gate::define('student', fn (User $user) => $user->is_active && $user->role === 'student');
+        Gate::define('view-student-results', fn (User $user) => $user->is_active
+            && in_array($user->role, ['admin', 'instructor'], true));
 
         RateLimiter::for('authentication', function (Request $request) {
             $scope = $request->route()->uri().'|'.$request->ip();
