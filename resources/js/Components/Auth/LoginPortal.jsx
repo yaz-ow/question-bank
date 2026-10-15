@@ -1,6 +1,11 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import FlashMessages from '../FlashMessages';
+import {
+    portalMessages,
+    readPortalLanguage,
+    savePortalLanguage,
+} from './portalLanguage';
 import StudentIcon from '../StudentIcon';
 import portalArt from '../../../images/auth-portals.webp';
 import '../../../css/auth-portals.css';
@@ -53,10 +58,11 @@ function LoginForm({
     onBack,
     onBusy,
     onHeight,
+    messages,
 }) {
     const student = role === 'student';
     const field = student ? 'university_id' : 'email';
-    const label = student ? 'الرقم الجامعي' : 'البريد الإلكتروني';
+    const label = student ? messages.universityId : messages.email;
     const { data, setData, post, reset, processing, errors, setError } =
         useForm({
             [field]: initialIdentifier,
@@ -116,7 +122,7 @@ function LoginForm({
             <div className="qb-form-top">
                 <span className="qb-badge">
                     <PortalIcon name={student ? 'book' : 'shield'} />
-                    {student ? 'بوابة الطالب' : 'بوابة الإدارة'}
+                    {student ? messages.studentPortal : messages.adminPortal}
                 </span>
                 <button
                     type="button"
@@ -126,21 +132,21 @@ function LoginForm({
                     disabled={processing}
                 >
                     <PortalIcon name="arrow" />
-                    رجوع
+                    {messages.back}
                 </button>
             </div>
             <h2 className="qb-form-title">
-                {student ? 'مرحبًا بعودتك' : 'دخول الإدارة'}
+                {student ? messages.welcomeBack : messages.adminLogin}
             </h2>
             <p className="qb-subtitle">
                 {student
-                    ? 'سجّل دخولك وواصل رحلتك التعليمية.'
-                    : 'إدارة المقررات والأسئلة من مكان واحد.'}
+                    ? messages.studentSubtitle
+                    : messages.adminSubtitle}
             </p>
             <form
                 onSubmit={submit}
                 aria-label={
-                    student ? 'تسجيل دخول الطالب' : 'تسجيل دخول الإدارة'
+                    student ? messages.studentForm : messages.adminForm
                 }
                 aria-busy={processing}
             >
@@ -182,7 +188,7 @@ function LoginForm({
                     )}
                 </label>
                 <label className="qb-field" htmlFor={`${role}-password`}>
-                    كلمة المرور
+                    {messages.password}
                     <span className="qb-input-wrap">
                         <input
                             id={`${role}-password`}
@@ -193,7 +199,7 @@ function LoginForm({
                             onChange={(event) =>
                                 setData('password', event.target.value)
                             }
-                            placeholder="أدخل كلمة المرور"
+                            placeholder={messages.passwordPlaceholder}
                             autoComplete="current-password"
                             required
                             aria-invalid={Boolean(errors.password)}
@@ -209,8 +215,8 @@ function LoginForm({
                             onClick={() => setShowPassword((show) => !show)}
                             aria-label={
                                 showPassword
-                                    ? 'إخفاء كلمة المرور'
-                                    : 'إظهار كلمة المرور'
+                                    ? messages.hidePassword
+                                    : messages.showPassword
                             }
                             aria-pressed={showPassword}
                         >
@@ -237,24 +243,24 @@ function LoginForm({
                             : 'password-request-admin.show',
                     )}
                 >
-                    نسيت كلمة المرور؟
+                    {messages.forgotPassword}
                 </Link>
                 <button
                     type="submit"
                     className="qb-submit"
                     disabled={processing}
                 >
-                    {processing ? 'جارٍ تسجيل الدخول…' : 'تسجيل الدخول'}
+                    {processing ? messages.signingIn : messages.signIn}
                     <PortalIcon name="arrow" />
                 </button>
                 {student && (
                     <p className="qb-register">
-                        ليس لديك حساب؟{' '}
+                        {messages.noAccount}{' '}
                         <Link
                             className="qb-text-button"
                             href={route('register')}
                         >
-                            إنشاء حساب
+                            {messages.register}
                         </Link>
                     </p>
                 )}
@@ -266,13 +272,35 @@ function LoginForm({
 export default function LoginPortal({
     initialRole = null,
     initialIdentifier = '',
+    allowLanguageSelection = false,
 }) {
     const { errors: pageErrors = EMPTY_ERRORS } = usePage().props;
+    const [language, setLanguage] = useState(readPortalLanguage);
+    const messages = portalMessages[language];
     const [activeRole, setActiveRole] = useState(initialRole);
     const [busy, setBusy] = useState(false);
     const [formHeight, setFormHeight] = useState(500);
     const choices = useRef({});
     const closingRole = useRef(null);
+
+    useLayoutEffect(() => {
+        const root = document.documentElement;
+        const previousLanguage = root.getAttribute('lang');
+        const previousDirection = root.getAttribute('dir');
+        root.setAttribute('lang', language);
+        root.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
+        return () => {
+            if (previousLanguage === null) root.removeAttribute('lang');
+            else root.setAttribute('lang', previousLanguage);
+            if (previousDirection === null) root.removeAttribute('dir');
+            else root.setAttribute('dir', previousDirection);
+        };
+    }, [language]);
+
+    const changeLanguage = (nextLanguage) => {
+        setLanguage(nextLanguage);
+        savePortalLanguage(nextLanguage);
+    };
 
     const close = () => {
         if (busy) return;
@@ -292,7 +320,8 @@ export default function LoginPortal({
     return (
         <div
             className={`auth-entry${activeRole ? ' qb-open' : ''}`}
-            dir="rtl"
+            lang={language}
+            dir={language === 'ar' ? 'rtl' : 'ltr'}
             style={{
                 '--qb-art': `url("${portalArt}")`,
                 '--auth-form-height': `${formHeight}px`,
@@ -304,23 +333,46 @@ export default function LoginPortal({
             <Head
                 title={
                     activeRole === 'student'
-                        ? 'دخول الطالب'
+                        ? messages.studentLogin
                         : activeRole === 'admin'
-                          ? 'دخول الإدارة'
-                          : 'مرحبًا بك'
+                          ? messages.adminLogin
+                          : messages.welcome
                 }
             />
             <header className="qb-top">
                 <Link className="qb-brand" href="/">
                     <PortalIcon name="book" />
-                    <span>بنك الأسئلة</span>
+                    <span>{messages.brand}</span>
                 </Link>
-                <span className="qb-tag">QUESTION BANK</span>
+                <div className="qb-top-actions">
+                    <span className="qb-tag">QUESTION BANK</span>
+                    {allowLanguageSelection && !activeRole && (
+                        <div
+                            className="qb-language"
+                            role="group"
+                            aria-label={messages.language}
+                            dir="ltr"
+                        >
+                            {['ar', 'en'].map((locale) => (
+                                <button
+                                    key={locale}
+                                    type="button"
+                                    lang={locale}
+                                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
+                                    aria-pressed={language === locale}
+                                    onClick={() => changeLanguage(locale)}
+                                >
+                                    {locale === 'ar' ? 'العربية' : 'English'}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </header>
             <main className="auth-main">
                 <div className="qb-intro">
-                    <h1>رحلتك تبدأ من هنا</h1>
-                    <p>تعلّم، تدرّب، وتابع تقدّمك.</p>
+                    <h1>{messages.heading}</h1>
+                    <p>{messages.tagline}</p>
                 </div>
                 <div className="qb-flash">
                     <FlashMessages />
@@ -337,11 +389,18 @@ export default function LoginPortal({
                                 inert={away}
                                 aria-label={
                                     role === 'student'
-                                        ? 'بوابة الطالب'
-                                        : 'بوابة الإدارة'
+                                        ? messages.studentPortal
+                                        : messages.adminPortal
                                 }
                             >
                                 <div className="qb-art">
+                                    {language === 'en' && (
+                                        <div className="qb-art-translation" aria-hidden="true">
+                                            <PortalIcon name="book" />
+                                            <strong>{messages.brand}</strong>
+                                            <span>{messages.tagline}</span>
+                                        </div>
+                                    )}
                                     <button
                                         type="button"
                                         className="qb-select"
@@ -351,16 +410,16 @@ export default function LoginPortal({
                                         onClick={() => setActiveRole(role)}
                                         aria-label={
                                             role === 'student'
-                                                ? 'فتح تسجيل دخول الطالب'
-                                                : 'فتح تسجيل دخول الإدارة'
+                                                ? messages.openStudent
+                                                : messages.openAdmin
                                         }
                                         aria-expanded={selected}
                                         aria-controls={`${role}-login-panel`}
                                     >
                                         <span className="qb-choice">
                                             {role === 'student'
-                                                ? 'الطالب'
-                                                : 'الإدارة'}
+                                                ? messages.student
+                                                : messages.admin}
                                             <PortalIcon name="arrow" />
                                         </span>
                                     </button>
@@ -379,6 +438,7 @@ export default function LoginPortal({
                                                 ? pageErrors
                                                 : EMPTY_ERRORS
                                         }
+                                        messages={messages}
                                         onBack={close}
                                         onBusy={setBusy}
                                         onHeight={setFormHeight}
@@ -389,7 +449,7 @@ export default function LoginPortal({
                     })}
                 </div>
             </main>
-            <footer className="qb-footer">بنك الأسئلة · تعلّم بثقة</footer>
+            <footer className="qb-footer">{messages.footer}</footer>
         </div>
     );
 }
