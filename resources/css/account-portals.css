@@ -12,7 +12,7 @@
     box-shadow: 0 20px 55px #183f6a1c;
 }
 .auth-entry.qb-account .qb-art {
-    flex-basis: calc(var(--qb-account-height) * 389 / 601);
+    flex-basis: min(35%, calc(var(--qb-account-height) * 2 / 3));
     height: var(--qb-account-height);
     transition: none;
 }

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Head, router, usePage } from '@inertiajs/react';
 import StudentIcon from '../../../Components/StudentIcon';
+import BrandMark from '../../../Components/BrandMark';
 import '../../../../css/student.css';
 
 const letters = ['A', 'B', 'C', 'D'];
@@ -76,12 +77,12 @@ export default function Show({ attempt, course, question, feedback }) {
         setError('');
     }
 
-    return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">
+    return <div dir="rtl" className="student-dashboard qb-surface min-h-screen text-[#112d49]">
         <Head title={`اختبار ${course.name}`} />
         <header className="border-b border-slate-200/70 bg-white">
             <div className="student-topbar mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-5 sm:px-8">
                 <div className="flex min-w-0 items-center gap-4 sm:gap-6">
-                    <span className="hidden items-center gap-2 whitespace-nowrap text-lg font-bold sm:flex"><StudentIcon className="size-7" />بنك الأسئلة</span>
+                    <span className="hidden items-center gap-2 whitespace-nowrap text-lg font-bold sm:flex"><BrandMark />بنك الأسئلة</span>
                     <div className="min-w-0 sm:border-r sm:border-slate-200 sm:pr-6">
                         <h1 className="break-words text-lg font-bold sm:text-xl">{course.name}</h1>
                         <p className="mt-1 text-xs text-slate-500">المستوى {number(course.level)} · اختبار تدريبي</p>

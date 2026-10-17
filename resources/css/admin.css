@@ -5,7 +5,6 @@
     --admin-gutter: clamp(24px, 2.4vw, 48px);
     min-height: 100svh;
     color: var(--admin-ink);
-    background: #f2f6fb;
     font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
     font-size: 18px;
     line-height: 1.6;
@@ -61,27 +60,10 @@
     padding: 0 8px;
     margin-bottom: 36px;
 }
-.admin-logo-mark {
-    position: relative;
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    width: 98px;
-    height: 90px;
-    margin-bottom: 12px;
-}
-.admin-logo-mark .admin-icon {
+.admin-logo .admin-logo-mark {
     width: 84px;
-    height: 68px;
-    stroke-width: 1.35;
-    filter: drop-shadow(3px 3px 0 #e2b951);
-}
-.admin-logo-mark > span {
-    position: absolute;
-    top: -12px;
-    color: #f5c965;
-    font-size: 38px;
-    line-height: 1;
+    height: 92px;
+    margin-bottom: 12px;
 }
 .admin-logo strong {
     font-size: 30px;

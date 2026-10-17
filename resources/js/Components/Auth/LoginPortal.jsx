@@ -7,7 +7,8 @@ import {
     savePortalLanguage,
 } from './portalLanguage';
 import StudentIcon from '../StudentIcon';
-import portalArt from '../../../images/auth-portals.webp';
+import BrandMark from '../BrandMark';
+import PortalArtwork from './PortalArtwork';
 import '../../../css/auth-portals.css';
 
 const EMPTY_ERRORS = {};
@@ -319,11 +320,10 @@ export default function LoginPortal({
 
     return (
         <div
-            className={`auth-entry${activeRole ? ' qb-open' : ''}`}
+            className={`auth-entry qb-surface${activeRole ? ' qb-open' : ''}`}
             lang={language}
             dir={language === 'ar' ? 'rtl' : 'ltr'}
             style={{
-                '--qb-art': `url("${portalArt}")`,
                 '--auth-form-height': `${formHeight}px`,
             }}
             onKeyDown={(event) => {
@@ -341,11 +341,10 @@ export default function LoginPortal({
             />
             <header className="qb-top">
                 <Link className="qb-brand" href="/">
-                    <PortalIcon name="book" />
+                    <BrandMark />
                     <span>{messages.brand}</span>
                 </Link>
                 <div className="qb-top-actions">
-                    <span className="qb-tag">QUESTION BANK</span>
                     {allowLanguageSelection && !activeRole && (
                         <div
                             className="qb-language"
@@ -393,14 +392,7 @@ export default function LoginPortal({
                                         : messages.adminPortal
                                 }
                             >
-                                <div className="qb-art">
-                                    {language === 'en' && (
-                                        <div className="qb-art-translation" aria-hidden="true">
-                                            <PortalIcon name="book" />
-                                            <strong>{messages.brand}</strong>
-                                            <span>{messages.tagline}</span>
-                                        </div>
-                                    )}
+                                <PortalArtwork role={role} brand={messages.brand} tagline={messages.cardTagline}>
                                     <button
                                         type="button"
                                         className="qb-select"
@@ -423,7 +415,7 @@ export default function LoginPortal({
                                             <PortalIcon name="arrow" />
                                         </span>
                                     </button>
-                                </div>
+                                </PortalArtwork>
                                 {selected && (
                                     <LoginForm
                                         key={role}

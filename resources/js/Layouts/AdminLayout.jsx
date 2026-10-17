@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminIcon from '../Components/AdminIcon';
+import BrandMark from '../Components/BrandMark';
 import '../../css/admin.css';
 
 export default function AdminLayout({
@@ -62,16 +63,13 @@ export default function AdminLayout({
             </Link>
         ));
     return (
-        <div className="admin-app" dir="rtl">
+        <div className="admin-app qb-surface" dir="rtl">
             <aside
                 className="admin-sidebar"
                 aria-label="القائمة الجانبية للإدارة"
             >
                 <Link className="admin-logo" href={route('admin.dashboard')}>
-                    <span className="admin-logo-mark" aria-hidden="true">
-                        <span>✦</span>
-                        <AdminIcon name="book" />
-                    </span>
+                    <BrandMark inverse className="admin-logo-mark" />
                     <strong>بنك الأسئلة</strong>
                     <small>بوابة الإدارة</small>
                 </Link>

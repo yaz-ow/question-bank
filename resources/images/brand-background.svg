@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000" fill="none">
+  <defs>
+    <linearGradient id="wave" x1="0" y1="0" x2="1600" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#DCEAF7" stop-opacity=".52"/><stop offset="1" stop-color="#D4E6F6" stop-opacity=".24"/></linearGradient>
+    <pattern id="dots" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.5" fill="#82A9D0" fill-opacity=".45"/></pattern>
+  </defs>
+  <path d="M0 210C175 250 285 460 120 638C55 707 15 728 0 742V210Z" fill="url(#wave)"/>
+  <path d="M0 620C230 499 283 781 540 917C655 978 731 992 820 1000H0V620Z" fill="url(#wave)"/>
+  <path d="M1600 560C1370 566 1375 757 1190 788C1025 815 997 926 919 1000H1600V560Z" fill="url(#wave)"/>
+  <path d="M1600 747C1430 680 1327 924 1050 1000" stroke="#DBE9F6" stroke-opacity=".6"/>
+  <rect x="1410" y="340" width="110" height="130" fill="url(#dots)"/>
+  <rect x="28" y="690" width="115" height="90" fill="url(#dots)"/>
+  <g stroke="#A8C9E9" stroke-opacity=".6"><rect x="94" y="228" width="28" height="28" rx="4"/><rect x="149" y="534" width="26" height="26" rx="4"/><rect x="1470" y="744" width="28" height="28" rx="4"/></g>
+</svg>

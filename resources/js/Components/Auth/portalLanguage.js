@@ -19,6 +19,7 @@ export function savePortalLanguage(language) {
 export const portalMessages = {
     ar: {
         brand: 'بنك الأسئلة',
+        cardTagline: 'تعلّم بثقة',
         welcome: 'مرحبًا بك',
         heading: 'رحلتك تبدأ من هنا',
         tagline: 'تعلّم، تدرّب، وتابع تقدّمك.',
@@ -52,6 +53,7 @@ export const portalMessages = {
     },
     en: {
         brand: 'Question Bank',
+        cardTagline: 'Learn with confidence',
         welcome: 'Welcome',
         heading: 'Your journey starts here',
         tagline: 'Learn, practise, and track your progress.',

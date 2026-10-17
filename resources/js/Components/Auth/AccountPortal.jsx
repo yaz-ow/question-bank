@@ -2,7 +2,8 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import FlashMessages from '../FlashMessages';
 import { PortalIcon } from './LoginPortal';
-import portalArt from '../../../images/auth-portals.webp';
+import BrandMark from '../BrandMark';
+import PortalArtwork from './PortalArtwork';
 import '../../../css/account-portals.css';
 
 const EMPTY_ERRORS = {};
@@ -158,17 +159,16 @@ export default function AccountPortal({
 
     return (
         <div
-            className="auth-entry qb-account"
+            className="auth-entry qb-account qb-surface"
             dir="rtl"
             style={{
-                '--qb-art': `url("${portalArt}")`,
                 '--qb-account-height': `${height}px`,
             }}
         >
             <Head title={title} />
             <header className="qb-top">
                 <Link className="qb-brand" href="/">
-                    <PortalIcon name="book" />
+                    <BrandMark />
                     <span>بنك الأسئلة</span>
                 </Link>
                 <span className="qb-tag">QUESTION BANK</span>
@@ -186,7 +186,7 @@ export default function AccountPortal({
                     data-role={role}
                     aria-labelledby="account-title"
                 >
-                    <div className="qb-art" aria-hidden="true" />
+                    <PortalArtwork role={role} />
                     <div className="qb-form-panel" ref={panel}>
                         <div className="qb-form-top">
                             <span className="qb-badge">

@@ -1,6 +1,7 @@
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import StudentIcon from '../Components/StudentIcon';
+import BrandMark from '../Components/BrandMark';
 import '../../css/student.css';
 
 export default function StudentLayout({ children, title, description = 'مستوياتك الدراسية، في مكان واحد', activeNav, selectedResultCourseId }) {
@@ -44,9 +45,9 @@ export default function StudentLayout({ children, title, description = 'مستو
             </section>
         </>;
     };
-    return <div dir="rtl" className="student-dashboard min-h-screen bg-[#f5f7fb] text-[#112d49]">
+    return <div dir="rtl" className="student-dashboard qb-surface min-h-screen text-[#112d49]">
         <aside className="student-sidebar fixed inset-y-0 right-0 z-30 hidden w-64 flex-col overflow-y-auto bg-[#001f3f] px-5 py-8 text-white lg:flex">
-            <Link href={route('student.dashboard')} className="student-sidebar-logo mb-12 flex items-center gap-3 px-3 text-xl font-bold"><StudentIcon className="size-9" />بنك الأسئلة</Link>
+            <Link href={route('student.dashboard')} className="student-sidebar-logo mb-12 flex items-center gap-3 px-3 text-xl font-bold"><BrandMark inverse />بنك الأسئلة</Link>
             <p className="mb-3 px-3 text-xs font-medium tracking-wide text-slate-400">مساحتك التعليمية</p>
             <nav aria-label="تنقل الطالب" className="space-y-2">
                 {renderNavigation()}
