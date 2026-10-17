@@ -1,11 +1,8 @@
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import FlashMessages from '../FlashMessages';
-import {
-    portalMessages,
-    readPortalLanguage,
-    savePortalLanguage,
-} from './portalLanguage';
+import { translatePortalFeedback } from './portalLanguage';
+import usePortalLanguage from './usePortalLanguage';
 import StudentIcon from '../StudentIcon';
 import BrandMark from '../BrandMark';
 import PortalArtwork from './PortalArtwork';
@@ -140,15 +137,11 @@ function LoginForm({
                 {student ? messages.welcomeBack : messages.adminLogin}
             </h2>
             <p className="qb-subtitle">
-                {student
-                    ? messages.studentSubtitle
-                    : messages.adminSubtitle}
+                {student ? messages.studentSubtitle : messages.adminSubtitle}
             </p>
             <form
                 onSubmit={submit}
-                aria-label={
-                    student ? messages.studentForm : messages.adminForm
-                }
+                aria-label={student ? messages.studentForm : messages.adminForm}
                 aria-busy={processing}
             >
                 <label className="qb-field" htmlFor={`${role}-${field}`}>
@@ -276,32 +269,12 @@ export default function LoginPortal({
     allowLanguageSelection = false,
 }) {
     const { errors: pageErrors = EMPTY_ERRORS } = usePage().props;
-    const [language, setLanguage] = useState(readPortalLanguage);
-    const messages = portalMessages[language];
+    const { language, messages, changeLanguage } = usePortalLanguage();
     const [activeRole, setActiveRole] = useState(initialRole);
     const [busy, setBusy] = useState(false);
     const [formHeight, setFormHeight] = useState(500);
     const choices = useRef({});
     const closingRole = useRef(null);
-
-    useLayoutEffect(() => {
-        const root = document.documentElement;
-        const previousLanguage = root.getAttribute('lang');
-        const previousDirection = root.getAttribute('dir');
-        root.setAttribute('lang', language);
-        root.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
-        return () => {
-            if (previousLanguage === null) root.removeAttribute('lang');
-            else root.setAttribute('lang', previousLanguage);
-            if (previousDirection === null) root.removeAttribute('dir');
-            else root.setAttribute('dir', previousDirection);
-        };
-    }, [language]);
-
-    const changeLanguage = (nextLanguage) => {
-        setLanguage(nextLanguage);
-        savePortalLanguage(nextLanguage);
-    };
 
     const close = () => {
         if (busy) return;
@@ -374,7 +347,11 @@ export default function LoginPortal({
                     <p>{messages.tagline}</p>
                 </div>
                 <div className="qb-flash">
-                    <FlashMessages />
+                    <FlashMessages
+                        translate={(value) =>
+                            translatePortalFeedback(value, language)
+                        }
+                    />
                 </div>
                 <div className="qb-stage">
                     {['student', 'admin'].map((role) => {
@@ -392,7 +369,11 @@ export default function LoginPortal({
                                         : messages.adminPortal
                                 }
                             >
-                                <PortalArtwork role={role} brand={messages.brand} tagline={messages.cardTagline}>
+                                <PortalArtwork
+                                    role={role}
+                                    brand={messages.brand}
+                                    tagline={messages.cardTagline}
+                                >
                                     <button
                                         type="button"
                                         className="qb-select"

@@ -4,6 +4,8 @@ import FlashMessages from '../FlashMessages';
 import { PortalIcon } from './LoginPortal';
 import BrandMark from '../BrandMark';
 import PortalArtwork from './PortalArtwork';
+import usePortalLanguage from './usePortalLanguage';
+import { translatePortalFeedback } from './portalLanguage';
 import '../../../css/account-portals.css';
 
 const EMPTY_ERRORS = {};
@@ -12,6 +14,7 @@ function AccountField({
     name,
     label,
     form,
+    messages,
     type = 'text',
     hint,
     wide = false,
@@ -56,7 +59,7 @@ function AccountField({
                             type="button"
                             className="qb-eye"
                             onClick={() => setVisible(!visible)}
-                            aria-label={`${visible ? 'إخفاء' : 'إظهار'} ${label}`}
+                            aria-label={`${visible ? messages.account.hide : messages.account.show} ${label}`}
                             aria-pressed={visible}
                         >
                             <PortalIcon name={visible ? 'eye-off' : 'eye'} />
@@ -85,6 +88,8 @@ export default function AccountPortal({
     token = '',
     email = '',
 }) {
+    const { language, messages } = usePortalLanguage();
+    const copy = messages.account;
     const student = role === 'student';
     const registering = mode === 'register';
     const recovering = mode === 'recovery';
@@ -99,7 +104,16 @@ export default function AccountPortal({
         ...(mode === 'reset' ? { token } : {}),
     });
     const { setError } = form;
-    useEffect(() => setError(pageErrors), [pageErrors, setError]);
+    useEffect(() => {
+        setError(
+            Object.fromEntries(
+                Object.entries(pageErrors).map(([key, value]) => [
+                    key,
+                    translatePortalFeedback(value, language),
+                ]),
+            ),
+        );
+    }, [pageErrors, language, setError]);
     useLayoutEffect(() => {
         const measure = () =>
             setHeight(
@@ -119,17 +133,17 @@ export default function AccountPortal({
         ? 'password-request-student.show'
         : 'password-request-admin.show';
     const title = registering
-        ? 'إنشاء حساب طالب'
+        ? copy.registerTitle
         : recovering
-          ? 'نسيت كلمة المرور؟'
-          : 'تعيين كلمة مرور جديدة';
+          ? messages.forgotPassword
+          : copy.resetTitle;
     const subtitle = registering
-        ? 'ابدأ رحلتك التعليمية بحسابك في بنك الأسئلة.'
+        ? copy.registerSubtitle
         : recovering
           ? student
-              ? 'أدخل رقمك الجامعي والبريد المرتبط بحسابك لإرسال رابط الاستعادة.'
-              : 'أدخل البريد المرتبط بحساب الإدارة لإرسال رابط الاستعادة.'
-          : 'اختر كلمة مرور جديدة، ثم أكّدها للعودة إلى حسابك.';
+              ? copy.studentRecoverySubtitle
+              : copy.adminRecoverySubtitle
+          : copy.resetSubtitle;
     const submit = (event) => {
         event.preventDefault();
         if (form.processing) return;
@@ -160,7 +174,8 @@ export default function AccountPortal({
     return (
         <div
             className="auth-entry qb-account qb-surface"
-            dir="rtl"
+            lang={language}
+            dir={language === 'ar' ? 'rtl' : 'ltr'}
             style={{
                 '--qb-account-height': `${height}px`,
             }}
@@ -169,16 +184,13 @@ export default function AccountPortal({
             <header className="qb-top">
                 <Link className="qb-brand" href="/">
                     <BrandMark />
-                    <span>بنك الأسئلة</span>
+                    <span>{messages.brand}</span>
                 </Link>
-                <span className="qb-tag">QUESTION BANK</span>
             </header>
             <main className="auth-main">
                 <div className="qb-intro">
                     <h1>
-                        {registering
-                            ? 'رحلتك تبدأ من هنا'
-                            : 'نساعدك على العودة'}
+                        {registering ? messages.heading : copy.recoveryHeading}
                     </h1>
                 </div>
                 <section
@@ -186,18 +198,24 @@ export default function AccountPortal({
                     data-role={role}
                     aria-labelledby="account-title"
                 >
-                    <PortalArtwork role={role} />
+                    <PortalArtwork
+                        role={role}
+                        brand={messages.brand}
+                        tagline={messages.cardTagline}
+                    />
                     <div className="qb-form-panel" ref={panel}>
                         <div className="qb-form-top">
                             <span className="qb-badge">
                                 <PortalIcon
                                     name={student ? 'book' : 'shield'}
                                 />
-                                {student ? 'بوابة الطالب' : 'بوابة الإدارة'}
+                                {student
+                                    ? messages.studentPortal
+                                    : messages.adminPortal}
                             </span>
                             <Link className="qb-back" href={route(loginRoute)}>
                                 <PortalIcon name="arrow" />
-                                رجوع للدخول
+                                {copy.backToLogin}
                             </Link>
                         </div>
                         <h2 id="account-title" className="qb-form-title">
@@ -205,7 +223,11 @@ export default function AccountPortal({
                         </h2>
                         <p className="qb-subtitle">{subtitle}</p>
                         <div className="qb-account-flash">
-                            <FlashMessages />
+                            <FlashMessages
+                                translate={(value) =>
+                                    translatePortalFeedback(value, language)
+                                }
+                            />
                         </div>
                         <form
                             onSubmit={submit}
@@ -217,31 +239,34 @@ export default function AccountPortal({
                             >
                                 {registering && (
                                     <AccountField
+                                        messages={messages}
                                         name="name"
-                                        label="الاسم الكامل"
+                                        label={copy.fullName}
                                         form={form}
                                         autoComplete="name"
-                                        placeholder="اسمك الكامل"
+                                        placeholder={copy.fullNamePlaceholder}
                                         maxLength={255}
                                     />
                                 )}
                                 {student && (
                                     <AccountField
+                                        messages={messages}
                                         name="university_id"
-                                        label="الرقم الجامعي"
+                                        label={messages.universityId}
                                         form={form}
                                         placeholder="M123456789"
                                         dir="ltr"
                                         autoComplete="username"
                                         autoCapitalize="none"
                                         spellCheck={false}
-                                        hint="M متبوعًا بتسعة أرقام"
+                                        hint={copy.universityIdHint}
                                     />
                                 )}
                                 <AccountField
+                                    messages={messages}
                                     name="email"
                                     wide={mode === 'reset' && !student}
-                                    label="البريد الإلكتروني"
+                                    label={messages.email}
                                     form={form}
                                     type="email"
                                     placeholder="name@example.com"
@@ -252,24 +277,28 @@ export default function AccountPortal({
                                 {!recovering && (
                                     <>
                                         <AccountField
+                                            messages={messages}
                                             name="password"
                                             label={
                                                 registering
-                                                    ? 'كلمة المرور'
-                                                    : 'كلمة المرور الجديدة'
+                                                    ? messages.password
+                                                    : copy.passwordNew
                                             }
                                             form={form}
                                             type="password"
-                                            placeholder="ثمانية أحرف على الأقل"
+                                            placeholder={copy.passwordMinimum}
                                             autoComplete="new-password"
                                             minLength={8}
                                         />
                                         <AccountField
+                                            messages={messages}
                                             name="password_confirmation"
-                                            label="تأكيد كلمة المرور"
+                                            label={copy.passwordConfirm}
                                             form={form}
                                             type="password"
-                                            placeholder="أعد كتابة كلمة المرور"
+                                            placeholder={
+                                                copy.passwordConfirmPlaceholder
+                                            }
                                             autoComplete="new-password"
                                             minLength={8}
                                         />
@@ -288,25 +317,27 @@ export default function AccountPortal({
                             >
                                 {form.processing
                                     ? registering
-                                        ? 'جارٍ إنشاء الحساب…'
+                                        ? copy.creating
                                         : recovering
-                                          ? 'جارٍ إرسال الرابط…'
-                                          : 'جارٍ حفظ كلمة المرور…'
+                                          ? copy.sending
+                                          : copy.saving
                                     : registering
-                                      ? 'إنشاء الحساب'
+                                      ? copy.createAccount
                                       : recovering
-                                        ? 'إرسال رابط الاستعادة'
-                                        : 'حفظ كلمة المرور الجديدة'}
+                                        ? copy.sendResetLink
+                                        : copy.savePassword}
                                 <PortalIcon name="arrow" />
                             </button>
                         </form>
                         <p className="qb-register">
-                            {registering ? 'لديك حساب بالفعل؟' : 'جاهز للعودة؟'}{' '}
+                            {registering
+                                ? copy.alreadyHaveAccount
+                                : copy.readyToReturn}{' '}
                             <Link
                                 className="qb-text-button"
                                 href={route(loginRoute)}
                             >
-                                تسجيل الدخول
+                                {messages.signIn}
                             </Link>
                         </p>
                         {mode === 'reset' && (
@@ -314,13 +345,13 @@ export default function AccountPortal({
                                 className="qb-recovery-link"
                                 href={route(requestRoute)}
                             >
-                                انتهت صلاحية الرابط؟ اطلب رابطًا جديدًا
+                                {copy.expiredLink}
                             </Link>
                         )}
                     </div>
                 </section>
             </main>
-            <footer className="qb-footer">بنك الأسئلة · تعلّم بثقة</footer>
+            <footer className="qb-footer">{messages.footer}</footer>
         </div>
     );
 }

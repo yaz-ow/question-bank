@@ -50,6 +50,36 @@ export const portalMessages = {
         signIn: 'تسجيل الدخول',
         noAccount: 'ليس لديك حساب؟',
         register: 'إنشاء حساب',
+        account: {
+            registerTitle: 'إنشاء حساب طالب',
+            resetTitle: 'تعيين كلمة مرور جديدة',
+            registerSubtitle: 'ابدأ رحلتك التعليمية بحسابك في بنك الأسئلة.',
+            studentRecoverySubtitle:
+                'أدخل رقمك الجامعي والبريد المرتبط بحسابك لإرسال رابط الاستعادة.',
+            adminRecoverySubtitle:
+                'أدخل البريد المرتبط بحساب الإدارة لإرسال رابط الاستعادة.',
+            resetSubtitle: 'اختر كلمة مرور جديدة، ثم أكّدها للعودة إلى حسابك.',
+            recoveryHeading: 'نساعدك على العودة',
+            backToLogin: 'رجوع للدخول',
+            fullName: 'الاسم الكامل',
+            fullNamePlaceholder: 'اسمك الكامل',
+            universityIdHint: 'M متبوعًا بتسعة أرقام',
+            passwordNew: 'كلمة المرور الجديدة',
+            passwordMinimum: 'ثمانية أحرف على الأقل',
+            passwordConfirm: 'تأكيد كلمة المرور',
+            passwordConfirmPlaceholder: 'أعد كتابة كلمة المرور',
+            show: 'إظهار',
+            hide: 'إخفاء',
+            creating: 'جارٍ إنشاء الحساب…',
+            sending: 'جارٍ إرسال الرابط…',
+            saving: 'جارٍ حفظ كلمة المرور…',
+            createAccount: 'إنشاء الحساب',
+            sendResetLink: 'إرسال رابط الاستعادة',
+            savePassword: 'حفظ كلمة المرور الجديدة',
+            alreadyHaveAccount: 'لديك حساب بالفعل؟',
+            readyToReturn: 'جاهز للعودة؟',
+            expiredLink: 'انتهت صلاحية الرابط؟ اطلب رابطًا جديدًا',
+        },
     },
     en: {
         brand: 'Question Bank',
@@ -84,5 +114,51 @@ export const portalMessages = {
         signIn: 'Sign in',
         noAccount: 'Don’t have an account?',
         register: 'Create an account',
+        account: {
+            registerTitle: 'Create a student account',
+            resetTitle: 'Set a new password',
+            registerSubtitle:
+                'Start your learning journey with a Question Bank account.',
+            studentRecoverySubtitle:
+                'Enter your university ID and account email to receive a reset link.',
+            adminRecoverySubtitle:
+                'Enter your administration account email to receive a reset link.',
+            resetSubtitle:
+                'Choose and confirm a new password to return to your account.',
+            recoveryHeading: 'Let’s get you back',
+            backToLogin: 'Back to sign in',
+            fullName: 'Full name',
+            fullNamePlaceholder: 'Your full name',
+            universityIdHint: 'M followed by nine digits',
+            passwordNew: 'New password',
+            passwordMinimum: 'At least eight characters',
+            passwordConfirm: 'Confirm password',
+            passwordConfirmPlaceholder: 'Re-enter your password',
+            show: 'Show',
+            hide: 'Hide',
+            creating: 'Creating your account…',
+            sending: 'Sending the link…',
+            saving: 'Saving your password…',
+            createAccount: 'Create account',
+            sendResetLink: 'Send reset link',
+            savePassword: 'Save new password',
+            alreadyHaveAccount: 'Already have an account?',
+            readyToReturn: 'Ready to return?',
+            expiredLink: 'Link expired? Request a new one',
+        },
+        feedback: {
+            'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني':
+                'If the details are correct, a password reset link will be sent to your email.',
+            'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول':
+                'Your password has been reset. You can now sign in.',
+            'حسابك تم إنشاؤه بنجاح':
+                'Your account has been created successfully.',
+            'الحقائق غير صحيحة': 'The account details are incorrect.',
+        },
     },
 };
+
+/** Translate the existing account feedback without changing its server-side meaning. */
+export function translatePortalFeedback(message, language) {
+    return portalMessages[language]?.feedback?.[message] ?? message;
+}
