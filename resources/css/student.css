@@ -78,7 +78,7 @@
         font-size: 17px;
     }
     .student-dashboard .student-workspace {
-        margin-right: var(--student-sidebar-width);
+        margin-inline-start: var(--student-sidebar-width);
         display: flex;
         flex-direction: column;
         min-height: 100svh;
@@ -149,8 +149,8 @@
     }
     .student-dashboard .student-level-card > span[aria-hidden='true'] {
         top: auto;
-        right: auto;
-        left: 76px;
+        inset-inline-start: auto;
+        inset-inline-end: 76px;
         bottom: 16px;
         font-size: 76px;
         color: #e9eef5;
@@ -317,4 +317,16 @@
         min-height: 72px;
         padding: 14px 16px;
     }
+}
+
+.student-dashboard[dir='ltr'] .student-direction-arrow {
+    transform: scaleX(-1);
+}
+.student-dashboard[lang='en'] .student-sidebar-logo {
+    font-size: 23px;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+.student-sidebar-logo svg {
+    flex-shrink: 0;
 }
