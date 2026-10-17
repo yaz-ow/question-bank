@@ -100,11 +100,11 @@ class QuestionController extends Controller
         return $this->workspaceRedirect($request, $subject)->with('success', 'تم حذف السؤال بنجاح');
     }
 
-    public function downloadTemplate(Subject $subject)
+    public function downloadTemplate(Request $request, Subject $subject)
     {
         $this->authorize('manage-questions', $subject);
 
-        return Excel::download(new QuestionsImportTemplate($subject->id), 'questions_template.xlsx');
+        return Excel::download(new QuestionsImportTemplate($subject->id, $request->query('locale') === 'en' ? 'en' : 'ar'), 'questions_template.xlsx');
     }
 
     public function uploadPreview(Request $request, Subject $subject)

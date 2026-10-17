@@ -1,8 +1,11 @@
+import {
+    adminText as t,
+    translateAdminFeedback as feedback,
+} from '../../i18n/admin';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef } from 'react';
 import AdminIcon from '../AdminIcon';
 import { choices, emptyQuestion } from './QuestionPreview';
-
 export default function QuestionEditor({
     subject,
     question,
@@ -13,7 +16,9 @@ export default function QuestionEditor({
     onSaved,
     onCancel,
 }) {
-    const form = useForm({ ...emptyQuestion });
+    const form = useForm({
+        ...emptyQuestion,
+    });
     const text = useRef(null);
     useEffect(() => {
         const values = Object.fromEntries(
@@ -36,14 +41,21 @@ export default function QuestionEditor({
             onStart: () => onBusy(true),
             onFinish: () => onBusy(false),
             onSuccess: () => {
-                form.setDefaults({ ...emptyQuestion });
-                form.setData({ ...emptyQuestion });
+                form.setDefaults({
+                    ...emptyQuestion,
+                });
+                form.setData({
+                    ...emptyQuestion,
+                });
                 form.clearErrors();
                 onSaved();
                 text.current?.focus();
             },
         };
-        form.transform((data) => ({ ...data, ...listContext }));
+        form.transform((data) => ({
+            ...data,
+            ...listContext,
+        }));
         if (question)
             form.put(
                 route('admin.questions.update', {
@@ -54,7 +66,9 @@ export default function QuestionEditor({
             );
         else
             form.post(
-                route('admin.questions.store', { subject: subject.id }),
+                route('admin.questions.store', {
+                    subject: subject.id,
+                }),
                 options,
             );
     };
@@ -65,7 +79,7 @@ export default function QuestionEditor({
                 role="alert"
                 id={`question-${field}-error`}
             >
-                {form.errors[field]}
+                {feedback(form.errors[field])}
             </p>
         );
     return (
@@ -78,7 +92,7 @@ export default function QuestionEditor({
             <div className="admin-question-pane-heading">
                 <h2 id="question-editor-title">
                     <AdminIcon name={question ? 'edit' : 'plus'} />
-                    {question ? 'تعديل السؤال' : 'إضافة سؤال جديد'}
+                    {question ? t('تعديل السؤال') : t('إضافة سؤال جديد')}
                 </h2>
                 {question && (
                     <span className="admin-question-id">#{question.id}</span>
@@ -86,12 +100,12 @@ export default function QuestionEditor({
             </div>
             <p className="admin-pane-hint">
                 {question
-                    ? 'عدّل السؤال وخياراته ثم احفظ التغييرات.'
-                    : 'أدخل السؤال وخياراته وحدّد الإجابة الصحيحة.'}
+                    ? t('عدّل السؤال وخياراته ثم احفظ التغييرات.')
+                    : t('أدخل السؤال وخياراته وحدّد الإجابة الصحيحة.')}
             </p>
             <form onSubmit={submit}>
                 <div className="admin-question-field">
-                    <label htmlFor="question-text">نص السؤال</label>
+                    <label htmlFor="question-text">{t('نص السؤال')}</label>
                     <textarea
                         ref={text}
                         id="question-text"
@@ -99,7 +113,7 @@ export default function QuestionEditor({
                         rows={3}
                         required
                         dir="auto"
-                        placeholder="اكتب نص السؤال هنا…"
+                        placeholder={t('اكتب نص السؤال هنا…')}
                         value={form.data.question_text}
                         onChange={(e) =>
                             form.setData('question_text', e.target.value)
@@ -115,9 +129,9 @@ export default function QuestionEditor({
                     {error('question_text')}
                 </div>
                 <fieldset className="admin-answer-fields" disabled={busy}>
-                    <legend>خيارات الإجابة</legend>
+                    <legend>{t('خيارات الإجابة')}</legend>
                     <p className="admin-pane-hint">
-                        حدّد الإجابة الصحيحة بجانب الخيار.
+                        {t('حدّد الإجابة الصحيحة بجانب الخيار.')}
                     </p>
                     {choices.map((choice) => (
                         <div key={choice.key} className="admin-option-field">
@@ -137,7 +151,9 @@ export default function QuestionEditor({
                                     required
                                     maxLength={255}
                                     dir="auto"
-                                    aria-label={`الخيار ${choice.label}`}
+                                    aria-label={t('الخيار {0}', {
+                                        0: choice.label,
+                                    })}
                                     aria-invalid={!!form.errors[choice.field]}
                                     aria-describedby={
                                         form.errors[choice.field]
@@ -157,7 +173,12 @@ export default function QuestionEditor({
                                     name="correct_answer"
                                     value={choice.key}
                                     required
-                                    aria-label={`تحديد الخيار ${choice.label} إجابة صحيحة`}
+                                    aria-label={t(
+                                        'تحديد الخيار {0} إجابة صحيحة',
+                                        {
+                                            0: choice.label,
+                                        },
+                                    )}
                                     checked={
                                         form.data.correct_answer === choice.key
                                     }
@@ -171,7 +192,7 @@ export default function QuestionEditor({
                             </div>
                             {form.data.correct_answer === choice.key && (
                                 <span className="admin-correct-hint">
-                                    الإجابة الصحيحة
+                                    {t('الإجابة الصحيحة')}
                                 </span>
                             )}
                             {error(choice.field)}
@@ -187,10 +208,10 @@ export default function QuestionEditor({
                     >
                         <AdminIcon name="tick" />
                         {form.processing
-                            ? 'جارٍ الحفظ…'
+                            ? t('جارٍ الحفظ…')
                             : question
-                              ? 'حفظ التعديلات'
-                              : 'إضافة السؤال'}
+                              ? t('حفظ التعديلات')
+                              : t('إضافة السؤال')}
                     </button>
                     <button
                         type="button"
@@ -202,7 +223,7 @@ export default function QuestionEditor({
                             onCancel();
                         }}
                     >
-                        {question ? 'إلغاء التعديل' : 'مسح الحقول'}
+                        {question ? t('إلغاء التعديل') : t('مسح الحقول')}
                     </button>
                 </div>
             </form>

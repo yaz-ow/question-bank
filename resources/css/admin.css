@@ -42,7 +42,7 @@
 .admin-sidebar {
     position: fixed;
     inset-block: 0;
-    right: 0;
+    inset-inline-start: 0;
     z-index: 30;
     display: flex;
     flex-direction: column;
@@ -68,6 +68,7 @@
 .admin-logo strong {
     font-size: 30px;
     line-height: 1.5;
+    text-align: center;
 }
 .admin-logo small {
     font-size: 16px;
@@ -92,7 +93,10 @@
     transition: background 0.18s;
 }
 .admin-nav-link span {
-    white-space: nowrap;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.4;
 }
 .admin-nav-link .admin-icon {
     width: 28px;
@@ -361,7 +365,8 @@
 .admin-search input {
     width: 100%;
     height: 48px;
-    padding: 10px 44px 10px 14px;
+    padding-block: 10px;
+    padding-inline: 44px 14px;
     border: 1px solid #d7e2ee;
     background: #fff;
     border-radius: 9px;
@@ -415,7 +420,7 @@
     width: 100%;
     min-width: 760px;
     border-collapse: collapse;
-    text-align: right;
+    text-align: start;
 }
 .admin-table thead {
     background: #edf3f9;
@@ -596,7 +601,7 @@
 .admin-plus-mark {
     position: absolute;
     bottom: 7px;
-    left: 5px;
+    inset-inline-end: 5px;
     border-radius: 4px;
     background: var(--admin-tone-badge);
 }
@@ -624,7 +629,7 @@
     padding: 0 var(--admin-gutter) 18px;
     font-size: 13px;
     color: #8598b0;
-    text-align: left;
+    text-align: end;
 }
 .admin-footer strong {
     color: #365d86;
@@ -1079,7 +1084,7 @@
     gap: 18px;
     margin-bottom: 22px;
 }
-.admin-account-list-heading h2 { flex-shrink: 0; }
+.admin-account-list-heading h2 { min-width: 0; flex-shrink: 1; overflow-wrap: anywhere; }
 .admin-account-filters {
     flex: 1 1 600px;
     margin: 0;
@@ -1093,7 +1098,7 @@
 .admin-account-table :is(th, td) { padding: 12px 16px; vertical-align: middle; }
 .admin-account-table thead th { white-space: nowrap; }
 .admin-account-table tbody td { overflow-wrap: anywhere; }
-.admin-account-table :is(th, td):nth-child(3) { text-align: right; }
+.admin-account-table :is(th, td):nth-child(3) { text-align: start; }
 .admin-account-table tbody td:nth-child(2) { white-space: normal; }
 .admin-students-table th:first-child { width: 23%; }
 .admin-students-table th:nth-child(2) { width: 16%; }
@@ -1160,7 +1165,7 @@
 .admin-account-delete:hover { background: #ffe8ed; }
 .admin-account-activate { color: #087b43; border-color: #93d2b2; }
 .admin-account-activate:hover { background: #ecfaf3; }
-.admin-account-table .admin-row-actions { gap: 8px; }
+.admin-account-table .admin-row-actions { gap: 8px; flex-wrap: wrap; }
 .admin-account-table tr.admin-account-selected { background: #f5f9fe; }
 .admin-account-panel-row > td { padding: 8px !important; }
 .admin-account-inline {
@@ -1200,8 +1205,10 @@
 .admin-instructor-create-actions .admin-button { min-height: 48px; font-size: 17px; padding: 8px 16px; }
 .admin-instructor-create-actions .admin-button-primary { flex: 1; }
 .admin-account-secret { position: relative; }
-.admin-account-secret .admin-subject-input { padding-left: 48px; }
-.admin-account-secret-toggle { position: absolute; left: 4px; top: 4px; display: grid; place-items: center; width: 40px; height: 40px; color: #597594; border-radius: 7px; }
+/* Secret inputs stay LTR; reserve space on the portal's toggle side. */
+.admin-account-secret .admin-subject-input { padding-right: 48px; }
+.admin-app[dir='rtl'] .admin-account-secret .admin-subject-input { padding-left: 48px; padding-right: 14px; }
+.admin-account-secret-toggle { position: absolute; inset-inline-end: 4px; top: 4px; display: grid; place-items: center; width: 40px; height: 40px; color: #597594; border-radius: 7px; }
 .admin-account-secret-toggle:hover { background: #edf4fc; }
 .admin-account-secret-toggle .admin-icon { width: 21px; height: 21px; }
 .admin-account-list button:disabled,
@@ -1229,4 +1236,17 @@
     .admin-instructor-create-actions { padding-top: 0; flex-wrap: wrap; }
     .admin-account-list-heading, .admin-account-create-heading { gap: 12px; }
     .admin-account-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.admin-app[dir='ltr'] .admin-quick-arrow,
+.admin-app[dir='ltr'] .admin-view-all > .admin-icon,
+.admin-app[dir='ltr'] .admin-back-subjects > .admin-icon {
+    transform: scaleX(-1);
+}
+
+.admin-app[lang='en'] .admin-nav-link {
+    font-size: 16px;
+}
+.admin-app[lang='en'] .admin-logo strong {
+    font-size: 26px;
 }

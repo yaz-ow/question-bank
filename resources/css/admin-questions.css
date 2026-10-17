@@ -103,7 +103,7 @@
     min-width: 540px;
     table-layout: fixed;
     border-collapse: collapse;
-    text-align: right;
+    text-align: start;
 }
 .admin-question-table thead {
     background: #edf3f9;
@@ -584,7 +584,7 @@
     font-size: 14px;
     color: #b42334;
     margin: 10px 0 0;
-    padding-right: 18px;
+    padding-inline-start: 18px;
 }
 .admin-import-empty,
 .admin-import-loading {
@@ -728,6 +728,6 @@
     }
 }
 .admin-question-editor textarea:placeholder-shown {
-    direction: rtl;
-    text-align: right;
+    direction: inherit;
+    text-align: start;
 }

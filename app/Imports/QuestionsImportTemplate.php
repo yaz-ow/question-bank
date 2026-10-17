@@ -16,13 +16,20 @@ class QuestionsImportTemplate implements FromCollection, WithHeadings
     /**
      * Create a new template instance.
      */
-    public function __construct($subjectId)
+    public function __construct($subjectId, private string $locale = 'ar')
     {
         $this->subjectId = $subjectId;
     }
 
     public function collection(): Collection
     {
+        if ($this->locale === 'en') {
+            return collect([[
+                'Which data structure follows FIFO?',
+                'Stack', 'Queue', 'Tree', 'Graph', 'B',
+            ]]);
+        }
+
         return collect([[
             'أي بنية بيانات تعمل وفق مبدأ FIFO؟',
             'المكدس', 'الطابور', 'الشجرة', 'الرسم البياني', 'B',

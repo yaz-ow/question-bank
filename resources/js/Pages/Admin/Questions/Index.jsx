@@ -1,3 +1,7 @@
+import {
+    adminText as t,
+    translateAdminFeedback as feedback,
+} from '../../../i18n/admin';
 import { Head, Link, useForm } from '@inertiajs/react';
 import '../../../../css/admin-questions.css';
 import { useEffect, useRef, useState } from 'react';
@@ -11,14 +15,15 @@ import QuestionPreview, {
     number,
 } from '../../../Components/AdminQuestions/QuestionPreview';
 import QuestionDelete from '../../../Components/AdminQuestions/QuestionDelete';
-
 export default function QuestionsIndex({
     subject,
     questions,
     filters = {},
     importPreview = null,
 }) {
-    const search = useForm({ search: filters.search || '' });
+    const search = useForm({
+        search: filters.search || '',
+    });
     const [mode, setMode] = useState(importPreview ? 'import' : 'editor');
     const [editing, setEditing] = useState(null);
     const [previewing, setPreviewing] = useState(null);
@@ -50,7 +55,9 @@ export default function QuestionsIndex({
                     behavior: 'smooth',
                     block: 'start',
                 });
-            pane.current?.focus({ preventScroll: true });
+            pane.current?.focus({
+                preventScroll: true,
+            });
         });
     };
     const edit = (question) => {
@@ -69,24 +76,36 @@ export default function QuestionsIndex({
     };
     const submitSearch = (event) => {
         event.preventDefault();
-        search.get(route('admin.questions.index', { subject: subject.id }), {
-            preserveState: true,
-            preserveScroll: true,
-        });
+        search.get(
+            route('admin.questions.index', {
+                subject: subject.id,
+            }),
+            {
+                preserveState: true,
+                preserveScroll: true,
+            },
+        );
     };
     return (
-        <AdminLayout activeNav="subjects" breadcrumb="إدارة الأسئلة">
-            <Head title={`أسئلة ${subject.name}`} />
+        <AdminLayout activeNav="subjects" breadcrumb={t('إدارة الأسئلة')}>
+            <Head
+                title={t('أسئلة {0}', {
+                    0: subject.name,
+                })}
+            />
             <div className="admin-page-heading admin-question-page-heading">
                 <div>
                     <div className="admin-question-title">
-                        <h1>إدارة الأسئلة</h1>
+                        <h1>{t('إدارة الأسئلة')}</h1>
                         <span className="admin-total-questions">
-                            {number(subject.questions_count)} سؤالًا
+                            {number(subject.questions_count)}
+                            {t(' سؤالًا')}
                         </span>
                     </div>
                     <p>
-                        {subject.name} · المستوى {subject.level}
+                        {subject.name}
+                        {t(' · المستوى ')}
+                        {subject.level}
                     </p>
                 </div>
                 <div className="admin-question-toolbar">
@@ -97,11 +116,11 @@ export default function QuestionsIndex({
                         disabled={busy}
                     >
                         <AdminIcon name="upload" />
-                        استيراد من Excel
+                        {t('استيراد من Excel')}
                         {importPreview && (
                             <span
                                 className="admin-pending-dot"
-                                aria-label="يوجد ملف قيد المعاينة"
+                                aria-label={t('يوجد ملف قيد المعاينة')}
                             />
                         )}
                     </button>
@@ -112,23 +131,23 @@ export default function QuestionsIndex({
                         disabled={busy}
                     >
                         <AdminIcon name="plus" />
-                        إضافة سؤال
+                        {t('إضافة سؤال')}
                     </button>
                 </div>
             </div>
-            <FlashMessages />
+            <FlashMessages translate={feedback} />
             <div className="admin-question-workspace">
                 <section
                     className="admin-panel admin-question-list"
                     aria-labelledby="question-list-title"
                 >
                     <div className="admin-question-list-heading">
-                        <h2 id="question-list-title">قائمة الأسئلة</h2>
+                        <h2 id="question-list-title">{t('قائمة الأسئلة')}</h2>
                         <Link
                             href={route('admin.subjects.index')}
                             className="admin-back-subjects"
                         >
-                            المقررات
+                            {t('المقررات')}
                             <AdminIcon name="arrow" />
                         </Link>
                     </div>
@@ -139,8 +158,8 @@ export default function QuestionsIndex({
                         <label className="admin-search">
                             <AdminIcon name="search" />
                             <input
-                                aria-label="البحث بنص السؤال"
-                                placeholder="البحث في أسئلة المقرر"
+                                aria-label={t('البحث بنص السؤال')}
+                                placeholder={t('البحث في أسئلة المقرر')}
                                 maxLength={1000}
                                 value={search.data.search}
                                 onChange={(e) =>
@@ -154,7 +173,7 @@ export default function QuestionsIndex({
                             className="admin-button admin-subject-search-button"
                             disabled={busy || search.processing}
                         >
-                            {search.processing ? 'جارٍ البحث…' : 'بحث'}
+                            {search.processing ? t('جارٍ البحث…') : t('بحث')}
                         </button>
                         {filters.search && (
                             <Link
@@ -165,25 +184,27 @@ export default function QuestionsIndex({
                                 preserveScroll
                                 className="admin-subject-reset"
                             >
-                                مسح البحث
+                                {t('مسح البحث')}
                             </Link>
                         )}
                     </form>
                     {search.errors.search && (
                         <p className="admin-field-error" role="alert">
-                            {search.errors.search}
+                            {feedback(search.errors.search)}
                         </p>
                     )}
                     <div className="admin-question-table-scroll">
                         <table className="admin-question-table">
                             <caption className="sr-only">
-                                أسئلة المقرر والإجابات الصحيحة وإجراءات الإدارة
+                                {t(
+                                    'أسئلة المقرر والإجابات الصحيحة وإجراءات الإدارة',
+                                )}
                             </caption>
                             <thead>
                                 <tr>
-                                    <th scope="col">السؤال</th>
-                                    <th scope="col">الإجابة الصحيحة</th>
-                                    <th scope="col">الإجراءات</th>
+                                    <th scope="col">{t('السؤال')}</th>
+                                    <th scope="col">{t('الإجابة الصحيحة')}</th>
+                                    <th scope="col">{t('الإجراءات')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -256,8 +277,15 @@ export default function QuestionsIndex({
                                                     <button
                                                         type="button"
                                                         className="admin-edit-link"
-                                                        title="معاينة السؤال"
-                                                        aria-label={`معاينة السؤال ${question.id}`}
+                                                        title={t(
+                                                            'معاينة السؤال',
+                                                        )}
+                                                        aria-label={t(
+                                                            'معاينة السؤال {0}',
+                                                            {
+                                                                0: question.id,
+                                                            },
+                                                        )}
                                                         disabled={busy}
                                                         onClick={() => {
                                                             setPreviewing(
@@ -271,8 +299,15 @@ export default function QuestionsIndex({
                                                     <button
                                                         type="button"
                                                         className={`admin-edit-link${mode === 'editor' && editing?.id === question.id ? ' is-active' : ''}`}
-                                                        title="تعديل السؤال"
-                                                        aria-label={`تعديل السؤال ${question.id}`}
+                                                        title={t(
+                                                            'تعديل السؤال',
+                                                        )}
+                                                        aria-label={t(
+                                                            'تعديل السؤال {0}',
+                                                            {
+                                                                0: question.id,
+                                                            },
+                                                        )}
                                                         disabled={busy}
                                                         onClick={() =>
                                                             edit(question)
@@ -283,8 +318,13 @@ export default function QuestionsIndex({
                                                     <button
                                                         type="button"
                                                         className="admin-edit-link admin-delete-subject"
-                                                        title="حذف السؤال"
-                                                        aria-label={`حذف السؤال ${question.id}`}
+                                                        title={t('حذف السؤال')}
+                                                        aria-label={t(
+                                                            'حذف السؤال {0}',
+                                                            {
+                                                                0: question.id,
+                                                            },
+                                                        )}
                                                         disabled={busy}
                                                         onClick={() =>
                                                             remove(question)
@@ -305,13 +345,15 @@ export default function QuestionsIndex({
                             <AdminIcon name="question" />
                             <h3>
                                 {filters.search
-                                    ? 'لا توجد أسئلة مطابقة'
-                                    : 'ابدأ بإضافة أول سؤال'}
+                                    ? t('لا توجد أسئلة مطابقة')
+                                    : t('ابدأ بإضافة أول سؤال')}
                             </h3>
                             <p>
                                 {filters.search
-                                    ? 'جرّب كلمات أخرى أو امسح البحث.'
-                                    : 'استخدم المحرر أو استورد أسئلة المقرر من Excel.'}
+                                    ? t('جرّب كلمات أخرى أو امسح البحث.')
+                                    : t(
+                                          'استخدم المحرر أو استورد أسئلة المقرر من Excel.',
+                                      )}
                             </p>
                             <button
                                 type="button"
@@ -319,19 +361,23 @@ export default function QuestionsIndex({
                                 onClick={add}
                                 disabled={busy}
                             >
-                                إضافة سؤال
+                                {t('إضافة سؤال')}
                             </button>
                         </div>
                     )}
                     <div className="admin-table-footer admin-question-list-footer">
                         <span>
                             {questions.total
-                                ? `عرض ${number(questions.from)} – ${number(questions.to)} من ${number(questions.total)} سؤالًا`
-                                : 'لا توجد أسئلة للعرض'}
+                                ? t('عرض {0} – {1} من {2} سؤالًا', {
+                                      0: number(questions.from),
+                                      1: number(questions.to),
+                                      2: number(questions.total),
+                                  })
+                                : t('لا توجد أسئلة للعرض')}
                         </span>
                         <nav
                             className="admin-pagination"
-                            aria-label="صفحات الأسئلة"
+                            aria-label={t('صفحات الأسئلة')}
                         >
                             {questions.prev_page_url ? (
                                 <Link
@@ -340,16 +386,17 @@ export default function QuestionsIndex({
                                     preserveState
                                     preserveScroll
                                 >
-                                    السابق
+                                    {t('السابق')}
                                 </Link>
                             ) : (
                                 <span className="admin-pagination-link admin-pagination-disabled">
-                                    السابق
+                                    {t('السابق')}
                                 </span>
                             )}
                             <span>
-                                صفحة {number(questions.current_page)} من{' '}
-                                {number(questions.last_page)}
+                                {t('صفحة ')}
+                                {number(questions.current_page)}
+                                {t(' من')} {number(questions.last_page)}
                             </span>
                             {questions.next_page_url ? (
                                 <Link
@@ -358,18 +405,18 @@ export default function QuestionsIndex({
                                     preserveState
                                     preserveScroll
                                 >
-                                    التالي
+                                    {t('التالي')}
                                 </Link>
                             ) : (
                                 <span className="admin-pagination-link admin-pagination-disabled">
-                                    التالي
+                                    {t('التالي')}
                                 </span>
                             )}
                         </nav>
                     </div>
                     <div className="admin-question-list-note">
                         <AdminIcon name="question" />
-                        حذف السؤال يتطلب تأكيدًا داخل مساحة المحرر.
+                        {t('حذف السؤال يتطلب تأكيدًا داخل مساحة المحرر.')}
                     </div>
                 </section>
                 <div

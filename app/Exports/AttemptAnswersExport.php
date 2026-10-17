@@ -16,30 +16,59 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class AttemptAnswersExport extends DefaultValueBinder implements FromArray, WithColumnWidths, WithCustomValueBinder, WithStrictNullComparison, WithStyles, WithTitle
 {
-    public function __construct(private QuizAttempt $attempt) {}
+    public function __construct(private QuizAttempt $attempt, private string $locale = 'ar') {}
 
     public function array(): array
     {
         $attempt = $this->attempt;
         $rows = [
-            ['مراجعة إجابات الاختبار'],
-            ['الطالب', $attempt->user->name, 'الرقم الجامعي', $attempt->user->university_id],
-            ['المقرر', $attempt->subject->name, 'المستوى', $attempt->subject->level],
-            ['رقم المحاولة', $attempt->id, 'تاريخ الاختبار', ($attempt->completed_at ?? $attempt->created_at)->timezone('Asia/Riyadh')->format('Y-m-d H:i')],
-            ['عدد الأسئلة', $attempt->question_count, 'الدرجة', "{$attempt->score} / {$attempt->question_count}"],
-            ['النسبة المئوية', round(100 * $attempt->score / $attempt->question_count, 1).'%'],
+            [$this->label('مراجعة إجابات الاختبار')],
+            [$this->label('الطالب'), $attempt->user->name, $this->label('الرقم الجامعي'), $attempt->user->university_id],
+            [$this->label('المقرر'), $attempt->subject->name, $this->label('المستوى'), $attempt->subject->level],
+            [$this->label('رقم المحاولة'), $attempt->id, $this->label('تاريخ الاختبار'), ($attempt->completed_at ?? $attempt->created_at)->timezone('Asia/Riyadh')->format('Y-m-d H:i')],
+            [$this->label('عدد الأسئلة'), $attempt->question_count, $this->label('الدرجة'), "{$attempt->score} / {$attempt->question_count}"],
+            [$this->label('النسبة المئوية'), round(100 * $attempt->score / $attempt->question_count, 1).'%'],
             [''],
-            ['رقم السؤال', 'السؤال', 'A', 'B', 'C', 'D', 'إجابة الطالب', 'الإجابة الصحيحة', 'التقييم'],
+            [$this->label('رقم السؤال'), $this->label('السؤال'), 'A', 'B', 'C', 'D', $this->label('إجابة الطالب'), $this->label('الإجابة الصحيحة'), $this->label('التقييم')],
         ];
         foreach ($attempt->items as $item) {
             $rows[] = [
                 $item->position, $item->question_text, $item->option_a, $item->option_b,
-                $item->option_c, $item->option_d, $item->selected_answer ?? 'لم يجب',
-                $item->correct_answer, $item->is_correct ? 'صحيحة' : 'خاطئة',
+                $item->option_c, $item->option_d, $item->selected_answer ?? $this->label('لم يجب'),
+                $item->correct_answer, $item->is_correct ? $this->label('صحيحة') : $this->label('خاطئة'),
             ];
         }
 
         return $rows;
+    }
+
+    private function label(string $arabic): string
+    {
+        if ($this->locale !== 'en') {
+            return $arabic;
+        }
+
+        return [
+            'مراجعة إجابات الاختبار' => 'Quiz answer review',
+            'الطالب' => 'Student',
+            'الرقم الجامعي' => 'University ID',
+            'المقرر' => 'Course',
+            'المستوى' => 'Level',
+            'رقم المحاولة' => 'Attempt ID',
+            'تاريخ الاختبار' => 'Quiz date',
+            'عدد الأسئلة' => 'Question count',
+            'الدرجة' => 'Score',
+            'النسبة المئوية' => 'Percentage',
+            'رقم السؤال' => 'Question number',
+            'السؤال' => 'Question',
+            'إجابة الطالب' => 'Student answer',
+            'الإجابة الصحيحة' => 'Correct answer',
+            'التقييم' => 'Result',
+            'لم يجب' => 'Unanswered',
+            'صحيحة' => 'Correct',
+            'خاطئة' => 'Incorrect',
+            'إجابات المحاولة' => 'Attempt answers',
+        ][$arabic] ?? $arabic;
     }
 
     public function bindValue(Cell $cell, $value): bool
@@ -56,7 +85,7 @@ class AttemptAnswersExport extends DefaultValueBinder implements FromArray, With
 
     public function title(): string
     {
-        return 'إجابات المحاولة';
+        return $this->label('إجابات المحاولة');
     }
 
     public function columnWidths(): array
@@ -66,7 +95,7 @@ class AttemptAnswersExport extends DefaultValueBinder implements FromArray, With
 
     public function styles(Worksheet $sheet): array
     {
-        $sheet->setRightToLeft(true);
+        $sheet->setRightToLeft($this->locale !== 'en');
         $sheet->mergeCells('A1:I1');
         $sheet->freezePane('C9');
         $sheet->setAutoFilter('A8:I'.$sheet->getHighestRow());

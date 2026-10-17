@@ -1,6 +1,9 @@
+import {
+    adminText as t,
+    translateAdminFeedback as feedback,
+} from '../../i18n/admin';
 import { useForm } from '@inertiajs/react';
 import AdminIcon from '../AdminIcon';
-
 export default function QuestionDelete({
     subject,
     question,
@@ -10,7 +13,9 @@ export default function QuestionDelete({
     onBusy,
     busy,
 }) {
-    const form = useForm({ ...listContext });
+    const form = useForm({
+        ...listContext,
+    });
     const remove = (event) => {
         event.preventDefault();
         if (busy) return;
@@ -36,19 +41,19 @@ export default function QuestionDelete({
             <div className="admin-delete-symbol">
                 <AdminIcon name="trash" />
             </div>
-            <h2 id="delete-question-title">حذف السؤال؟</h2>
+            <h2 id="delete-question-title">{t('حذف السؤال؟')}</h2>
             <p className="admin-pane-hint">
-                راجع السؤال قبل تأكيد حذفه من بنك أسئلة هذا المقرر.
+                {t('راجع السؤال قبل تأكيد حذفه من بنك أسئلة هذا المقرر.')}
             </p>
             <p className="admin-full-question" dir="auto">
                 {question.question_text}
             </p>
             <p className="admin-delete-warning">
-                سيُحذف السؤال نهائيًا. لا يمكن التراجع عن الحذف.
+                {t('سيُحذف السؤال نهائيًا. لا يمكن التراجع عن الحذف.')}
             </p>
             {Object.values(form.errors).map((message, i) => (
                 <p key={i} className="admin-field-error" role="alert">
-                    {message}
+                    {feedback(message)}
                 </p>
             ))}
             <form onSubmit={remove} className="admin-pane-actions">
@@ -57,7 +62,7 @@ export default function QuestionDelete({
                     className="admin-button admin-confirm-delete"
                     disabled={busy}
                 >
-                    {form.processing ? 'جارٍ الحذف…' : 'تأكيد حذف السؤال'}
+                    {form.processing ? t('جارٍ الحذف…') : t('تأكيد حذف السؤال')}
                 </button>
                 <button
                     type="button"
@@ -65,7 +70,7 @@ export default function QuestionDelete({
                     onClick={onClose}
                     disabled={busy}
                 >
-                    إلغاء الحذف
+                    {t('إلغاء الحذف')}
                 </button>
             </form>
         </section>

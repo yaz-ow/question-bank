@@ -1,34 +1,36 @@
+import { adminText as t } from '../i18n/admin';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import AdminIcon from '../Components/AdminIcon';
 import BrandMark from '../Components/BrandMark';
+import usePortalLanguage from '../Components/Auth/usePortalLanguage';
 import '../../css/admin.css';
-
 export default function AdminLayout({
     children,
     activeNav = 'dashboard',
-    breadcrumb = 'لوحة التحكم',
+    breadcrumb = t('لوحة التحكم'),
 }) {
+    const { language } = usePortalLanguage();
     const { auth } = usePage().props;
     const isFounder = auth.user.role === 'admin';
-    const roleLabel = isFounder ? 'المؤسس' : 'المدرّس';
+    const roleLabel = isFounder ? t('المؤسس') : t('المدرّس');
     const [menuOpen, setMenuOpen] = useState(false);
     const navigation = [
         {
             key: 'dashboard',
-            label: 'لوحة التحكم',
+            label: t('لوحة التحكم'),
             icon: 'grid',
             href: route('admin.dashboard'),
         },
         {
             key: 'subjects',
-            label: 'إدارة المقررات',
+            label: t('إدارة المقررات'),
             icon: 'book',
             href: route('admin.subjects.index'),
         },
         {
             key: 'student-results',
-            label: 'نتائج الطلاب',
+            label: t('نتائج الطلاب'),
             icon: 'chart',
             href: route('admin.student-results.index'),
         },
@@ -36,13 +38,13 @@ export default function AdminLayout({
             ? [
                   {
                       key: 'students',
-                      label: 'إدارة الطلاب',
+                      label: t('إدارة الطلاب'),
                       icon: 'users',
                       href: route('admin.students.index'),
                   },
                   {
                       key: 'instructors',
-                      label: 'إدارة المدرّسين',
+                      label: t('إدارة المدرّسين'),
                       icon: 'user-plus',
                       href: route('admin.instructors.index'),
                   },
@@ -63,17 +65,24 @@ export default function AdminLayout({
             </Link>
         ));
     return (
-        <div className="admin-app qb-surface" dir="rtl">
+        <div
+            className="admin-app qb-surface"
+            lang={language}
+            dir={language === 'en' ? 'ltr' : 'rtl'}
+        >
             <aside
                 className="admin-sidebar"
-                aria-label="القائمة الجانبية للإدارة"
+                aria-label={t('القائمة الجانبية للإدارة')}
             >
                 <Link className="admin-logo" href={route('admin.dashboard')}>
                     <BrandMark inverse className="admin-logo-mark" />
-                    <strong>بنك الأسئلة</strong>
-                    <small>بوابة الإدارة</small>
+                    <strong>{t('بنك الأسئلة')}</strong>
+                    <small>{t('بوابة الإدارة')}</small>
                 </Link>
-                <nav className="admin-navigation" aria-label="تنقل الإدارة">
+                <nav
+                    className="admin-navigation"
+                    aria-label={t('تنقل الإدارة')}
+                >
                     {links()}
                 </nav>
                 <div className="admin-sidebar-account">
@@ -85,8 +94,8 @@ export default function AdminLayout({
                             <strong>{roleLabel}</strong>
                             <span>
                                 {isFounder
-                                    ? 'حساب الإدارة'
-                                    : 'إدارة المقررات والأسئلة'}
+                                    ? t('حساب الإدارة')
+                                    : t('إدارة المقررات والأسئلة')}
                             </span>
                         </div>
                     </div>
@@ -97,7 +106,7 @@ export default function AdminLayout({
                         className="admin-logout"
                     >
                         <AdminIcon name="exit" />
-                        تسجيل الخروج
+                        {t('تسجيل الخروج')}
                     </Link>
                 </div>
             </aside>
@@ -110,13 +119,15 @@ export default function AdminLayout({
                             aria-controls="admin-mobile-nav"
                             aria-expanded={menuOpen}
                             aria-label={
-                                menuOpen ? 'إغلاق القائمة' : 'فتح القائمة'
+                                menuOpen ? t('إغلاق القائمة') : t('فتح القائمة')
                             }
                             onClick={() => setMenuOpen((open) => !open)}
                         >
                             <AdminIcon name={menuOpen ? 'close' : 'menu'} />
                         </button>
-                        <Link href={route('admin.dashboard')}>الرئيسية</Link>
+                        <Link href={route('admin.dashboard')}>
+                            {t('الرئيسية')}
+                        </Link>
                         <span aria-hidden="true">/</span>
                         <span>{breadcrumb}</span>
                     </div>
@@ -129,7 +140,9 @@ export default function AdminLayout({
                                 <bdi>{auth.user.name || roleLabel}</bdi>
                             </strong>
                             <span>
-                                {isFounder ? 'حساب المؤسس' : 'حساب المدرّس'}
+                                {isFounder
+                                    ? t('حساب المؤسس')
+                                    : t('حساب المدرّس')}
                             </span>
                         </div>
                     </div>
@@ -138,7 +151,7 @@ export default function AdminLayout({
                     <nav
                         id="admin-mobile-nav"
                         className="admin-mobile-nav"
-                        aria-label="تنقل الإدارة على الجوال"
+                        aria-label={t('تنقل الإدارة على الجوال')}
                     >
                         {links()}
                         <Link
@@ -148,14 +161,15 @@ export default function AdminLayout({
                             className="admin-nav-link"
                         >
                             <AdminIcon name="exit" />
-                            تسجيل الخروج
+                            {t('تسجيل الخروج')}
                         </Link>
                     </nav>
                 )}
                 <main className="admin-content">{children}</main>
                 <footer className="admin-footer">
-                    <strong>بنك الأسئلة</strong> © {new Date().getFullYear()} ·
-                    جميع الحقوق محفوظة
+                    <strong>{t('بنك الأسئلة')}</strong> ©{' '}
+                    {new Date().getFullYear()}
+                    {t(' · جميع الحقوق محفوظة')}
                 </footer>
             </div>
         </div>

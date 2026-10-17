@@ -67,13 +67,13 @@ class StudentResultController extends Controller
         ]);
     }
 
-    public function export(Subject $subject, User $user, QuizAttempt $attempt)
+    public function export(Request $request, Subject $subject, User $user, QuizAttempt $attempt)
     {
         $this->authorize('view-student-results');
         $this->completedAttempt($subject, $user, $attempt);
         $attempt->load(['user', 'subject', 'items']);
 
-        return Excel::download(new AttemptAnswersExport($attempt), "attempt-{$attempt->id}-answers.xlsx");
+        return Excel::download(new AttemptAnswersExport($attempt, $request->query('locale') === 'en' ? 'en' : 'ar'), "attempt-{$attempt->id}-answers.xlsx");
     }
 
     private function completedAttempt(Subject $subject, User $student, QuizAttempt $attempt): QuizAttempt

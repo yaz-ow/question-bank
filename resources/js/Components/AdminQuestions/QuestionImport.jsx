@@ -1,8 +1,12 @@
+import {
+    adminLanguage,
+    adminText as t,
+    translateAdminFeedback as feedback,
+} from '../../i18n/admin';
 import { useForm } from '@inertiajs/react';
 import { useEffect, useRef, useState } from 'react';
 import AdminIcon from '../AdminIcon';
 import { choices, number } from './QuestionPreview';
-
 export default function QuestionImport({
     subject,
     preview,
@@ -12,7 +16,9 @@ export default function QuestionImport({
     onBusy,
     onClose,
 }) {
-    const upload = useForm({ file: null });
+    const upload = useForm({
+        file: null,
+    });
     const confirm = useForm({});
     const cancel = useForm({});
     const file = useRef(null);
@@ -41,7 +47,10 @@ export default function QuestionImport({
         confirm.clearErrors();
         cancel.clearErrors();
         setUploadName(selected.name);
-        upload.transform(() => ({ file: selected, ...listContext }));
+        upload.transform(() => ({
+            file: selected,
+            ...listContext,
+        }));
         upload.post(
             route('admin.questions.upload.preview', {
                 subject: subject.id,
@@ -61,7 +70,9 @@ export default function QuestionImport({
     const accept = (event) => {
         event.preventDefault();
         if (!canConfirm || busy) return;
-        confirm.transform(() => ({ import_token: preview.token }));
+        confirm.transform(() => ({
+            import_token: preview.token,
+        }));
         confirm.post(
             route('admin.questions.import.confirm', {
                 subject: subject.id,
@@ -93,7 +104,9 @@ export default function QuestionImport({
             ...listContext,
         }));
         cancel.delete(
-            route('admin.questions.import.cancel', { subject: subject.id }),
+            route('admin.questions.import.cancel', {
+                subject: subject.id,
+            }),
             {
                 errorBag: 'questionImportCancel',
                 preserveScroll: true,
@@ -121,7 +134,7 @@ export default function QuestionImport({
             <div className="admin-question-pane-heading">
                 <h2 id="import-preview-title">
                     <AdminIcon name="file" />
-                    فحص ملف Excel
+                    {t('فحص ملف Excel')}
                 </h2>
             </div>
             <input
@@ -133,18 +146,18 @@ export default function QuestionImport({
                 accept=".xlsx,.xls,.csv"
                 onChange={choose}
                 disabled={busy}
-                aria-label="اختيار ملف الأسئلة"
+                aria-label={t('اختيار ملف الأسئلة')}
             />
             {upload.processing ? (
                 <div className="admin-import-loading" role="status">
                     <AdminIcon name="file" />
-                    <h3>جارٍ رفع الملف وفحصه…</h3>
+                    <h3>{t('جارٍ رفع الملف وفحصه…')}</h3>
                     <p dir="auto">{uploadName}</p>
                     {upload.progress && (
                         <progress
                             value={upload.progress.percentage}
                             max="100"
-                            aria-label="تقدم رفع الملف"
+                            aria-label={t('تقدم رفع الملف')}
                         />
                     )}
                 </div>
@@ -155,7 +168,8 @@ export default function QuestionImport({
                         <div>
                             <strong dir="auto">{preview.filename}</strong>
                             <span>
-                                {number(preview.totalCount)} سؤالًا في الملف
+                                {number(preview.totalCount)}
+                                {t(' سؤالًا في الملف')}
                             </span>
                         </div>
                         <button
@@ -164,19 +178,20 @@ export default function QuestionImport({
                             disabled={busy}
                             className="admin-replace-file"
                         >
-                            استبدال الملف
+                            {t('استبدال الملف')}
                         </button>
                     </div>
                     <div
                         className="admin-import-summary"
-                        aria-label="نتيجة فحص الملف"
+                        aria-label={t('نتيجة فحص الملف')}
                     >
                         <span className="admin-import-ready">
-                            <strong>{number(preview.validCount)}</strong> جديد
+                            <strong>{number(preview.validCount)}</strong>
+                            {t(' جديد')}
                         </span>
                         <span className="admin-import-duplicate">
                             <strong>{number(preview.duplicateCount)}</strong>{' '}
-                            مكرر
+                            {t('مكرر')}
                         </span>
                         <span
                             className={
@@ -185,34 +200,40 @@ export default function QuestionImport({
                                     : ''
                             }
                         >
-                            <strong>{number(preview.errorCount)}</strong> خطأ
+                            <strong>{number(preview.errorCount)}</strong>
+                            {t(' خطأ')}
                         </span>
                     </div>
                     {preview.errorCount > 0 && (
                         <p className="admin-import-warning" role="alert">
-                            صحّح الصفوف الموضحة أدناه وأعد رفع الملف. لن تُضاف
-                            الأسئلة قبل تصحيح جميع الأخطاء.
+                            {t(
+                                'صحّح الصفوف الموضحة أدناه وأعد رفع الملف. لن تُضاف الأسئلة قبل تصحيح جميع الأخطاء.',
+                            )}
                         </p>
                     )}
                     {preview.duplicateCount > 0 && (
                         <p className="admin-pane-hint">
-                            سيتم تخطي الأسئلة المكررة دون إضافتها مرة أخرى.
+                            {t(
+                                'سيتم تخطي الأسئلة المكررة دون إضافتها مرة أخرى.',
+                            )}
                         </p>
                     )}
                     {expired && (
                         <p className="admin-import-warning" role="alert">
-                            انتهت صلاحية المعاينة. أعد رفع الملف لفحصه من جديد.
+                            {t(
+                                'انتهت صلاحية المعاينة. أعد رفع الملف لفحصه من جديد.',
+                            )}
                         </p>
                     )}
                     <p className="admin-import-scroll-hint">
                         <AdminIcon name="chevron" />
-                        مرّر داخل البطاقة لفحص جميع الأسئلة
+                        {t('مرّر داخل البطاقة لفحص جميع الأسئلة')}
                     </p>
                     <div
                         ref={scroll}
                         className="admin-import-scroll"
                         role="region"
-                        aria-label="أسئلة ملف Excel"
+                        aria-label={t('أسئلة ملف Excel')}
                         tabIndex={0}
                     >
                         {preview.rows.map((row) => (
@@ -221,17 +242,21 @@ export default function QuestionImport({
                                 key={row.line}
                             >
                                 <div className="admin-import-row-heading">
-                                    <span>صف Excel {number(row.line)}</span>
+                                    <span>
+                                        {t('صف Excel ')}
+                                        {number(row.line)}
+                                    </span>
                                     <span>
                                         {row.status === 'error'
-                                            ? 'يحتاج تصحيحًا'
+                                            ? t('يحتاج تصحيحًا')
                                             : row.status === 'duplicate'
-                                              ? 'مكرر · سيُتخطى'
-                                              : 'جاهز للاستيراد'}
+                                              ? t('مكرر · سيُتخطى')
+                                              : t('جاهز للاستيراد')}
                                     </span>
                                 </div>
                                 <h3 dir="auto">
-                                    {row.question_text || 'نص السؤال غير موجود'}
+                                    {row.question_text ||
+                                        t('نص السؤال غير موجود')}
                                 </h3>
                                 <ol className="admin-import-options">
                                     {choices.map((choice) => (
@@ -247,7 +272,7 @@ export default function QuestionImport({
                                             <span>{choice.label}</span>
                                             <span dir="auto">
                                                 {row[choice.field] ||
-                                                    'الخيار غير موجود'}
+                                                    t('الخيار غير موجود')}
                                             </span>
                                             {row.correct_answer ===
                                                 choice.key && (
@@ -259,7 +284,7 @@ export default function QuestionImport({
                                 {row.errors.length > 0 && (
                                     <ul className="admin-import-row-errors">
                                         {row.errors.map((error, i) => (
-                                            <li key={i}>{error}</li>
+                                            <li key={i}>{feedback(error)}</li>
                                         ))}
                                     </ul>
                                 )}
@@ -272,10 +297,11 @@ export default function QuestionImport({
                     <div className="admin-excel-symbol">
                         <AdminIcon name="file" />
                     </div>
-                    <h3>اختر ملف الأسئلة لفحصه</h3>
+                    <h3>{t('اختر ملف الأسئلة لفحصه')}</h3>
                     <p>
-                        ستظهر الأسئلة هنا مع الخيارات والإجابة الصحيحة قبل تأكيد
-                        إضافتها.
+                        {t(
+                            'ستظهر الأسئلة هنا مع الخيارات والإجابة الصحيحة قبل تأكيد إضافتها.',
+                        )}
                     </p>
                     <button
                         type="button"
@@ -284,29 +310,31 @@ export default function QuestionImport({
                         disabled={busy}
                     >
                         <AdminIcon name="upload" />
-                        اختيار ملف Excel
+                        {t('اختيار ملف Excel')}
                     </button>
-                    <small>Excel أو CSV · حتى 5 MB و1000 سؤال</small>
+                    <small>{t('Excel أو CSV · حتى 5 MB و1000 سؤال')}</small>
                     <a
                         href={route('admin.questions.download.template', {
                             subject: subject.id,
+                            locale: adminLanguage(),
                         })}
                         download
                         className="admin-import-template-link"
                     >
                         <AdminIcon name="download" />
-                        تحميل قالب Excel
+                        {t('تحميل قالب Excel')}
                     </a>
                     <p className="admin-template-help">
-                        القالب يحتوي مثالًا للتعبئة؛ استبدله بأسئلتك. حدّد
-                        الإجابة الصحيحة بالحروف A أو B أو C أو D.
+                        {t(
+                            'القالب يحتوي مثالًا للتعبئة؛ استبدله بأسئلتك. حدّد الإجابة الصحيحة بالحروف A أو B أو C أو D.',
+                        )}
                     </p>
                 </div>
             )}
             <div className="admin-import-footer">
                 {messages.map((message, i) => (
                     <p key={i} className="admin-field-error" role="alert">
-                        {message}
+                        {feedback(message)}
                     </p>
                 ))}
                 <form onSubmit={accept} className="admin-pane-actions">
@@ -317,8 +345,14 @@ export default function QuestionImport({
                     >
                         <AdminIcon name="tick" />
                         {confirm.processing
-                            ? 'جارٍ الاستيراد…'
-                            : `تأكيد استيراد${preview ? ` ${number(preview.validCount)} سؤالًا` : ''}`}
+                            ? t('جارٍ الاستيراد…')
+                            : t('تأكيد استيراد{0}', {
+                                  0: preview
+                                      ? t(' {0} سؤالًا', {
+                                            0: number(preview.validCount),
+                                        })
+                                      : '',
+                              })}
                     </button>
                     <button
                         type="button"
@@ -326,11 +360,13 @@ export default function QuestionImport({
                         onClick={cancelPreview}
                         disabled={busy}
                     >
-                        {cancel.processing ? 'جارٍ الإلغاء…' : 'إلغاء'}
+                        {cancel.processing ? t('جارٍ الإلغاء…') : t('إلغاء')}
                     </button>
                 </form>
                 {preview && !expired && (
-                    <small>المعاينة متاحة لمدة 15 دقيقة من رفع الملف.</small>
+                    <small>
+                        {t('المعاينة متاحة لمدة 15 دقيقة من رفع الملف.')}
+                    </small>
                 )}
             </div>
         </section>
