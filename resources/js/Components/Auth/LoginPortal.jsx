@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import FlashMessages from '../FlashMessages';
 import { translatePortalFeedback } from './portalLanguage';
 import usePortalLanguage from './usePortalLanguage';
+import LanguageSwitcher from './LanguageSwitcher';
 import StudentIcon from '../StudentIcon';
 import BrandMark from '../BrandMark';
 import PortalArtwork from './PortalArtwork';
@@ -266,7 +267,6 @@ function LoginForm({
 export default function LoginPortal({
     initialRole = null,
     initialIdentifier = '',
-    allowLanguageSelection = false,
 }) {
     const { errors: pageErrors = EMPTY_ERRORS } = usePage().props;
     const { language, messages, changeLanguage } = usePortalLanguage();
@@ -318,27 +318,11 @@ export default function LoginPortal({
                     <span>{messages.brand}</span>
                 </Link>
                 <div className="qb-top-actions">
-                    {allowLanguageSelection && !activeRole && (
-                        <div
-                            className="qb-language"
-                            role="group"
-                            aria-label={messages.language}
-                            dir="ltr"
-                        >
-                            {['ar', 'en'].map((locale) => (
-                                <button
-                                    key={locale}
-                                    type="button"
-                                    lang={locale}
-                                    dir={locale === 'ar' ? 'rtl' : 'ltr'}
-                                    aria-pressed={language === locale}
-                                    onClick={() => changeLanguage(locale)}
-                                >
-                                    {locale === 'ar' ? 'العربية' : 'English'}
-                                </button>
-                            ))}
-                        </div>
-                    )}
+                    <LanguageSwitcher
+                        language={language}
+                        label={messages.language}
+                        onChange={changeLanguage}
+                    />
                 </div>
             </header>
             <main className="auth-main">

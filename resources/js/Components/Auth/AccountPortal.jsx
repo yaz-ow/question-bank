@@ -5,6 +5,7 @@ import { PortalIcon } from './LoginPortal';
 import BrandMark from '../BrandMark';
 import PortalArtwork from './PortalArtwork';
 import usePortalLanguage from './usePortalLanguage';
+import LanguageSwitcher from './LanguageSwitcher';
 import { translatePortalFeedback } from './portalLanguage';
 import '../../../css/account-portals.css';
 
@@ -88,7 +89,7 @@ export default function AccountPortal({
     token = '',
     email = '',
 }) {
-    const { language, messages } = usePortalLanguage();
+    const { language, messages, changeLanguage } = usePortalLanguage();
     const copy = messages.account;
     const student = role === 'student';
     const registering = mode === 'register';
@@ -186,6 +187,13 @@ export default function AccountPortal({
                     <BrandMark />
                     <span>{messages.brand}</span>
                 </Link>
+                <div className="qb-top-actions">
+                    <LanguageSwitcher
+                        language={language}
+                        label={messages.language}
+                        onChange={changeLanguage}
+                    />
+                </div>
             </header>
             <main className="auth-main">
                 <div className="qb-intro">
