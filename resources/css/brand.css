@@ -6,7 +6,7 @@
         radial-gradient(ellipse at 50% 35%, #fff 0%, #f4f8fc 65%, #eef5fc 100%);
     background-position: center top;
     background-size:
-        100% 100svh,
+        100% 100%,
         100% 100%;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -28,9 +28,6 @@
 }
 @media (max-width: 640px) {
     .qb-surface {
-        background-size:
-            auto 100svh,
-            100% 100%;
         background-attachment: scroll;
     }
 }
