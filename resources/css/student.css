@@ -147,14 +147,6 @@
         font-size: 22px;
         line-height: 1.5;
     }
-    .student-dashboard .student-level-card > span[aria-hidden='true'] {
-        top: auto;
-        inset-inline-start: auto;
-        inset-inline-end: 76px;
-        bottom: 16px;
-        font-size: 76px;
-        color: #e9eef5;
-    }
     .student-dashboard :is(.student-level-card, .student-course-card) p {
         font-size: 16px;
         line-height: 1.7;
@@ -329,4 +321,77 @@
 }
 .student-sidebar-logo svg {
     flex-shrink: 0;
+}
+
+/* Shared level/course surfaces echo the approved home-page waves. */
+.student-dashboard .student-academic-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-width: 0;
+    border-color: #d5e3f2;
+    background: linear-gradient(145deg, #fdfefe 12%, #f3f8ff 100%);
+    box-shadow: 0 2px 4px #163c6410;
+    transition: box-shadow 240ms ease, border-color 240ms ease;
+}
+.student-academic-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: url('../images/academic-card-background.svg') center / 100% 100% no-repeat;
+}
+.student-dashboard[dir='ltr'] .student-academic-card::before {
+    transform: scaleX(-1);
+}
+.student-academic-card .student-card-footer {
+    margin-top: auto;
+    min-height: 64px;
+    padding-top: 12px;
+}
+.student-academic-card .student-level-card-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    gap: 12px;
+}
+.student-academic-card .student-card-level-number {
+    color: #7b9fc52e;
+    font-size: 80px;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+    line-height: .8;
+    pointer-events: none;
+    user-select: none;
+    transition: color 240ms ease;
+}
+.student-academic-card .student-card-arrow {
+    flex-shrink: 0;
+    color: #7c9aba;
+    background: #ffffffb3;
+    transition: color 240ms ease, background-color 240ms ease;
+}
+.student-dashboard .student-academic-card:is(:hover, :focus-visible) {
+    border-color: #b4cfe9;
+    box-shadow: 0 10px 28px #276eac2b, 0 2px 8px #276eac14;
+}
+.student-academic-card:is(:hover, :focus-visible) .student-card-level-number {
+    color: #668fbd63;
+}
+.student-academic-card:is(:hover, :focus-visible) .student-card-arrow {
+    color: #2b6ca8;
+    background: #e0edfc;
+}
+@media (min-width: 1024px) {
+    .student-academic-card .student-card-level-number {
+        font-size: 88px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .student-dashboard .student-academic-card,
+    .student-academic-card .student-card-level-number,
+    .student-academic-card .student-card-arrow {
+        transition: none;
+    }
 }

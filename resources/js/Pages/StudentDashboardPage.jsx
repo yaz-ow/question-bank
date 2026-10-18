@@ -41,14 +41,8 @@ export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
                                 0: studentLevel(level.level),
                                 1: courseLabel(level.course_count),
                             })}
-                            className="student-level-card group relative isolate flex min-h-40 flex-col overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/20"
+                            className="student-level-card student-academic-card group flex min-h-40 flex-col rounded-xl border p-6"
                         >
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute start-5 top-7 -z-10 select-none text-[96px] font-bold leading-none text-gray-300"
-                            >
-                                {level.level}
-                            </span>
                             <div className="flex items-start justify-between gap-4">
                                 <div className="min-w-0 pt-1">
                                     <h3 className="text-lg font-bold leading-7">
@@ -63,8 +57,14 @@ export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
                                     <StudentIcon className="size-6" />
                                 </span>
                             </div>
-                            <div className="mt-auto flex justify-end pt-5">
-                                <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700">
+                            <div className="student-card-footer student-level-card-footer">
+                                <span
+                                    aria-hidden="true"
+                                    className="student-card-level-number"
+                                >
+                                    {level.level}
+                                </span>
+                                <span className="student-card-arrow flex size-8 items-center justify-center rounded-full">
                                     <StudentIcon
                                         name="arrow"
                                         className="student-direction-arrow size-4"

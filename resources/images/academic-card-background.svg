@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" preserveAspectRatio="none" fill="none">
+  <defs>
+    <linearGradient id="sweep" x1="0" y1="25" x2="350" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#DDEBF9" stop-opacity=".16"/>
+      <stop offset="1" stop-color="#D5E7FA" stop-opacity=".52"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="350" y1="245" x2="570" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E2EEFC" stop-opacity=".5"/>
+      <stop offset="1" stop-color="#C9DFF8" stop-opacity=".7"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="260" y1="330" x2="445" y2="278" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#C2A56D" stop-opacity="0"/>
+      <stop offset=".5" stop-color="#C2A56D" stop-opacity=".78"/>
+      <stop offset="1" stop-color="#C2A56D" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="dots" x="0" y="0" width="14" height="14" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.15" fill="#89AED5" fill-opacity=".48"/>
+    </pattern>
+  </defs>
+  <path d="M0 0C15 78 61 115 141 163C222 212 256 279 348 326L0 400V0Z" fill="url(#sweep)"/>
+  <path d="M0 299C85 229 121 275 215 314C313 355 364 237 483 253C595 268 650 249 713 267C757 279 782 298 800 322V400H0V299Z" fill="#DFECFB" fill-opacity=".55"/>
+  <path d="M0 328C108 253 199 395 318 343C412 302 441 267 503 284C591 309 628 369 800 349V400H0V328Z" fill="#D7E8FB" fill-opacity=".6"/>
+  <path d="M210 400C286 352 346 277 424 276C509 275 549 350 587 400H210Z" fill="url(#wave)"/>
+  <path d="M0 166C108 190 137 302 260 310C346 316 358 265 449 270C563 277 631 382 800 367" stroke="white" stroke-opacity=".86" stroke-width="1.2"/>
+  <path d="M0 322C70 266 129 301 191 336C292 394 366 300 439 303C539 307 579 391 690 384" stroke="white" stroke-opacity=".68" stroke-width="1.1"/>
+  <path d="M260 330C324 310 369 280 445 278" stroke="url(#gold)" stroke-width="1.25"/>
+  <rect x="224" y="90" width="68" height="57" fill="url(#dots)"/>
+  <rect x="666" y="299" width="72" height="59" fill="url(#dots)"/>
+  <rect x="305" y="158" width="17" height="17" rx="2.5" stroke="#9DBFE2" stroke-opacity=".6" stroke-width="1.2"/>
+  <rect x="760" y="260" width="16" height="17" rx="2" stroke="#C2A56D" stroke-opacity=".78" stroke-width="1.2"/>
+</svg>

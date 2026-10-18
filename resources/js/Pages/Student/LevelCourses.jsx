@@ -131,7 +131,7 @@ export default function LevelCourses({
                                 aria-label={t('بدء الاختبار في {0}', {
                                     0: course.name,
                                 })}
-                                className="student-course-card group flex w-full text-start min-h-44 flex-col rounded-xl border border-slate-200 bg-white p-6 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/20"
+                                className="student-course-card student-academic-card group flex w-full text-start min-h-44 flex-col rounded-xl border p-6"
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="min-w-0 pt-1">
@@ -147,11 +147,11 @@ export default function LevelCourses({
                                         <StudentIcon className="size-6" />
                                     </span>
                                 </div>
-                                <div className="mt-auto flex items-center justify-between gap-3 pt-5">
+                                <div className="student-card-footer flex items-end justify-between gap-3">
                                     <span className="text-xs font-medium text-slate-500 group-hover:text-blue-700">
                                         {t('بدء الاختبار')}
                                     </span>
-                                    <span className="flex size-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-700">
+                                    <span className="student-card-arrow flex size-8 items-center justify-center rounded-full">
                                         <StudentIcon
                                             name="arrow"
                                             className="student-direction-arrow size-4"
