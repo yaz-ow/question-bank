@@ -18,7 +18,7 @@
 
 - Git وComposer 2 وNode.js 22 مع npm.
 - PHP وإضافات Laravel/Excel عند تشغيل Composer خارج Docker: `mbstring`, `pdo`, `dom`, `xml`, `xmlreader`, `xmlwriter`, `simplexml`, `zip`, `gd`, `fileinfo`، وإضافة قاعدة البيانات المناسبة.
-- إعداد Sail المرفق يستخدم PHP 8.5 وMySQL 8.4. الفحوص الآلية مهيأة أيضًا لـPHP 8.3 مع SQLite.
+- إعداد Sail المرفق يستخدم PHP 8.4 وMySQL 8.4. الفحوص الآلية مهيأة أيضًا لـPHP 8.3 مع SQLite.
 - في Windows: WSL 2 مع تفعيل تكامل التوزيعة في Docker Desktop. يفضل وضع المشروع داخل `~/projects` في WSL.
 
 ## تثبيت جديد باستخدام Sail
@@ -48,6 +48,7 @@ docker compose -p projectqb exec laravel.test php artisan app:create-founder
 
 ```bash
 git pull --rebase --autostash origin main
+docker compose -p projectqb up -d --build
 docker compose -p projectqb exec laravel.test composer install --no-interaction --prefer-dist
 docker compose -p projectqb exec laravel.test npm ci
 docker compose -p projectqb exec laravel.test php artisan optimize:clear
@@ -55,7 +56,7 @@ docker compose -p projectqb exec laravel.test php artisan migrate
 docker compose -p projectqb exec laravel.test npm run build
 ```
 
-شغّل الحاويات أولًا إذا كانت متوقفة. لا تُعد إنشاء `APP_KEY` أو نسخ `.env.example` فوق إعداداتك عند التحديث. مراجعة أكتوبر 2026 لا تضيف migration جديدة.
+شغّل الحاويات أولًا إذا كانت متوقفة. لا تُعد إنشاء `APP_KEY` أو نسخ `.env.example` فوق إعداداتك عند التحديث. مراجعة أكتوبر 2026 لا تضيف migration جديدة. تتطلب إعادة بناء حاوية التطبيق لأنها توحّد إصدار PHP على 8.4؛ مكتبة Excel المثبتة لا تدعم PHP 8.5. يبقى مجلد بيانات MySQL المحفوظ في Docker volume كما هو.
 
 ## استيراد الأسئلة
 
@@ -80,7 +81,7 @@ npm audit
 composer audit --locked
 ```
 
-استخدم `docker compose -p projectqb exec laravel.test` قبل كل أمر لتشغيله في Sail. تستخدم الاختبارات SQLite في الذاكرة افتراضيًا، ولا تختبر على قاعدة بيانات حقيقية تحتوي بيانات المستخدمين. GitHub Actions يهيئ مسارين: PHP 8.3/SQLite وPHP 8.5/MySQL 8.4 مع قاعدة منفصلة للاختبار، إضافة إلى البناء وتدقيق الاعتمادات.
+استخدم `docker compose -p projectqb exec laravel.test` قبل كل أمر لتشغيله في Sail. تستخدم الاختبارات SQLite في الذاكرة افتراضيًا، ولا تختبر على قاعدة بيانات حقيقية تحتوي بيانات المستخدمين. GitHub Actions يهيئ مسارين: PHP 8.3/SQLite وPHP 8.4/MySQL 8.4 مع قاعدة منفصلة للاختبار، إضافة إلى البناء وتدقيق الاعتمادات.
 
 ## البريد والتشغيل المنشور
 
