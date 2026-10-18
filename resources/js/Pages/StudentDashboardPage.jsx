@@ -7,6 +7,7 @@ import {
 import { Head, Link } from '@inertiajs/react';
 import FlashMessages from '../Components/FlashMessages';
 import StudentIcon from '../Components/StudentIcon';
+import AcademicBookIcon from '../Components/AcademicBookIcon';
 import StudentLayout from '../Layouts/StudentLayout';
 
 const courseLabel = (count) => {
@@ -54,7 +55,7 @@ export default function StudentDashboardPage({ statistics = {}, levels = [] }) {
                                     </p>
                                 </div>
                                 <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-800">
-                                    <StudentIcon className="size-6" />
+                                    <AcademicBookIcon index={level.level - 1} />
                                 </span>
                             </div>
                             <div className="student-card-footer student-level-card-footer">

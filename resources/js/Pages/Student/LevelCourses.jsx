@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import QuizSetupModal from '../../Components/QuizSetupModal';
 import FlashMessages from '../../Components/FlashMessages';
 import StudentIcon from '../../Components/StudentIcon';
+import AcademicBookIcon from '../../Components/AcademicBookIcon';
 import StudentLayout from '../../Layouts/StudentLayout';
 
 export default function LevelCourses({
@@ -144,7 +145,7 @@ export default function LevelCourses({
                                         </p>
                                     </div>
                                     <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-800">
-                                        <StudentIcon className="size-6" />
+                                        <AcademicBookIcon index={course.id + 3} />
                                     </span>
                                 </div>
                                 <div className="student-card-footer flex items-end justify-between gap-3">
