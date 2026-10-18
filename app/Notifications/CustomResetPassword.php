@@ -13,10 +13,11 @@ class CustomResetPassword extends BaseResetPassword
             ? 'password-reset.student'
             : 'password-reset.admin';
 
+        // Never let an incoming Host header choose where a reset token is sent.
         // The password broker validates the token and its expiry on submission.
-        return URL::route($route, [
+        return rtrim(config('app.url'), '/').URL::route($route, [
             'token' => $this->token,
             'email' => $notifiable->email,
-        ]);
+        ], false);
     }
 }

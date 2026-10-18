@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\BcryptPassword;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -13,18 +14,9 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password as PasswordRule;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 class ResetPasswordController extends Controller
 {
-    /**
-     * Show the student password reset form.
-     */
-    public function studentShow(string $token)
-    {
-        return Inertia::render('ResetPasswordStudentPage', ['token' => $token]);
-    }
-
     /**
      * Handle student password reset request.
      */
@@ -35,7 +27,7 @@ class ResetPasswordController extends Controller
                 'token' => ['required', 'string'],
                 'university_id' => ['required', 'string'],
                 'email' => ['required', 'string', 'email'],
-                'password' => ['required', 'confirmed', PasswordRule::defaults()],
+                'password' => ['required', 'confirmed', PasswordRule::defaults(), new BcryptPassword],
             ]);
         } catch (ValidationException $e) {
             return redirect()->back()
@@ -89,14 +81,6 @@ class ResetPasswordController extends Controller
     }
 
     /**
-     * Show the admin/instructor password reset form.
-     */
-    public function adminShow(string $token)
-    {
-        return Inertia::render('ResetPasswordAdminPage', ['token' => $token]);
-    }
-
-    /**
      * Handle admin/instructor password reset request.
      */
     public function adminStore(Request $request): RedirectResponse
@@ -105,7 +89,7 @@ class ResetPasswordController extends Controller
             $request->validate([
                 'token' => ['required', 'string'],
                 'email' => ['required', 'string', 'email'],
-                'password' => ['required', 'confirmed', PasswordRule::defaults()],
+                'password' => ['required', 'confirmed', PasswordRule::defaults(), new BcryptPassword],
             ]);
         } catch (ValidationException $e) {
             return redirect()->back()

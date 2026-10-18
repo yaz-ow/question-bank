@@ -17,7 +17,7 @@ class Phase4QuestionTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_manage_questions()
     {
         $admin = User::factory()->create([
@@ -36,7 +36,7 @@ class Phase4QuestionTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function instructor_can_manage_questions()
     {
         $instructor = User::factory()->create([
@@ -55,7 +55,7 @@ class Phase4QuestionTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function student_cannot_manage_questions()
     {
         $student = User::factory()->create([
@@ -71,7 +71,7 @@ class Phase4QuestionTest extends TestCase
             ->assertSessionHas('error', 'غير مسموح لك بالوصول إلى هذه الصفحة');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function guest_cannot_manage_questions()
     {
         $subject = Subject::factory()->create();
@@ -80,7 +80,7 @@ class Phase4QuestionTest extends TestCase
             ->assertRedirect('/login/admin');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function inactive_user_cannot_manage_questions()
     {
         $user = User::factory()->create([
@@ -96,7 +96,7 @@ class Phase4QuestionTest extends TestCase
             ->assertSessionHas('error', 'حسابك غير نشط أو تم تعطيله');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_create_question()
     {
         $admin = User::factory()->create([
@@ -129,7 +129,7 @@ class Phase4QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_cannot_create_question_with_invalid_input()
     {
         $admin = User::factory()->create([
@@ -158,7 +158,7 @@ class Phase4QuestionTest extends TestCase
             ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_cannot_access_question_from_another_subject()
     {
         $admin = User::factory()->create([
@@ -221,7 +221,7 @@ class Phase4QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_update_question()
     {
         $admin = User::factory()->create([
@@ -266,7 +266,7 @@ class Phase4QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_delete_question()
     {
         $admin = User::factory()->create([
@@ -292,7 +292,7 @@ class Phase4QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_download_excel_template()
     {
         $admin = User::factory()->create([
@@ -313,7 +313,7 @@ class Phase4QuestionTest extends TestCase
         $this->assertGreaterThan(0, $file->getSize());
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_preview_excel_import()
     {
         $admin = User::factory()->create([
@@ -363,7 +363,7 @@ class Phase4QuestionTest extends TestCase
         });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_import_questions_from_excel()
     {
         $admin = User::factory()->create([
@@ -437,7 +437,7 @@ class Phase4QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function question_count_updates_in_question_workspace()
     {
         $admin = User::factory()->create([

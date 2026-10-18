@@ -6,11 +6,7 @@
         <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
-
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=Nunito:400,600,700" rel="stylesheet">
+        <title>{{ config('app.name', 'Question Bank') }}</title>
 
         @routes
         @viteReactRefresh

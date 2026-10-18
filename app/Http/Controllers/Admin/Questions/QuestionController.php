@@ -104,7 +104,7 @@ class QuestionController extends Controller
     {
         $this->authorize('manage-questions', $subject);
 
-        return Excel::download(new QuestionsImportTemplate($subject->id, $request->query('locale') === 'en' ? 'en' : 'ar'), 'questions_template.xlsx');
+        return Excel::download(new QuestionsImportTemplate($request->query('locale') === 'en' ? 'en' : 'ar'), 'questions_template.xlsx');
     }
 
     public function uploadPreview(Request $request, Subject $subject)
@@ -280,7 +280,7 @@ class QuestionController extends Controller
     private function questionRules(): array
     {
         return [
-            'question_text' => ['required', 'string'],
+            'question_text' => ['required', 'string', 'max:10000'],
             'option_a' => ['required', 'string', 'max:255'],
             'option_b' => ['required', 'string', 'max:255'],
             'option_c' => ['required', 'string', 'max:255'],
@@ -293,6 +293,7 @@ class QuestionController extends Controller
     {
         return [
             'question_text.required' => 'نص السؤال مطلوب',
+            'question_text.max' => 'نص السؤال لا يمكن أن يتجاوز 10000 حرف',
             'option_a.required' => 'الخيار أ مطلوب',
             'option_b.required' => 'الخيار ب مطلوب',
             'option_c.required' => 'الخيار ج مطلوب',

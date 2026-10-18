@@ -9,18 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 class LoginController extends Controller
 {
-    /**
-     * Show the student login form.
-     */
-    public function studentShow()
-    {
-        return Inertia::render('LoginStudentPage');
-    }
-
     /**
      * Handle student login request (using university ID).
      */
@@ -58,14 +49,6 @@ class LoginController extends Controller
                 ->withInput($request->only('university_id'))
                 ->withErrors($e->errors());
         }
-    }
-
-    /**
-     * Show the admin login form.
-     */
-    public function adminShow()
-    {
-        return Inertia::render('LoginAdminPage');
     }
 
     /**

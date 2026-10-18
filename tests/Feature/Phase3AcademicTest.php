@@ -11,7 +11,7 @@ class Phase3AcademicTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function legacy_levels_page_redirects_to_dashboard()
     {
         $student = User::factory()->create([
@@ -30,7 +30,7 @@ class Phase3AcademicTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function student_can_browse_courses_for_a_specific_level()
     {
         $student = User::factory()->create([
@@ -58,7 +58,7 @@ class Phase3AcademicTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function legacy_course_details_redirects_to_level_course_cards()
     {
         $student = User::factory()->create([
@@ -86,7 +86,7 @@ class Phase3AcademicTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function student_can_search_courses_within_level()
     {
         $student = User::factory()->create([
@@ -116,7 +116,7 @@ class Phase3AcademicTest extends TestCase
             });
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function guest_cannot_access_academic_routes()
     {
         $this->get(route('student.levels'))
@@ -130,7 +130,7 @@ class Phase3AcademicTest extends TestCase
             ->assertRedirect('/login/student');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function inactive_student_cannot_access_academic_routes()
     {
         $student = User::factory()->create([
@@ -144,7 +144,7 @@ class Phase3AcademicTest extends TestCase
             ->assertSessionHas('error', 'حسابك غير نشط أو تم تعطيله');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function instructor_cannot_access_student_academic_routes()
     {
         $instructor = User::factory()->create([
@@ -157,7 +157,7 @@ class Phase3AcademicTest extends TestCase
             ->assertSessionHas('error', 'غير مسموح لك بالوصول إلى هذه الصفحة');
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function invalid_level_returns_404()
     {
         $student = User::factory()->create([
@@ -173,7 +173,7 @@ class Phase3AcademicTest extends TestCase
             ->assertNotFound();
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function course_with_wrong_level_returns_404()
     {
         $student = User::factory()->create([

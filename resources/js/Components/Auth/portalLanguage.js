@@ -147,6 +147,12 @@ export const portalMessages = {
             expiredLink: 'Link expired? Request a new one',
         },
         feedback: {
+            'كلمة المرور طويلة جدًا؛ قلّل عدد الأحرف أو الرموز.': 'Your password is too long. Use fewer characters or symbols.',
+            'كلمة المرور تحتوي على رمز غير صالح.': 'Your password contains an invalid character.',
+            'بيانات الدخول غير صحيحة': 'The sign-in details are incorrect.',
+            'حسابك غير نشط أو تم تعطيله': 'Your account is inactive or has been disabled.',
+            'غير مسموح لك بالوصول إلى هذه الصفحة': 'You do not have permission to access this page.',
+            'يجب تسجيل الدخول أولًا': 'Please sign in first.',
             'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني':
                 'If the details are correct, a password reset link will be sent to your email.',
             'تم إعادة تعيين كلمة المرور بنجاح. يمكنك الآن تسجيل الدخول':

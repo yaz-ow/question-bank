@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\BcryptPassword;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -74,7 +75,7 @@ class InstructorController extends Controller
                 'max:255',
                 'unique:users,email',
             ],
-            'password' => ['required', 'confirmed', Password::defaults()],
+            'password' => ['required', 'confirmed', Password::defaults(), new BcryptPassword],
             'instructor_creation_code' => ['required', 'string', 'max:255'],
         ], [
             'instructor_creation_code.required' => 'رمز التفويض لإنشاء المدرّس مطلوب',

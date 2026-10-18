@@ -111,6 +111,7 @@ export default function QuestionEditor({
                         id="question-text"
                         className="admin-subject-input"
                         rows={3}
+                        maxLength={10000}
                         required
                         dir="auto"
                         placeholder={t('اكتب نص السؤال هنا…')}

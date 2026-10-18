@@ -11,7 +11,7 @@ class SubjectRouteTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function admin_can_access_subjects_index()
     {
         $admin = User::factory()->create([

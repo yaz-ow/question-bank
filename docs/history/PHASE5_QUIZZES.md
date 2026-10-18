@@ -1,3 +1,5 @@
+> Historical implementation note. Routes, pages and setup instructions may have changed. Use the [current README](../../README.md) and [audit report](../AUDIT.md) for the maintained project status.
+
 # Phase 5: student practice quizzes
 
 ## Behavior

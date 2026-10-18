@@ -178,7 +178,7 @@ function LoginForm({
                             className="qb-error"
                             role="alert"
                         >
-                            {errors[field]}
+                            {messages.feedback?.[errors[field]] ?? errors[field]}
                         </span>
                     )}
                 </label>
@@ -226,7 +226,7 @@ function LoginForm({
                             className="qb-error"
                             role="alert"
                         >
-                            {errors.password}
+                            {messages.feedback?.[errors.password] ?? errors.password}
                         </span>
                     )}
                 </label>

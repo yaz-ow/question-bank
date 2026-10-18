@@ -1,3 +1,5 @@
+> Historical implementation note. Routes, pages and setup instructions may have changed. Use the [current README](../../README.md) and [audit report](../AUDIT.md) for the maintained project status.
+
 # Phase 6: student results history and review
 
 - `/student/results` lists only the authenticated student's attempts, newest first, in pages of 15. Course and status filters persist across pagination.

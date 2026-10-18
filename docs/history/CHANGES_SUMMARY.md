@@ -1,3 +1,5 @@
+> Historical implementation note. Routes, pages and setup instructions may have changed. Use the [current README](../../README.md) and [audit report](../AUDIT.md) for the maintained project status.
+
 # Phase 4, Part 3: Excel Upload, Preview, and Confirmed Import - Changes Summary
 
 ## Overview

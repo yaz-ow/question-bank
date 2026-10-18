@@ -34,6 +34,18 @@ class Phase2PasswordRecoveryTest extends TestCase
         }
     }
 
+    public function test_reset_link_uses_configured_origin_instead_of_request_host(): void
+    {
+        config(['app.url' => 'https://question-bank.example/portal']);
+        $this->app['url']->setRequest(\Illuminate\Http\Request::create('http://untrusted.example'));
+        foreach (['student', 'admin', 'instructor'] as $role) {
+            $user = User::factory()->create(['role' => $role]);
+            $url = (new CustomResetPassword('test-token'))->toMail($user)->actionUrl;
+            $portal = $role === 'student' ? 'student' : 'admin';
+            $this->assertSame('https://question-bank.example/portal/password/reset/'.$portal.'/test-token?email='.urlencode($user->email), $url);
+        }
+    }
+
     public function test_recovery_does_not_disclose_missing_or_mismatched_accounts(): void
     {
         Notification::fake();

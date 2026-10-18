@@ -1,3 +1,5 @@
+> Historical implementation note. Routes, pages and setup instructions may have changed. Use the [current README](../../README.md) and [audit report](../AUDIT.md) for the maintained project status.
+
 # React, authentication and course-management integration
 
 The application uses Laravel 12, Inertia and React. HTTP middleware is configured

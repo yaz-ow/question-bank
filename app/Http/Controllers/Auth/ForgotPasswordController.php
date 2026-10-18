@@ -8,18 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 class ForgotPasswordController extends Controller
 {
-    /**
-     * Show the student password reset request form.
-     */
-    public function studentShow()
-    {
-        return Inertia::render('ForgotPasswordStudentPage');
-    }
-
     /**
      * Handle student password reset request (university ID and email).
      */
@@ -56,14 +47,6 @@ class ForgotPasswordController extends Controller
         // Generic response regardless of whether account exists
         return redirect()->route('password-request-student.show')
             ->with(['status' => 'إذا كانت التفاصيل صحيحة، سيتم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني']);
-    }
-
-    /**
-     * Show the admin/instructor password reset request form.
-     */
-    public function adminShow()
-    {
-        return Inertia::render('ForgotPasswordAdminPage');
     }
 
     /**

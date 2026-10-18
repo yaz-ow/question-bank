@@ -12,7 +12,7 @@ class GateTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function manage_questions_gate_works_for_admin()
     {
         $admin = User::factory()->create([
@@ -28,7 +28,7 @@ class GateTest extends TestCase
         $this->assertTrue(Gate::check('manage-questions', $subject));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function manage_questions_gate_fails_for_inactive_admin()
     {
         $admin = User::factory()->create([
@@ -44,7 +44,7 @@ class GateTest extends TestCase
         $this->assertFalse(Gate::check('manage-questions', $subject));
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function manage_questions_gate_fails_for_student()
     {
         $student = User::factory()->create([

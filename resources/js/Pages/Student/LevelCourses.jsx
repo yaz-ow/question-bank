@@ -96,6 +96,7 @@ export default function LevelCourses({
                         <input
                             id="course-search"
                             type="search"
+                            maxLength={255}
                             placeholder={t('ابحث عن مقرر في هذا المستوى...')}
                             className="w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm placeholder:text-slate-400"
                             value={data.search}

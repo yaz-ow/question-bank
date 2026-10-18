@@ -349,5 +349,9 @@
     "الخيار ج لا يمكن أن يتجاوز 255 حرفًا": "Option C must not exceed 255 characters.",
     "الخيار د مطلوب": "Option D is required.",
     "الخيار د لا يمكن أن يتجاوز 255 حرفًا": "Option D must not exceed 255 characters.",
-    "عرض ": "Showing "
+    "عرض ": "Showing ",
+    "مرحبا بعودتك": "Welcome back.",
+    "نص السؤال لا يمكن أن يتجاوز 10000 حرف": "Question text cannot exceed 10,000 characters.",
+    "كلمة المرور طويلة جدًا؛ قلّل عدد الأحرف أو الرموز.": "Your password is too long. Use fewer characters or symbols.",
+    "كلمة المرور تحتوي على رمز غير صالح.": "Your password contains an invalid character."
 }

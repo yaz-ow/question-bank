@@ -8,17 +8,8 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class QuestionsImportTemplate implements FromCollection, WithHeadings
 {
-    /**
-     * The subject ID for the template.
-     */
-    protected $subjectId;
-
-    /**
-     * Create a new template instance.
-     */
-    public function __construct($subjectId, private string $locale = 'ar')
+    public function __construct(private string $locale = 'ar')
     {
-        $this->subjectId = $subjectId;
     }
 
     public function collection(): Collection

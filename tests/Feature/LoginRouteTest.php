@@ -6,7 +6,7 @@ use Tests\TestCase;
 
 class LoginRouteTest extends TestCase
 {
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function login_route_exists()
     {
         $response = $this->get('/login/admin');

@@ -11,7 +11,7 @@ class QuestionTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function question_belongs_to_subject()
     {
         $subject = Subject::factory()->create();
@@ -23,7 +23,7 @@ class QuestionTest extends TestCase
         $this->assertEquals($subject->id, $question->subject->id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function subject_has_many_questions()
     {
         $subject = Subject::factory()->create();
@@ -35,7 +35,7 @@ class QuestionTest extends TestCase
         $this->assertEquals($subject->id, $questions[0]->subject->id);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function question_can_be_created_with_valid_data()
     {
         $subject = Subject::factory()->create();
@@ -61,7 +61,7 @@ class QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function question_can_be_updated()
     {
         $subject = Subject::factory()->create();
@@ -87,7 +87,7 @@ class QuestionTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function question_can_be_deleted()
     {
         $subject = Subject::factory()->create();

@@ -1,59 +1,91 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# بنك الأسئلة · Question Bank
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+مشروع جامعي للتدريب على أسئلة الاختيار من متعدد، مبني باستخدام Laravel وInertia وReact. يدعم واجهة عربية وإنجليزية؛ محتوى الأسئلة والمقررات يبقى باللغة التي يكتبها المدرّس.
 
-## About Laravel
+## الوظائف والصلاحيات
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+| الحساب | الوظائف |
+| --- | --- |
+| الطالب | التسجيل واستعادة كلمة المرور، تصفح المستويات والمقررات، التدريب، متابعة المحاولة، سجل النتائج ومراجعة الإجابات |
+| المدرّس | إدارة المقررات والأسئلة، استيراد Excel/CSV بعد المعاينة، نتائج الطلاب وتنزيل إجابات المحاولات المكتملة |
+| المؤسس (`admin`) | جميع وظائف المدرّس، إدارة حسابات الطلاب والمدرّسين |
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+اختيار اللغة متاح في الواجهة العامة والتسجيل واستعادة كلمة المرور. يحفظ المتصفح الاختيار، وتستخدمه واجهات الحساب بعد تسجيل الدخول. لتغيير اللغة يعود المستخدم إلى الصفحة الرئيسية. يتغير الاتجاه RTL/LTR دون تبديل صور البطاقات أو ترجمة المحتوى المدخل.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+الاختبارات تدريبية بلا مؤقت، بأعداد 10 أو 20 أو 30 سؤالًا حسب المتاح. تُحفظ الإجابة قبل إظهار تصحيح السؤال، وتظهر الدرجة فقط بعد اكتمال المحاولة. المحاولة غير المكتملة قابلة للاستئناف. حذف سؤال من البنك لا يغير نسخة السؤال المحفوظة في محاولة سابقة، بينما حذف مقرر يحذف أسئلته ومحاولاته ونتائجه كما يوضح تأكيد الحذف.
 
-## Learning Laravel
+## المتطلبات
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+- Git وComposer 2 وNode.js 22 مع npm.
+- PHP وإضافات Laravel/Excel عند تشغيل Composer خارج Docker: `mbstring`, `pdo`, `dom`, `xml`, `xmlreader`, `xmlwriter`, `simplexml`, `zip`, `gd`, `fileinfo`، وإضافة قاعدة البيانات المناسبة.
+- إعداد Sail المرفق يستخدم PHP 8.5 وMySQL 8.4. الفحوص الآلية مهيأة أيضًا لـPHP 8.3 مع SQLite.
+- في Windows: WSL 2 مع تفعيل تكامل التوزيعة في Docker Desktop. يفضل وضع المشروع داخل `~/projects` في WSL.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## تثبيت جديد باستخدام Sail
 
-## Laravel Sponsors
+هذه الخطوات لنسخة جديدة، وليست لاستبدال إعدادات مشروع يعمل مسبقًا:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+composer install
+cp .env.example .env
+docker compose -p projectqb up -d --build
+docker compose -p projectqb exec laravel.test php artisan key:generate
+docker compose -p projectqb exec laravel.test php artisan migrate
+docker compose -p projectqb exec laravel.test npm ci
+docker compose -p projectqb exec laravel.test npm run build
+docker compose -p projectqb exec laravel.test php artisan app:create-founder
+```
 
-### Premium Partners
+افتح `http://localhost`. إذا كانت صلاحيات مستخدم WSL مختلفة، اضبط `WWWUSER` و`WWWGROUP` في `.env` حسب `id -u` و`id -g` قبل البناء. بيانات MySQL في المثال مخصصة للتطوير المحلي؛ غيّرها في أي بيئة منشورة.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+أمر `app:create-founder` يطلب الاسم والبريد وكلمة مرور مخفية وتأكيدها. يتوقف إذا كان أي مؤسس موجودًا، ولا يعدّل أو يرقّي حسابًا سابقًا. تُفحص كلمات المرور الجديدة أيضًا لتناسب bcrypt (72 بايت كحد أقصى، مع رفض محرف NUL)، دون تعديل بيانات الدخول السابقة. لا توجد حسابات دخول افتراضية، و`db:seed` لا ينشئ حسابات تجريبية. أمر الإنشاء لا يلزم للنسخ التي لديها حساب مؤسس بالفعل.
 
-## Contributing
+لإضافة المدرّسين من الواجهة، ضع قيمة خاصة وقوية لـ`ADMIN_CREATION_CODE` في `.env` ثم نفّذ `php artisan config:clear` داخل الحاوية. لا تضع الرمز أو كلمات المرور في Git.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## تحديث نسخة موجودة
 
-## Code of Conduct
+احتفظ بملف `.env` وقاعدة البيانات والمفتاح الحالي. انسخ قاعدة البيانات احتياطيًا قبل التحديثات التي تشمل تغييرات في هيكلها.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git pull --rebase --autostash origin main
+docker compose -p projectqb exec laravel.test composer install --no-interaction --prefer-dist
+docker compose -p projectqb exec laravel.test npm ci
+docker compose -p projectqb exec laravel.test php artisan optimize:clear
+docker compose -p projectqb exec laravel.test php artisan migrate
+docker compose -p projectqb exec laravel.test npm run build
+```
 
-## Security Vulnerabilities
+شغّل الحاويات أولًا إذا كانت متوقفة. لا تُعد إنشاء `APP_KEY` أو نسخ `.env.example` فوق إعداداتك عند التحديث. مراجعة أكتوبر 2026 لا تضيف migration جديدة.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## استيراد الأسئلة
 
-## License
+حمّل القالب من إدارة أسئلة المقرر. أسماء الأعمدة ثابتة:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```text
+question_text,option_a,option_b,option_c,option_d,correct_answer
+```
+
+الملف XLSX/XLS/CSV بحد 5 MB و1000 سؤال غير فارغ. نص السؤال بحد 10000 حرف، وكل خيار بحد 255 حرفًا. المفتاح الصحيح A/B/C/D، ويقبل الاستيراد أيضًا أحرف الخيارات العربية. تُعرض الأخطاء والتكرارات قبل الاعتماد؛ وجود خطأ يمنع الاستيراد كله. تنتهي المعاينة بعد 15 دقيقة وتخص الحساب والمقرر والجلسة الحالية. الأسئلة المطابقة تُتخطى عند المعاينة والتأكيد.
+
+## التحقق
+
+داخل الحاوية، أو مباشرة إذا توفرت المتطلبات محليًا:
+
+```bash
+php artisan config:clear
+php artisan test
+npm ci
+npm run build
+npm audit
+composer audit --locked
+```
+
+استخدم `docker compose -p projectqb exec laravel.test` قبل كل أمر لتشغيله في Sail. تستخدم الاختبارات SQLite في الذاكرة افتراضيًا، ولا تختبر على قاعدة بيانات حقيقية تحتوي بيانات المستخدمين. GitHub Actions يهيئ مسارين: PHP 8.3/SQLite وPHP 8.5/MySQL 8.4 مع قاعدة منفصلة للاختبار، إضافة إلى البناء وتدقيق الاعتمادات.
+
+## البريد والتشغيل المنشور
+
+`MAIL_MAILER=log` مخصص للتطوير؛ لا يرسل رابط الاستعادة إلى صندوق بريد حقيقي. اضبط `MAIL_MAILER=smtp` وبيانات `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SCHEME`, `MAIL_FROM_ADDRESS` حسب مزودك. اضبط `APP_URL` على عنوان الموقع الحقيقي؛ روابط الاستعادة تعتمد عليه دائمًا لحمايتها من تغيير عنوان الطلب. جرّب استعادة كلمة مرور الطالب والإدارة من بريد فعلي.
+
+قبل الإطلاق اضبط `APP_ENV=production`, `APP_DEBUG=false` واستخدم HTTPS و`SESSION_SECURE_COOKIE=true`. وجّه خادم الويب إلى `public/` فقط، واجعل `storage/` و`bootstrap/cache/` قابلين للكتابة للمستخدم المناسب. ملف Compose المرفق للتطوير المحلي ويعرض منفذ قاعدة البيانات؛ جهّز استضافة الإنتاج حسب بيئتك. احتفظ بنسخ احتياطية لقاعدة البيانات وجرّب الاستعادة منها. لا تشغّل خادم Vite التطويري على الموقع المنشور.
+
+راجع [تقرير الفحص وحدود التحقق](docs/AUDIT.md). ملاحظات المراحل السابقة محفوظة في [docs/history](docs/history) للتاريخ، وقد تصف واجهات استُبدلت لاحقًا.

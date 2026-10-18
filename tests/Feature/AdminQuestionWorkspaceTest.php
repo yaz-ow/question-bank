@@ -40,6 +40,37 @@ class AdminQuestionWorkspaceTest extends TestCase
         return 'excel_import_'.$subject->id.'_'.$user->id;
     }
 
+    public function test_question_length_is_bounded_for_create_update_and_import(): void
+    {
+        $user = User::factory()->create(['role' => 'instructor']);
+        $subject = Subject::factory()->create();
+        $this->actingAs($user);
+        $data = array_combine(
+            ['question_text', 'option_a', 'option_b', 'option_c', 'option_d', 'correct_answer'],
+            $this->row(str_repeat('س', 10000)),
+        );
+        $this->post(route('admin.questions.store', $subject), $data)->assertSessionHasNoErrors();
+        $question = $subject->questions()->sole();
+        $this->assertSame($data['question_text'], $question->question_text);
+
+        $oversized = array_replace($data, ['question_text' => str_repeat('س', 10001)]);
+        $this->post(route('admin.questions.store', $subject), $oversized)
+            ->assertSessionHasErrors('question_text');
+        $this->put(route('admin.questions.update', [$subject, $question]), $oversized)
+            ->assertSessionHasErrors('question_text');
+        $this->assertSame($data['question_text'], $question->fresh()->question_text);
+
+        $this->post(route('admin.questions.upload.preview', $subject), [
+            'file' => $this->csv([$this->row($oversized['question_text'])]),
+        ])->assertRedirect();
+        $preview = session($this->key($subject, $user));
+        $this->assertSame(1, $preview['preview']['errorCount']);
+        $this->assertSame('نص السؤال لا يمكن أن يتجاوز 10000 حرف', $preview['preview']['rows'][0]['errors'][0]);
+        $this->post(route('admin.questions.import.confirm', $subject), ['import_token' => $preview['token']])
+            ->assertSessionHasErrors('import');
+        $this->assertDatabaseCount('questions', 1);
+    }
+
     public function test_preview_stays_in_workspace_and_shows_every_row_without_inserting_questions(): void
     {
         $user = User::factory()->create(['role' => 'admin']);

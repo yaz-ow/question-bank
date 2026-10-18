@@ -5,18 +5,53 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - php: '8.3'
+            database: sqlite
+            db_name: ':memory:'
+          - php: '8.5'
+            database: mysql
+            db_name: question_bank_test
+    name: PHP ${{ matrix.php }} / ${{ matrix.database }}
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: testing
+          MYSQL_DATABASE: question_bank_test
+          MYSQL_USER: testing
+          MYSQL_PASSWORD: testing
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -ptesting"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    env:
+      DB_CONNECTION: ${{ matrix.database }}
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: ${{ matrix.db_name }}
+      DB_USERNAME: testing
+      DB_PASSWORD: testing
     steps:
       - uses: actions/checkout@v4
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: mbstring, pdo_sqlite, dom
+          php-version: ${{ matrix.php }}
+          extensions: mbstring, pdo_sqlite, pdo_mysql, dom, xml, xmlreader, xmlwriter, simplexml, gd, zip
           coverage: none
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
       - run: composer install --no-interaction --prefer-dist
+      - run: composer audit --locked
       - run: cp .env.example .env && php artisan key:generate
       - run: npm ci && npm run build
+      - run: npm audit
       - run: php artisan test

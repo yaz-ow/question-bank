@@ -148,4 +148,21 @@ class ProjectRegressionTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'new@example.com', 'university_id' => 'M123456789',
             'role' => 'student', 'is_active' => true]);
     }
+    public function test_student_course_search_rejects_arrays_and_excessive_length(): void
+    {
+        $this->actingAs(User::factory()->create());
+        foreach ([['unexpected'], str_repeat('a', 256)] as $search) {
+            $this->getJson('/student/level/1/courses?'.http_build_query(['search' => $search]))
+                ->assertUnprocessable()->assertJsonValidationErrors('search');
+        }
+    }
+
+    public function test_subject_validation_handles_non_scalar_level_without_a_server_error(): void
+    {
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
+        $this->postJson('/admin/subjects', ['name' => 'Invalid', 'level' => ['unexpected']])
+            ->assertUnprocessable()->assertJsonValidationErrors('level');
+        $this->assertDatabaseCount('subjects', 0);
+    }
+
 }

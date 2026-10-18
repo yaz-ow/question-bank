@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\BcryptPassword;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,18 +12,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
-use Inertia\Inertia;
 
 class RegisterController extends Controller
 {
-    /**
-     * Show the student registration form.
-     */
-    public function create()
-    {
-        return Inertia::render('RegisterPage');
-    }
-
     /**
      * Handle student registration request.
      */
@@ -48,7 +40,7 @@ class RegisterController extends Controller
                     'unique:users,university_id',
                     'regex:/^M[0-9]{9}$/',
                 ],
-                'password' => ['required', 'confirmed', Password::defaults()],
+                'password' => ['required', 'confirmed', Password::defaults(), new BcryptPassword],
             ]);
         } catch (ValidationException $e) {
             return redirect()->route('register')

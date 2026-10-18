@@ -34,8 +34,8 @@ class AcademicController extends Controller
             abort(404);
         }
 
-        // Get search parameter
-        $search = $request->input('search', '');
+        $filters = $request->validate(['search' => ['nullable', 'string', 'max:255']]);
+        $search = $filters['search'] ?? '';
 
         // Get courses for this level
         $courses = Subject::where('level', $level)
