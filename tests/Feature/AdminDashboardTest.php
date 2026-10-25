@@ -32,13 +32,10 @@ class AdminDashboardTest extends TestCase
                 ->where('subjects.data', fn ($rows) => collect($rows)->firstWhere('id', $subject->id)['questions_count'] === 4));
     }
 
-    public function test_instructor_does_not_receive_student_statistics(): void
+    public function test_instructor_cannot_access_the_admin_dashboard(): void
     {
         $instructor = User::factory()->create(['role' => 'instructor']);
-        $this->actingAs($instructor)->get(route('admin.dashboard'))
-            ->assertOk()->assertInertia(fn (Assert $page) => $page
-                ->component('AdminDashboardPage')->missing('stats.students')
-                ->where('stats.subjects', 0)->where('stats.questions', 0)->where('stats.levels', 0));
+        $this->actingAs($instructor)->get(route('admin.dashboard'))->assertRedirect('/');
     }
 
     public function test_dashboard_filters_and_pagination_preserve_global_totals(): void

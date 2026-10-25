@@ -43,7 +43,7 @@ class QuestionController extends Controller
     {
         $this->authorize('manage-questions', $subject);
 
-        return redirect()->route('admin.questions.index', $subject->id);
+        return redirect()->route($this->workspaceRoute(), $subject->id);
     }
 
     public function store(Request $request, Subject $subject)
@@ -51,7 +51,7 @@ class QuestionController extends Controller
         $this->authorize('manage-questions', $subject);
         $subject->questions()->create($this->validatedQuestion($request));
 
-        return redirect()->route('admin.questions.index', $subject->id)
+        return redirect()->route($this->workspaceRoute(), $subject->id)
             ->with('success', 'تم إنشاء السؤال بنجاح');
     }
 
@@ -76,7 +76,7 @@ class QuestionController extends Controller
         // Keep bookmarked questions visible in the replacement list, including older pages.
         $preceding = $subject->questions()->where('id', '>', $question->id)->count();
 
-        return redirect()->route('admin.questions.index', [
+        return redirect()->route($this->workspaceRoute(), [
             'subject' => $subject->id,
             'page' => intdiv($preceding, self::PAGE_SIZE) + 1,
         ]);
@@ -226,7 +226,7 @@ class QuestionController extends Controller
             });
             $request->session()->forget($key);
 
-            return redirect()->route('admin.questions.index', $subject->id)
+            return redirect()->route($this->workspaceRoute(), $subject->id)
                 ->with('success', "تم استيراد $imported سؤال بنجاح وتخطي $skipped سؤال مكرر.");
         } catch (\Throwable $e) {
             report($e);
@@ -248,6 +248,11 @@ class QuestionController extends Controller
         return $this->workspaceRedirect($request, $subject);
     }
 
+    private function workspaceRoute(): string
+    {
+        return request()->routeIs('instructor.*') ? 'instructor.questions.index' : 'admin.questions.index';
+    }
+
     private function importKey(Request $request, Subject $subject): string
     {
         return 'excel_import_'.$subject->id.'_'.$request->user()->id;
@@ -263,7 +268,7 @@ class QuestionController extends Controller
         $count = $subject->questions()->when($search, fn ($q) => $q->where('question_text', 'like', "%{$search}%"))->count();
         $page = min((int) ($list['list_page'] ?? 1), max(1, (int) ceil($count / self::PAGE_SIZE)));
 
-        return redirect()->route('admin.questions.index', array_filter([
+        return redirect()->route($this->workspaceRoute(), array_filter([
             'subject' => $subject->id, 'search' => $search, 'page' => $page > 1 ? $page : null,
         ], fn ($value) => $value !== null && $value !== ''));
     }

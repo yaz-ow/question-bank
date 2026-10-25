@@ -78,6 +78,12 @@ class LoginController extends Controller
             Auth::login($user);
             $request->session()->regenerate();
 
+            if ($user->role === 'instructor') {
+                $request->session()->forget('url.intended');
+
+                return redirect()->route('instructor.courses.index')->with('success', 'مرحبا بعودتك');
+            }
+
             return redirect()->intended(route('admin.dashboard'))
                 ->with('success', 'مرحبا بعودتك'); // Arabic: Welcome back
         } catch (ValidationException $e) {

@@ -44,10 +44,10 @@ class Phase4QuestionTest extends TestCase
             'is_active' => true
         ]);
 
-        $subject = Subject::factory()->create();
+        $subject = Subject::factory()->create(['instructor_id' => $instructor->id]);
 
         $this->actingAs($instructor)
-            ->get(route('admin.questions.index', ['subject' => $subject->id]))
+            ->get(route('instructor.questions.index', ['subject' => $subject->id]))
             ->assertOk()
             ->assertInertia(function ($page) use ($subject) {
                 $page->component('Admin/Questions/Index')

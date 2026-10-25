@@ -1,15 +1,19 @@
 <?php
 
 use App\Http\Controllers\Admin\InstructorController;
+use App\Http\Controllers\Admin\Questions\QuestionController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentResultController;
 use App\Http\Controllers\Admin\SubjectController;
-use App\Http\Controllers\Admin\Questions\QuestionController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Instructor\CourseController;
+use App\Http\Controllers\Student\AcademicController;
+use App\Http\Controllers\Student\DashboardController;
 use App\Http\Controllers\Student\QuizController;
+use App\Http\Controllers\Student\ResultController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -80,13 +84,13 @@ Route::get('/', function () {
 
 // Student and admin dashboards
 Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
-    Route::get('/student/dashboard', [\App\Http\Controllers\Student\DashboardController::class, 'index'])
+    Route::get('/student/dashboard', [DashboardController::class, 'index'])
         ->name('student.dashboard')->middleware('role:student');
 
     // Student academic browsing
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::get('results', [\App\Http\Controllers\Student\ResultController::class, 'index'])->name('results.index');
-        Route::get('results/{attempt}', [\App\Http\Controllers\Student\ResultController::class, 'show'])->name('results.show');
+        Route::get('results', [ResultController::class, 'index'])->name('results.index');
+        Route::get('results/{attempt}', [ResultController::class, 'show'])->name('results.show');
         Route::post('courses/{subject}/quizzes', [QuizController::class, 'store'])
             ->name('quizzes.store')->middleware('throttle:quiz-starts');
         Route::get('quizzes/{attempt}', [QuizController::class, 'show'])->name('quizzes.show');
@@ -100,42 +104,39 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             ->name('quizzes.retry')->middleware('throttle:quiz-starts');
     });
 
-    Route::get('/student/levels', [\App\Http\Controllers\Student\AcademicController::class, 'levels'])
+    Route::get('/student/levels', [AcademicController::class, 'levels'])
         ->name('student.levels')->middleware('role:student');
-    Route::get('/student/level/{level}/courses', [\App\Http\Controllers\Student\AcademicController::class, 'levelCourses'])
+    Route::get('/student/level/{level}/courses', [AcademicController::class, 'levelCourses'])
         ->name('student.level.courses')->middleware('role:student');
-    Route::get('/student/level/{level}/course/{id}', [\App\Http\Controllers\Student\AcademicController::class, 'courseDetails'])
+    Route::get('/student/level/{level}/course/{id}', [AcademicController::class, 'courseDetails'])
         ->name('student.course.details')->middleware('role:student');
 
-    Route::middleware(['auth', 'active', 'auth.session', 'role:admin,instructor'])->group(function () {
-        Route::get('/admin/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
+    Route::middleware('role:instructor')->prefix('instructor')->name('instructor.')->group(function () {
+        Route::get('courses', [CourseController::class, 'index'])->name('courses.index');
+    });
+
+    foreach (['admin', 'instructor'] as $portal) {
+        Route::middleware('role:'.$portal)->prefix($portal)->name($portal.'.')->group(function () {
+            Route::get('student-results', [StudentResultController::class, 'index'])->name('student-results.index');
+            Route::get('student-results/{subject}/students/{user}/attempts/{attempt}/answers.xlsx', [StudentResultController::class, 'export'])
+                ->name('student-results.export')->middleware('throttle:admin-actions');
+
+            Route::prefix('subjects/{subject}')->group(function () {
+                Route::get('questions/download-template', [QuestionController::class, 'downloadTemplate'])->name('questions.download.template');
+                Route::post('questions/upload-preview', [QuestionController::class, 'uploadPreview'])->block(10, 10)->name('questions.upload.preview');
+                Route::post('questions/import-confirm', [QuestionController::class, 'importConfirm'])->block(10, 10)->name('questions.import.confirm');
+                Route::delete('questions/import-preview', [QuestionController::class, 'cancelImport'])->block(10, 10)->name('questions.import.cancel');
+                Route::resource('questions', QuestionController::class)
+                    ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])->names('questions');
+            });
+        });
+    }
+
+    Route::middleware(['auth', 'active', 'auth.session', 'role:admin'])->group(function () {
+        Route::get('/admin/dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])
             ->name('admin.dashboard');
 
         Route::resource('admin/subjects', SubjectController::class)->names('admin.subjects');
-
-        Route::get('/admin/student-results', [StudentResultController::class, 'index'])->name('admin.student-results.index');
-        Route::get('/admin/student-results/{subject}/students/{user}/attempts/{attempt}/answers.xlsx', [StudentResultController::class, 'export'])
-            ->name('admin.student-results.export')->middleware('throttle:admin-actions');
-
-        // Question management routes nested under subjects
-        Route::prefix('admin/subjects/{subject}')->group(function () {
-            // Excel import/export routes
-            Route::get('questions/download-template', [QuestionController::class, 'downloadTemplate'])
-                ->name('admin.questions.download.template');
-            Route::post('questions/upload-preview', [QuestionController::class, 'uploadPreview'])
-                ->block(10, 10)
-                ->name('admin.questions.upload.preview');
-            Route::post('questions/import-confirm', [QuestionController::class, 'importConfirm'])
-                ->block(10, 10)
-                ->name('admin.questions.import.confirm');
-            Route::delete('questions/import-preview', [QuestionController::class, 'cancelImport'])
-                ->block(10, 10)
-                ->name('admin.questions.import.cancel');
-
-            Route::resource('questions', QuestionController::class)
-                ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
-                ->names('admin.questions');
-        });
 
         Route::middleware(['role:admin'])->group(function () {
             // Admin student management
@@ -146,6 +147,7 @@ Route::middleware(['auth', 'active', 'auth.session'])->group(function () {
             Route::get('/admin/instructors', [InstructorController::class, 'index'])->name('admin.instructors.index');
             Route::get('/admin/instructors/create', [InstructorController::class, 'create'])->name('admin.instructors.create');
             Route::post('/admin/instructors', [InstructorController::class, 'store'])->name('admin.instructors.store')->middleware('throttle:admin-actions');
+            Route::put('/admin/instructors/{user}/subjects', [InstructorController::class, 'subjects'])->name('admin.instructors.subjects')->middleware('throttle:admin-actions');
             Route::put('/admin/instructors/{user}', [InstructorController::class, 'update'])->name('admin.instructors.update')->middleware('throttle:admin-actions');
             Route::post('/admin/instructors/{user}/toggle', [InstructorController::class, 'toggle'])->name('admin.instructors.toggle')->middleware('throttle:admin-actions');
             Route::delete('/admin/instructors/{user}', [InstructorController::class, 'destroy'])->name('admin.instructors.destroy')->middleware('throttle:instructor-deletions');

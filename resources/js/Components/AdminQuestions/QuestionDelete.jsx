@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../Support/useStaffRoutes';
 import {
     adminText as t,
     translateAdminFeedback as feedback,
@@ -13,6 +14,7 @@ export default function QuestionDelete({
     onBusy,
     busy,
 }) {
+    const staffRoute = useStaffRoutes();
     const form = useForm({
         ...listContext,
     });
@@ -20,7 +22,7 @@ export default function QuestionDelete({
         event.preventDefault();
         if (busy) return;
         form.delete(
-            route('admin.questions.destroy', {
+            staffRoute('questions.destroy', {
                 subject: subject.id,
                 question: question.id,
             }),

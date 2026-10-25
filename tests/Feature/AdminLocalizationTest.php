@@ -31,7 +31,7 @@ class AdminLocalizationTest extends TestCase
                 'is_correct' => $position === 1, 'answered_at' => now(),
             ]);
         }
-        $this->actingAs(User::factory()->create(['role' => 'instructor']));
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
 
         foreach ([null, 'en', 'unsupported'] as $locale) {
             $response = $this->get(route('admin.student-results.export', [
@@ -62,7 +62,7 @@ class AdminLocalizationTest extends TestCase
     public function test_import_template_localizes_only_the_example_and_preserves_import_columns(): void
     {
         $course = Subject::factory()->create();
-        $this->actingAs(User::factory()->create(['role' => 'instructor']));
+        $this->actingAs(User::factory()->create(['role' => 'admin']));
 
         foreach ([null, 'en', 'unsupported'] as $locale) {
             $response = $this->get(route('admin.questions.download.template', [

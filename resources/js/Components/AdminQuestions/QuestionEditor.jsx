@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../Support/useStaffRoutes';
 import {
     adminText as t,
     translateAdminFeedback as feedback,
@@ -16,6 +17,7 @@ export default function QuestionEditor({
     onSaved,
     onCancel,
 }) {
+    const staffRoute = useStaffRoutes();
     const form = useForm({
         ...emptyQuestion,
     });
@@ -58,7 +60,7 @@ export default function QuestionEditor({
         }));
         if (question)
             form.put(
-                route('admin.questions.update', {
+                staffRoute('questions.update', {
                     subject: subject.id,
                     question: question.id,
                 }),
@@ -66,7 +68,7 @@ export default function QuestionEditor({
             );
         else
             form.post(
-                route('admin.questions.store', {
+                staffRoute('questions.store', {
                     subject: subject.id,
                 }),
                 options,

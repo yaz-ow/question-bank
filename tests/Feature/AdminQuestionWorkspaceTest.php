@@ -42,7 +42,7 @@ class AdminQuestionWorkspaceTest extends TestCase
 
     public function test_question_length_is_bounded_for_create_update_and_import(): void
     {
-        $user = User::factory()->create(['role' => 'instructor']);
+        $user = User::factory()->create(['role' => 'admin']);
         $subject = Subject::factory()->create();
         $this->actingAs($user);
         $data = array_combine(
@@ -87,7 +87,7 @@ class AdminQuestionWorkspaceTest extends TestCase
 
     public function test_invalid_rows_keep_excel_line_numbers_and_block_the_entire_import(): void
     {
-        $user = User::factory()->create(['role' => 'instructor']);
+        $user = User::factory()->create(['role' => 'admin']);
         $subject = Subject::factory()->create();
         $invalid = $this->row('سؤال ناقص');
         $invalid[2] = '';

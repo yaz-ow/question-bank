@@ -13,9 +13,14 @@ export default function AdminLayout({
     const { language } = usePortalLanguage();
     const { auth } = usePage().props;
     const isFounder = auth.user.role === 'admin';
+    const isInstructor = auth.user.role === 'instructor';
+    const home = route(isInstructor ? 'instructor.courses.index' : 'admin.dashboard');
     const roleLabel = isFounder ? t('المؤسس') : t('المدرّس');
     const [menuOpen, setMenuOpen] = useState(false);
-    const navigation = [
+    const navigation = isInstructor ? [
+        { key: 'subjects', label: t('مقرراتي'), icon: 'book', href: home },
+        { key: 'student-results', label: t('نتائج الطلاب'), icon: 'chart', href: route('instructor.student-results.index') },
+    ] : [
         {
             key: 'dashboard',
             label: t('لوحة التحكم'),
@@ -72,16 +77,16 @@ export default function AdminLayout({
         >
             <aside
                 className="admin-sidebar"
-                aria-label={t('القائمة الجانبية للإدارة')}
+                aria-label={t(isInstructor ? 'القائمة الجانبية للمدرس' : 'القائمة الجانبية للإدارة')}
             >
-                <Link className="admin-logo" href={route('admin.dashboard')}>
+                <Link className="admin-logo" href={home}>
                     <BrandMark inverse className="admin-logo-mark" />
                     <strong>{t('بنك الأسئلة')}</strong>
-                    <small>{t('بوابة الإدارة')}</small>
+                    <small>{t(isInstructor ? 'بوابة المدرس' : 'بوابة الإدارة')}</small>
                 </Link>
                 <nav
                     className="admin-navigation"
-                    aria-label={t('تنقل الإدارة')}
+                    aria-label={t(isInstructor ? 'تنقل المدرس' : 'تنقل الإدارة')}
                 >
                     {links()}
                 </nav>
@@ -95,7 +100,7 @@ export default function AdminLayout({
                             <span>
                                 {isFounder
                                     ? t('حساب الإدارة')
-                                    : t('إدارة المقررات والأسئلة')}
+                                    : t('إدارة أسئلة مقرراتك')}
                             </span>
                         </div>
                     </div>
@@ -125,7 +130,7 @@ export default function AdminLayout({
                         >
                             <AdminIcon name={menuOpen ? 'close' : 'menu'} />
                         </button>
-                        <Link href={route('admin.dashboard')}>
+                        <Link href={home}>
                             {t('الرئيسية')}
                         </Link>
                         <span aria-hidden="true">/</span>
@@ -151,7 +156,7 @@ export default function AdminLayout({
                     <nav
                         id="admin-mobile-nav"
                         className="admin-mobile-nav"
-                        aria-label={t('تنقل الإدارة على الجوال')}
+                        aria-label={t(isInstructor ? 'تنقل المدرس على الجوال' : 'تنقل الإدارة على الجوال')}
                     >
                         {links()}
                         <Link

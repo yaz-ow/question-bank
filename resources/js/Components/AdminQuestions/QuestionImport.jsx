@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../Support/useStaffRoutes';
 import {
     adminLanguage,
     adminText as t,
@@ -16,6 +17,7 @@ export default function QuestionImport({
     onBusy,
     onClose,
 }) {
+    const staffRoute = useStaffRoutes();
     const upload = useForm({
         file: null,
     });
@@ -52,7 +54,7 @@ export default function QuestionImport({
             ...listContext,
         }));
         upload.post(
-            route('admin.questions.upload.preview', {
+            staffRoute('questions.upload.preview', {
                 subject: subject.id,
             }),
             {
@@ -74,7 +76,7 @@ export default function QuestionImport({
             import_token: preview.token,
         }));
         confirm.post(
-            route('admin.questions.import.confirm', {
+            staffRoute('questions.import.confirm', {
                 subject: subject.id,
             }),
             {
@@ -104,7 +106,7 @@ export default function QuestionImport({
             ...listContext,
         }));
         cancel.delete(
-            route('admin.questions.import.cancel', {
+            staffRoute('questions.import.cancel', {
                 subject: subject.id,
             }),
             {
@@ -314,7 +316,7 @@ export default function QuestionImport({
                     </button>
                     <small>{t('Excel أو CSV · حتى 5 MB و1000 سؤال')}</small>
                     <a
-                        href={route('admin.questions.download.template', {
+                        href={staffRoute('questions.download.template', {
                             subject: subject.id,
                             locale: adminLanguage(),
                         })}

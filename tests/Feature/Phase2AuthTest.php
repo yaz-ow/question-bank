@@ -224,7 +224,7 @@ class Phase2AuthTest extends TestCase
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('admin.dashboard'));
+        $response->assertRedirect(route('instructor.courses.index'));
         $response->assertSessionHas('success', 'مرحبا بعودتك');
         $this->assertAuthenticatedAs($user);
     }

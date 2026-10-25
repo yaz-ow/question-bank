@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Subject;
 use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -16,13 +17,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('admin', fn (User $user) => $user->is_active && $user->role === 'admin');
-        Gate::define('manage-subjects', fn (User $user) => $user->is_active
-            && in_array($user->role, ['admin', 'instructor'], true));
-        Gate::define('manage-questions', fn (User $user) => $user->is_active
-            && in_array($user->role, ['admin', 'instructor'], true));
+        Gate::define('manage-subjects', fn (User $user) => $user->is_active && $user->role === 'admin');
+        Gate::define('manage-questions', fn (User $user, Subject $subject) => $user->is_active
+            && ($user->role === 'admin' || ($user->role === 'instructor' && $subject->instructor_id === $user->id)));
         Gate::define('student', fn (User $user) => $user->is_active && $user->role === 'student');
-        Gate::define('view-student-results', fn (User $user) => $user->is_active
-            && in_array($user->role, ['admin', 'instructor'], true));
+        Gate::define('view-student-results', fn (User $user, ?Subject $subject = null) => $user->is_active
+            && ($user->role === 'admin' || ($user->role === 'instructor'
+                && ($subject === null || $subject->instructor_id === $user->id))));
 
         RateLimiter::for('authentication', function (Request $request) {
             $scope = $request->route()->uri().'|'.$request->ip();

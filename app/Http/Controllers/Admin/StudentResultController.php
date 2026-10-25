@@ -27,6 +27,9 @@ class StudentResultController extends Controller
             'attempts_page' => ['nullable', 'integer', 'min:1'],
         ]);
         $course = empty($filters['subject_id']) ? null : Subject::findOrFail($filters['subject_id']);
+        if ($course) {
+            $this->authorize('view-student-results', $course);
+        }
         $student = empty($filters['student_id']) ? null : User::where('role', 'student')
             ->whereHas('quizAttempts', fn ($query) => $query->where('subject_id', $course->id))
             ->findOrFail($filters['student_id']);
@@ -35,7 +38,9 @@ class StudentResultController extends Controller
         );
 
         return Inertia::render('Admin/StudentResultsPage', [
-            'courses' => fn () => Subject::orderBy('level')->orderBy('name')->orderBy('id')->get(['id', 'name', 'level']),
+            'courses' => fn () => Subject::when($request->user()->role === 'instructor',
+                fn ($query) => $query->where('instructor_id', $request->user()->id))
+                ->orderBy('level')->orderBy('name')->orderBy('id')->get(['id', 'name', 'level']),
             'course' => $course?->only(['id', 'name', 'level']),
             'filters' => $filters,
             'stats' => fn () => $course ? [
@@ -69,7 +74,7 @@ class StudentResultController extends Controller
 
     public function export(Request $request, Subject $subject, User $user, QuizAttempt $attempt)
     {
-        $this->authorize('view-student-results');
+        $this->authorize('view-student-results', $subject);
         $this->completedAttempt($subject, $user, $attempt);
         $attempt->load(['user', 'subject', 'items']);
 

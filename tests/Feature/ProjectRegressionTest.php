@@ -89,9 +89,9 @@ class ProjectRegressionTest extends TestCase
         $this->assertDatabaseCount('subjects', 0);
     }
 
-    public function test_subjects_are_available_to_instructors_but_not_students(): void
+    public function test_subject_management_is_not_available_to_instructors_or_students(): void
     {
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))->get('/admin/subjects')->assertOk();
+        $this->actingAs(User::factory()->create(['role' => 'instructor']))->get('/admin/subjects')->assertRedirect('/');
         $this->actingAs(User::factory()->create())->get('/admin/subjects')->assertRedirect('/');
         $this->post('/admin/subjects', ['name' => 'Forbidden', 'level' => 1])->assertRedirect('/');
         $this->assertDatabaseCount('subjects', 0);

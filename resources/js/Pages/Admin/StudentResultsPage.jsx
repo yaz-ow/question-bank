@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../Support/useStaffRoutes';
 import {
     adminText as t,
     translateAdminFeedback as feedback,
@@ -78,6 +79,7 @@ export default function StudentResultsPage({
     review,
     filters = {},
 }) {
+    const staffRoute = useStaffRoutes();
     const form = useForm({
         search: filters.search || '',
         level: filters.level || '',
@@ -128,7 +130,7 @@ export default function StudentResultsPage({
     const search = (event) => {
         event.preventDefault();
         setLoadErrors([]);
-        form.get(route('admin.student-results.index'), {
+        form.get(staffRoute('student-results.index'), {
             preserveScroll: true,
             preserveState: true,
             errorBag: 'courseResults',
@@ -153,7 +155,7 @@ export default function StudentResultsPage({
             )
                 delete query[key];
         });
-        router.get(route('admin.student-results.index'), query, {
+        router.get(staffRoute('student-results.index'), query, {
             preserveState: true,
             preserveScroll: true,
             ...(partial

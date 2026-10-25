@@ -5,6 +5,7 @@ import {
 import { Link, useForm } from '@inertiajs/react';
 import { Fragment, useEffect, useRef, useState } from 'react';
 import AdminIcon from './AdminIcon';
+import InstructorSubjects from './InstructorSubjects';
 const number = (value) => new Intl.NumberFormat('en-US').format(value);
 const date = (value) => (value ? value.split('-').reverse().join('/') : '—');
 export function AccountMetrics({ stats, students = false }) {
@@ -79,6 +80,7 @@ export default function AccountList({
     students = false,
     disabled = false,
     onBusy,
+    subjects = [],
 }) {
     const prefix = students ? 'admin.students' : 'admin.instructors';
     const label = students ? t('طالب') : t('مدرّس');
@@ -100,11 +102,12 @@ export default function AccountList({
     const deletion = useForm({
         instructor_creation_code: '',
     });
+    const assignment = useForm({ subject_ids: [] });
     const processing =
         filter.processing ||
         edit.processing ||
         toggle.processing ||
-        deletion.processing;
+        deletion.processing || assignment.processing;
     const busy = disabled || processing;
     const selected = accounts.data.find((user) => user.id === panel?.id);
     const hasFilters = !!(filters.search || filters.status);
@@ -139,6 +142,10 @@ export default function AccountList({
         );
     };
     const open = (user, kind) => {
+        assignment.clearErrors();
+        if (kind === 'subjects') {
+            assignment.setData('subject_ids', subjects.filter((subject) => subject.instructor_id === user.id).map((subject) => subject.id));
+        }
         edit.clearErrors();
         toggle.clearErrors();
         deletion.reset();
@@ -167,6 +174,15 @@ export default function AccountList({
         edit.put(route('admin.instructors.update', selected.id), {
             preserveScroll: true,
             errorBag: 'updateInstructor',
+            onSuccess: close,
+        });
+    };
+    const saveSubjects = (event) => {
+        event.preventDefault();
+        if (busy || !selected || students) return;
+        assignment.put(route('admin.instructors.subjects', selected.id), {
+            preserveScroll: true,
+            errorBag: 'instructorSubjects',
             onSuccess: close,
         });
     };
@@ -341,6 +357,16 @@ export default function AccountList({
                                     <td>
                                         <div className="admin-row-actions">
                                             {!students && (
+                                                <button id={`account-${user.id}-subjects`} type="button"
+                                                    className="admin-account-action admin-account-edit"
+                                                    aria-label={t('مقررات {0}', { 0: user.name })}
+                                                    aria-expanded={selected?.id === user.id && panel?.kind === 'subjects'}
+                                                    aria-controls={selected?.id === user.id && panel?.kind === 'subjects' ? `account-panel-${user.id}` : undefined}
+                                                    disabled={busy} onClick={() => open(user, 'subjects')}>
+                                                    <AdminIcon name="book" />{t('المقررات')}
+                                                </button>
+                                            )}
+                                            {!students && (
                                                 <button
                                                     id={`account-${user.id}-edit`}
                                                     className="admin-account-action admin-account-edit"
@@ -440,7 +466,7 @@ export default function AccountList({
                                             <div
                                                 id={`account-panel-${user.id}`}
                                                 ref={panelRef}
-                                                className={`admin-account-inline ${panel.kind === 'edit' ? 'is-editing' : panel.kind === 'delete' ? 'is-deleting' : 'is-confirming'}`}
+                                                className={`admin-account-inline ${['edit', 'subjects'].includes(panel.kind) ? 'is-editing' : panel.kind === 'delete' ? 'is-deleting' : 'is-confirming'}`}
                                                 onKeyDown={(event) => {
                                                     if (
                                                         event.key ===
@@ -452,7 +478,10 @@ export default function AccountList({
                                                     }
                                                 }}
                                             >
-                                                {panel.kind === 'edit' ? (
+                                                {panel.kind === 'subjects' ? (
+                                                    <InstructorSubjects key={user.id} user={user} subjects={subjects}
+                                                        form={assignment} busy={busy} onSave={saveSubjects} onClose={close} />
+                                                ) : panel.kind === 'edit' ? (
                                                     <form
                                                         onSubmit={save}
                                                         className="admin-account-edit-form"

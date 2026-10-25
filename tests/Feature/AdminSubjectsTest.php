@@ -29,14 +29,14 @@ class AdminSubjectsTest extends TestCase
 
     public function test_search_and_level_filters_are_preserved_across_subject_pages(): void
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
+        $admin = User::factory()->create(['role' => 'admin']);
         Subject::factory()->count(12)->sequence(fn ($sequence) => [
             'name' => 'Database '.str_pad($sequence->index, 2, '0', STR_PAD_LEFT), 'level' => 4,
         ])->create();
         Subject::factory()->create(['name' => 'Database Other Level', 'level' => 5]);
         Subject::factory()->create(['name' => 'Operating Systems', 'level' => 4]);
 
-        $this->actingAs($instructor)->get(route('admin.subjects.index', [
+        $this->actingAs($admin)->get(route('admin.subjects.index', [
             'search' => 'Database', 'level' => 4, 'page' => 2,
         ]))->assertOk()->assertInertia(fn (Assert $page) => $page
             ->where('subjects.total', 12)->where('subjects.current_page', 2)

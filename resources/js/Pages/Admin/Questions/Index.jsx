@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../../Support/useStaffRoutes';
 import {
     adminText as t,
     translateAdminFeedback as feedback,
@@ -21,6 +22,7 @@ export default function QuestionsIndex({
     filters = {},
     importPreview = null,
 }) {
+    const staffRoute = useStaffRoutes();
     const search = useForm({
         search: filters.search || '',
     });
@@ -77,7 +79,7 @@ export default function QuestionsIndex({
     const submitSearch = (event) => {
         event.preventDefault();
         search.get(
-            route('admin.questions.index', {
+            staffRoute('questions.index', {
                 subject: subject.id,
             }),
             {
@@ -144,7 +146,7 @@ export default function QuestionsIndex({
                     <div className="admin-question-list-heading">
                         <h2 id="question-list-title">{t('قائمة الأسئلة')}</h2>
                         <Link
-                            href={route('admin.subjects.index')}
+                            href={staffRoute('courses')}
                             className="admin-back-subjects"
                         >
                             {t('المقررات')}
@@ -177,7 +179,7 @@ export default function QuestionsIndex({
                         </button>
                         {filters.search && (
                             <Link
-                                href={route('admin.questions.index', {
+                                href={staffRoute('questions.index', {
                                     subject: subject.id,
                                 })}
                                 preserveState

@@ -1,3 +1,4 @@
+import useStaffRoutes from '../../Support/useStaffRoutes';
 import { adminLanguage, adminText as t } from '../../i18n/admin';
 import { useEffect, useState } from 'react';
 import AdminIcon from '../AdminIcon';
@@ -17,6 +18,7 @@ export default function AttemptReview({
     busy,
     onClose,
 }) {
+    const staffRoute = useStaffRoutes();
     const [onlyWrong, setOnlyWrong] = useState(false);
     useEffect(() => {
         setOnlyWrong(false);
@@ -53,7 +55,7 @@ export default function AttemptReview({
                 <div className="admin-results-review-actions">
                     <a
                         className="admin-button admin-button-primary"
-                        href={route('admin.student-results.export', {
+                        href={staffRoute('student-results.export', {
                             subject: course.id,
                             user: student.id,
                             attempt: review.attempt.id,

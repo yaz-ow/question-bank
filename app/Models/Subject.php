@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
@@ -28,6 +30,7 @@ class Subject extends Model
     {
         return [
             'level' => 'integer',
+            'instructor_id' => 'integer',
         ];
     }
 
@@ -49,7 +52,12 @@ class Subject extends Model
         return $this->hasMany(Question::class);
     }
 
-    public function quizAttempts(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function instructor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'instructor_id');
+    }
+
+    public function quizAttempts(): HasMany
     {
         return $this->hasMany(QuizAttempt::class);
     }

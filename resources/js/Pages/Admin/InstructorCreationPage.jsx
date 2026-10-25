@@ -91,6 +91,7 @@ export default function InstructorCreationPage({
     instructors,
     stats,
     filters,
+    subjects = [],
 }) {
     const form = useForm({
         name: '',
@@ -215,6 +216,7 @@ export default function InstructorCreationPage({
             </section>
             <AccountList
                 accounts={instructors}
+                subjects={subjects}
                 filters={filters}
                 disabled={form.processing}
                 onBusy={setListBusy}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subject;
 use App\Models\User;
 use App\Rules\BcryptPassword;
 use Illuminate\Http\Request;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class InstructorController extends Controller
@@ -51,6 +53,14 @@ class InstructorController extends Controller
             'instructors' => $instructors,
             'filters' => $request->only('search', 'status'),
             'stats' => ['total' => $total, 'active' => $active, 'inactive' => $total - $active],
+            'subjects' => Subject::with('instructor:id,name')->orderBy('level')->orderBy('name')->orderBy('id')
+                ->get(['id', 'name', 'level', 'instructor_id'])->map(fn ($subject) => [
+                    'id' => $subject->id,
+                    'name' => $subject->name,
+                    'level' => $subject->level,
+                    'instructor_id' => $subject->instructor_id,
+                    'instructor_name' => $subject->instructor?->name,
+                ]),
         ]);
     }
 
@@ -133,6 +143,49 @@ class InstructorController extends Controller
 
         return back()->with('success', $user->is_active
             ? 'تم تفعيل حساب المدرّس بنجاح' : 'تم تعطيل حساب المدرّس بنجاح');
+    }
+
+    public function subjects(Request $request, User $user)
+    {
+        $this->authorize('admin', User::class);
+        abort_unless($user->role === 'instructor', 404);
+        $data = $request->validate([
+            'subject_ids' => ['present', 'array', 'max:2000'],
+            'subject_ids.*' => ['required', 'integer', 'distinct', 'exists:subjects,id'],
+        ], [
+            'subject_ids.present' => 'حدد المقررات المطلوبة أو احفظ قائمة فارغة لإلغاء الإسناد.',
+            'subject_ids.array' => 'قائمة المقررات غير صحيحة.',
+            'subject_ids.max' => 'يمكن إسناد 2000 مقرر كحد أقصى.',
+            'subject_ids.*.required' => 'المقرر المحدد غير صحيح.',
+            'subject_ids.*.integer' => 'المقرر المحدد غير صحيح.',
+            'subject_ids.*.distinct' => 'لا يمكن تكرار المقرر في القائمة.',
+            'subject_ids.*.exists' => 'أحد المقررات لم يعد موجودًا. حدّث الصفحة وحاول مجددًا.',
+        ]);
+        $ids = array_map('intval', $data['subject_ids']);
+
+        DB::transaction(function () use ($user, $ids) {
+            // Serialize changes to this teacher and lock every affected course in a stable order.
+            $teacher = User::whereKey($user->id)->where('role', 'instructor')->lockForUpdate()->firstOrFail();
+            $subjects = Subject::where(fn ($query) => $query->where('instructor_id', $teacher->id)
+                ->orWhereIn('id', $ids))->orderBy('id')->lockForUpdate()->get();
+
+            if ($subjects->whereIn('id', $ids)->count() !== count($ids)) {
+                throw ValidationException::withMessages([
+                    'subject_ids' => 'أحد المقررات لم يعد موجودًا. حدّث الصفحة وحاول مجددًا.',
+                ]);
+            }
+            if ($subjects->whereIn('id', $ids)->contains(fn ($subject) => $subject->instructor_id !== null
+                && $subject->instructor_id !== $teacher->id)) {
+                throw ValidationException::withMessages([
+                    'subject_ids' => 'أحد المقررات مسند إلى مدرس آخر. ألغِ إسناده أولًا ثم حاول مجددًا.',
+                ]);
+            }
+
+            Subject::where('instructor_id', $teacher->id)->whereNotIn('id', $ids)->update(['instructor_id' => null]);
+            Subject::whereIn('id', $ids)->update(['instructor_id' => $teacher->id]);
+        }, 3);
+
+        return back()->with('success', 'تم تحديث مقررات المدرّس بنجاح');
     }
 
     public function destroy(Request $request, User $user)

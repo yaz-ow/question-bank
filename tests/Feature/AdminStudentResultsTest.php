@@ -32,7 +32,7 @@ class AdminStudentResultsTest extends TestCase
     {
         $course = Subject::factory()->create();
         $this->attempt(User::factory()->create(), $course);
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))->get(route('admin.student-results.index'))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))->get(route('admin.student-results.index'))
             ->assertOk()->assertInertia(fn (Assert $page) => $page->component('Admin/StudentResultsPage')
             ->has('courses', 1)->where('course', null)->where('students', null)->where('stats', null)
             ->where('selectedStudent', null)->where('review', null));
@@ -53,7 +53,7 @@ class AdminStudentResultsTest extends TestCase
         $this->attempt(User::factory()->create(), $other);
         $this->attempt(User::factory()->create(['role' => 'admin']), $course);
 
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->get(route('admin.student-results.index', ['subject_id' => $course->id]))->assertOk()
             ->assertInertia(fn (Assert $page) => $page->where('course.id', $course->id)
                 ->where('stats.students', 2)->where('stats.completed', 2)->missing('stats.average_percentage')
@@ -95,7 +95,7 @@ class AdminStudentResultsTest extends TestCase
                 'status' => $index === 17 ? 'abandoned' : 'completed', 'score' => 8]);
         }
         $this->attempt($student, $other);
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->get(route('admin.student-results.index', ['subject_id' => $course->id, 'student_id' => $student->id]))
             ->assertInertia(fn (Assert $page) => $page->where('selectedStudent.id', $student->id)
                 ->where('selectedStudent.attempts.total', 17)->has('selectedStudent.attempts.data', 15)
@@ -121,7 +121,7 @@ class AdminStudentResultsTest extends TestCase
                 'correct_answer' => 'B', 'selected_answer' => $position <= 8 ? 'B' : 'A',
                 'is_correct' => $position <= 8, 'answered_at' => now()]);
         }
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->get(route('admin.student-results.index', ['subject_id' => $course->id, 'student_id' => $student->id, 'attempt_id' => $attempt->id]))
             ->assertOk()->assertInertia(fn (Assert $page) => $page->where('review.attempt.id', $attempt->id)
             ->has('review.items', 10)->where('review.items.0.position', 1)->where('review.items.0.question_text', '=SNAPSHOT 1')
@@ -171,7 +171,7 @@ class AdminStudentResultsTest extends TestCase
         }
     }
 
-    public function test_only_active_admins_and_instructors_can_read_or_export_results(): void
+    public function test_only_active_admins_can_read_or_export_admin_results(): void
     {
         $course = Subject::factory()->create();
         $student = User::factory()->create();
@@ -181,22 +181,20 @@ class AdminStudentResultsTest extends TestCase
         foreach ($urls as $url) {
             $this->get($url)->assertRedirect(route('login-admin.show'));
         }
-        foreach ([['student', true], ['admin', false], ['instructor', false]] as [$role, $active]) {
+        foreach ([['student', true], ['instructor', true], ['admin', false], ['instructor', false]] as [$role, $active]) {
             $user = User::factory()->create(['role' => $role, 'is_active' => $active]);
             foreach ($urls as $url) {
                 $this->actingAs($user)->get($url)->assertRedirect('/');
             }
         }
-        foreach (['admin', 'instructor'] as $role) {
-            $this->actingAs(User::factory()->create(['role' => $role]))->get($urls[0])->assertOk();
-        }
+        $this->actingAs(User::factory()->create(['role' => 'admin']))->get($urls[0])->assertOk();
         $this->assertSame(8, $attempt->fresh()->score);
     }
 
     public function test_empty_courses_and_invalid_selection_are_handled(): void
     {
         $course = Subject::factory()->create();
-        $this->actingAs(User::factory()->create(['role' => 'instructor']))
+        $this->actingAs(User::factory()->create(['role' => 'admin']))
             ->get(route('admin.student-results.index', ['subject_id' => $course->id]))
             ->assertInertia(fn (Assert $page) => $page->where('students.total', 0)->where('stats.students', 0)->where('stats.completed', 0));
         foreach (['subject_id' => 99999, 'level' => 10, 'page' => 0, 'attempts_page' => 0, 'search' => str_repeat('x', 256)] as $key => $value) {
